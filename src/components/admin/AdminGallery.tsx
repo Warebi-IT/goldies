@@ -37,7 +37,8 @@ const AdminGallery = () => {
     setUploadingCover(true);
     try {
       const ext = file.name.split(".").pop();
-      const path = `covers/${crypto.randomUUID()}.${ext}`;
+      //const path = `covers/${crypto.randomUUID()}.${ext}`;
+      const path = `covers/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const { error: uploadError } = await supabase.storage.from("gallery").upload(path, file);
       if (uploadError) throw uploadError;
       const { data: { publicUrl } } = supabase.storage.from("gallery").getPublicUrl(path);
@@ -134,7 +135,8 @@ const AdminGallery = () => {
       const files = Array.from(e.target.files);
       for (const file of files) {
         const ext = file.name.split(".").pop();
-        const path = `${selectedAlbum}/${crypto.randomUUID()}.${ext}`;
+        //const path = `${selectedAlbum}/${crypto.randomUUID()}.${ext}`;
+        const path = `${selectedAlbum}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
         const { error: uploadError } = await supabase.storage.from("gallery").upload(path, file);
         if (uploadError) throw uploadError;
 
