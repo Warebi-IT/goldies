@@ -23,6 +23,20 @@ interface AdminUser {
   confirmed_at: string | null;
 }
 
+async function invokeAdmin(action: string, options?: Parameters<typeof supabase.functions.invoke>[1]) {
+  const { data, error } = await supabase.functions.invoke(`admin-users?action=${action}`, options);
+  if (error) {
+    let message = error.message;
+    try {
+      const body = await (error as any).context?.json?.();
+      if (body?.error) message = body.error;
+    } catch { /* use generic message */ }
+    return { data: null as null, errorMessage: message };
+  }
+  if (data?.error) return { data: null as null, errorMessage: String(data.error) };
+  return { data, errorMessage: null };
+}
+
 const AdminUsers = () => {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,10 +46,8 @@ const AdminUsers = () => {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase.functions.invoke("admin-users?action=list", {
-      method: "GET",
-    });
-    if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    const { data, errorMessage } = await invokeAdmin("list", { method: "GET" });
+    if (errorMessage) toast({ title: "Erreur", description: errorMessage, variant: "destructive" });
     else setUsers(data?.users ?? []);
     setLoading(false);
   };
@@ -48,13 +60,13 @@ const AdminUsers = () => {
     e.preventDefault();
     const normalizedEmail = email.trim().toLowerCase();
     setSubmitting(true);
-    const { data, error } = await supabase.functions.invoke("admin-users?action=invite", {
+    const { errorMessage } = await invokeAdmin("invite", {
       method: "POST",
       body: { email: normalizedEmail },
     });
     setSubmitting(false);
-    if (error || data?.error) {
-      toast({ title: "Erreur", description: data?.error ?? error?.message, variant: "destructive" });
+    if (errorMessage) {
+      toast({ title: "Erreur", description: errorMessage, variant: "destructive" });
       return;
     }
     toast({ title: "Invitation envoyée", description: `Invitation envoyée à ${normalizedEmail}` });
@@ -64,12 +76,12 @@ const AdminUsers = () => {
 
   const handleDelete = async () => {
     if (!toDelete) return;
-    const { data, error } = await supabase.functions.invoke("admin-users?action=delete", {
+    const { errorMessage } = await invokeAdmin("delete", {
       method: "DELETE",
       body: { user_id: toDelete.user_id },
     });
-    if (error || data?.error) {
-      toast({ title: "Erreur", description: data?.error ?? error?.message, variant: "destructive" });
+    if (errorMessage) {
+      toast({ title: "Erreur", description: errorMessage, variant: "destructive" });
     } else {
       toast({ title: "Admin supprimé" });
       load();

@@ -11,13 +11,74 @@ import { LogOut } from "lucide-react";
 
 const EMAIL_DOMAIN = "goldies.local";
 
+interface LoginFormProps {
+  isBootstrap: boolean;
+  onLogin: (username: string, password: string) => Promise<string | null>;
+  onBootstrap: (username: string, password: string) => Promise<string | null>;
+}
+
+const LoginForm = ({ isBootstrap, onLogin, onBootstrap }: LoginFormProps) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [authError, setAuthError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError("");
+    const fn = isBootstrap ? onBootstrap : onLogin;
+    const error = await fn(username, password);
+    if (error) setAuthError(error);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
+      <div className="w-full max-w-sm bg-card rounded-2xl shadow-lg p-8">
+        <div className="flex items-center gap-2 justify-center mb-6">
+          <img src={logo} alt="Goldies Travel" className="h-10 w-10" />
+          <span className="font-serif text-xl font-bold text-foreground">Admin</span>
+        </div>
+        {isBootstrap && (
+          <p className="text-xs text-center text-muted-foreground mb-4">
+            Aucun admin n'existe. Créez le premier compte.
+          </p>
+        )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="text-xs font-medium text-foreground mb-1 block">Identifiant</label>
+            <Input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="nom.prenom ou email@exemple.com"
+              autoComplete="username"
+              required
+            />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-foreground mb-1 block">Mot de passe</label>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              autoComplete="current-password"
+              required
+            />
+          </div>
+          {authError && <p className="text-sm text-destructive">{authError}</p>}
+          <Button type="submit" className="w-full rounded-full bg-primary text-primary-foreground">
+            {isBootstrap ? "Créer le compte admin" : "Se connecter"}
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const Admin = () => {
   const [session, setSession] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [authError, setAuthError] = useState("");
   const [needsBootstrap, setNeedsBootstrap] = useState(false);
 
   useEffect(() => {
@@ -59,31 +120,24 @@ const Admin = () => {
     check();
   }, [session]);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthError("");
+  const handleLogin = async (username: string, password: string): Promise<string | null> => {
     const clean = username.trim().toLowerCase();
     const email = clean.includes("@") ? clean : `${clean}@${EMAIL_DOMAIN}`;
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setAuthError("Identifiants invalides");
+    return error ? "Identifiants invalides" : null;
   };
 
-  const handleBootstrap = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthError("");
+  const handleBootstrap = async (username: string, password: string): Promise<string | null> => {
     const clean = username.trim().toLowerCase();
     const { data, error } = await supabase.functions.invoke("admin-users?action=create", {
       method: "POST",
       body: { username: clean, password },
     });
-    if (error || data?.error) {
-      setAuthError(data?.error ?? error?.message ?? "Erreur");
-      return;
-    }
-    // sign in
+    if (error || data?.error) return data?.error ?? error?.message ?? "Erreur";
     const email = `${clean}@${EMAIL_DOMAIN}`;
     await supabase.auth.signInWithPassword({ email, password });
     setNeedsBootstrap(false);
+    return null;
   };
 
   const handleLogout = async () => {
@@ -99,49 +153,12 @@ const Admin = () => {
   }
 
   if (!session) {
-    const isBootstrap = needsBootstrap;
     return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-        <div className="w-full max-w-sm bg-card rounded-2xl shadow-lg p-8">
-          <div className="flex items-center gap-2 justify-center mb-6">
-            <img src={logo} alt="Goldies Travel" className="h-10 w-10" />
-            <span className="font-serif text-xl font-bold text-foreground">Admin</span>
-          </div>
-          {isBootstrap && (
-            <p className="text-xs text-center text-muted-foreground mb-4">
-              Aucun admin n'existe. Créez le premier compte.
-            </p>
-          )}
-          <form onSubmit={isBootstrap ? handleBootstrap : handleLogin} className="space-y-4">
-            <div>
-              <label className="text-xs font-medium text-foreground mb-1 block">Identifiant</label>
-              <Input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="nom.prenom ou email@exemple.com"
-                autoComplete="username"
-                required
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-foreground mb-1 block">Mot de passe</label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                autoComplete="current-password"
-                required
-              />
-            </div>
-            {authError && <p className="text-sm text-destructive">{authError}</p>}
-            <Button type="submit" className="w-full rounded-full bg-primary text-primary-foreground">
-              {isBootstrap ? "Créer le compte admin" : "Se connecter"}
-            </Button>
-          </form>
-        </div>
-      </div>
+      <LoginForm
+        isBootstrap={needsBootstrap}
+        onLogin={handleLogin}
+        onBootstrap={handleBootstrap}
+      />
     );
   }
 
