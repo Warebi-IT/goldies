@@ -63,11 +63,7 @@ const Admin = () => {
     e.preventDefault();
     setAuthError("");
     const clean = username.trim().toLowerCase();
-    if (!/^[a-z0-9]+\.[a-z0-9]+$/.test(clean)) {
-      setAuthError("Format invalide. Utilisez nom.prenom");
-      return;
-    }
-    const email = `${clean}@${EMAIL_DOMAIN}`;
+    const email = clean.includes("@") ? clean : `${clean}@${EMAIL_DOMAIN}`;
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) setAuthError("Identifiants invalides");
   };
@@ -123,7 +119,7 @@ const Admin = () => {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="nom.prenom"
+                placeholder="nom.prenom ou email@exemple.com"
                 autoComplete="username"
                 required
               />

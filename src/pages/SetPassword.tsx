@@ -16,24 +16,26 @@ const SetPassword = () => {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    let redirectTimer: ReturnType<typeof setTimeout> | undefined;
+    // onAuthStateChange fires when the client processes the invitation hash fragment
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setHasSession(!!session);
+      setLoading(false);
+    });
 
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
+    // Fallback: session may already be stored if the hash was processed before mount
+    supabase.auth.getSession().then(({ data }) => {
       setHasSession(!!data.session);
       setLoading(false);
-    };
+    });
 
-    checkSession();
+    return () => subscription.unsubscribe();
+  }, []);
 
-    if (success) {
-      redirectTimer = setTimeout(() => navigate("/admin"), 2000);
-    }
-
-    return () => {
-      if (redirectTimer) clearTimeout(redirectTimer);
-    };
-  }, [navigate, success]);
+  useEffect(() => {
+    if (!success) return;
+    const timer = setTimeout(() => navigate("/admin"), 2000);
+    return () => clearTimeout(timer);
+  }, [success, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,7 +80,12 @@ const SetPassword = () => {
         </div>
 
         {!hasSession ? (
-          <p className="text-sm text-center text-destructive">Lien invalide ou expiré</p>
+          <div className="text-center space-y-4">
+            <p className="text-sm text-destructive">Lien invalide ou expiré.</p>
+            <a href="/admin" className="text-sm text-primary underline">
+              Retour à l'administration
+            </a>
+          </div>
         ) : success ? (
           <p className="text-sm text-center text-foreground">
             Mot de passe défini. Redirection vers l'administration...
