@@ -97,6 +97,24 @@ Deno.serve(async (req) => {
     const isAdmin = await getCallerIsAdmin(req);
     if (!isAdmin) return json({ error: "Non autorisé" }, 403);
 
+    if (req.method === "POST" && action === "invite") {
+      const body = await req.json();
+      const email = String(body.email ?? "").trim().toLowerCase();
+      if (!email) return json({ error: "email requis" }, 400);
+
+      const { data: invited, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(email);
+      if (inviteErr || !invited.user) {
+        return json({ error: inviteErr?.message ?? "Invitation échouée" }, 400);
+      }
+
+      const { error: roleErr } = await admin
+        .from("user_roles")
+        .insert({ user_id: invited.user.id, role: "admin" });
+      if (roleErr) return json({ error: roleErr.message }, 400);
+
+      return json({ success: true, message: `Invitation envoyée à ${email}` });
+    }
+
     if (req.method === "GET" && action === "list") {
       const { data: roles } = await admin
         .from("user_roles")
@@ -110,6 +128,8 @@ Deno.serve(async (req) => {
             user_id: r.user_id,
             username: email.replace(`@${EMAIL_DOMAIN}`, ""),
             created_at: r.created_at,
+            invited_at: data.user?.invited_at ?? null,
+            confirmed_at: data.user?.confirmed_at ?? null,
           };
         })
       );

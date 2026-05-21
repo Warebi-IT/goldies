@@ -10,6 +10,7 @@ import Gallery from "./pages/Gallery.tsx";
 import Concept from "./pages/Concept.tsx";
 import ContactPage from "./pages/ContactPage.tsx";
 import Admin from "./pages/Admin.tsx";
+import SetPassword from "./pages/SetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/concept" element={<Concept />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/set-password" element={<SetPassword />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

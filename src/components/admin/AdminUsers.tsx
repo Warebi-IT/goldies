@@ -19,13 +19,14 @@ interface AdminUser {
   user_id: string;
   username: string;
   created_at: string;
+  invited_at: string | null;
+  confirmed_at: string | null;
 }
 
 const AdminUsers = () => {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [toDelete, setToDelete] = useState<AdminUser | null>(null);
 
@@ -43,21 +44,21 @@ const AdminUsers = () => {
     load();
   }, []);
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
+    const normalizedEmail = email.trim().toLowerCase();
     setSubmitting(true);
-    const { data, error } = await supabase.functions.invoke("admin-users?action=create", {
+    const { data, error } = await supabase.functions.invoke("admin-users?action=invite", {
       method: "POST",
-      body: { username: username.trim().toLowerCase(), password },
+      body: { email: normalizedEmail },
     });
     setSubmitting(false);
     if (error || data?.error) {
       toast({ title: "Erreur", description: data?.error ?? error?.message, variant: "destructive" });
       return;
     }
-    toast({ title: "Admin créé", description: username });
-    setUsername("");
-    setPassword("");
+    toast({ title: "Invitation envoyée", description: `Invitation envoyée à ${normalizedEmail}` });
+    setEmail("");
     load();
   };
 
@@ -83,29 +84,18 @@ const AdminUsers = () => {
           <Plus size={18} className="text-primary" />
           <h3 className="font-serif text-lg font-bold text-foreground">Ajouter un admin</h3>
         </div>
-        <form onSubmit={handleCreate} className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <form onSubmit={handleInvite} className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3">
           <Input
-            placeholder="nom.prenom"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            pattern="^[a-z0-9]+\.[a-z0-9]+$"
-            required
-          />
-          <Input
-            type="password"
-            placeholder="Mot de passe (min 6)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            minLength={6}
+            type="email"
+            placeholder="email@exemple.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
           <Button type="submit" disabled={submitting} className="rounded-full">
-            {submitting ? "Création..." : "Créer l'admin"}
+            {submitting ? "Invitation..." : "Inviter"}
           </Button>
         </form>
-        <p className="text-xs text-muted-foreground mt-2">
-          Format requis : <code>nom.prenom</code> (lettres minuscules, chiffres, séparés par un point)
-        </p>
       </div>
 
       <div className="bg-card rounded-2xl border border-border p-6">
@@ -122,7 +112,18 @@ const AdminUsers = () => {
             {users.map((u) => (
               <li key={u.user_id} className="flex items-center justify-between py-3">
                 <div>
-                  <p className="font-medium text-foreground">{u.username}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-foreground">{u.username}</p>
+                    {u.invited_at && !u.confirmed_at ? (
+                      <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+                        Invitation en attente
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+                        Actif
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     Créé le {new Date(u.created_at).toLocaleDateString("fr-FR")}
                   </p>
