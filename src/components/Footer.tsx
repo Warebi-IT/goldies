@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
-import { Instagram, Facebook, Mail } from "lucide-react";
+import { RESEAUX_ACTIFS } from "@/config/reseauxSociaux";
 
 const Footer = () => {
   return (
@@ -49,27 +49,21 @@ const Footer = () => {
               Nous suivre
             </h4>
             <div className="flex gap-4">
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center text-background/70 hover:bg-background/20 transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram size={18} />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center text-background/70 hover:bg-background/20 transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook size={18} />
-              </a>
-              <a
-                href="mailto:contact@goldiestravel.com"
-                className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center text-background/70 hover:bg-background/20 transition-colors"
-                aria-label="Email"
-              >
-                <Mail size={18} />
-              </a>
+              {RESEAUX_ACTIFS.map((reseau) => {
+                const Icone = reseau.icone;
+                return (
+                  <a
+                    key={reseau.nom}
+                    href={reseau.externe ? reseau.url : `mailto:${reseau.url}`}
+                    target={reseau.externe ? "_blank" : undefined}
+                    rel={reseau.externe ? "noopener noreferrer" : undefined}
+                    aria-label={reseau.nom}
+                    className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center text-background/70 hover:bg-background/20 transition-colors"
+                  >
+                    {Icone && <Icone className="w-[18px] h-[18px]" />}
+                  </a>
+                );
+              })}
             </div>
           </div>
         </div>
