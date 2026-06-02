@@ -5,12 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, X } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, X, Calendar as CalendarIcon } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface ProgramDay {
   title: string;
   description: string;
+}
+
+interface TripPhoto {
+  url: string;
 }
 
 interface TripForm {
@@ -26,6 +32,8 @@ interface TripForm {
   payment_link: string;
   slug: string;
   program: ProgramDay[];
+  start_date: string;
+  end_date: string;
 }
 
 const emptyForm: TripForm = {
@@ -41,15 +49,32 @@ const emptyForm: TripForm = {
   payment_link: "",
   slug: "",
   program: [],
+  start_date: "",
+  end_date: "",
 };
 
 const slugify = (s: string) =>
   s
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
+
+const toLocalISODate = (date: Date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+};
+
+const fromLocalISODate = (iso: string) => {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d);
+};
+
+const formatDateFr = (date: Date) =>
+  date.toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
 
 const AdminTrips = () => {
   const queryClient = useQueryClient();
@@ -57,6 +82,10 @@ const AdminTrips = () => {
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<TripForm>(emptyForm);
   const [uploading, setUploading] = useState(false);
+  const [tripPhotos, setTripPhotos] = useState<TripPhoto[]>([]);
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
 
   const { data: trips, isLoading } = useQuery({
     queryKey: ["admin-trips"],
@@ -69,6 +98,42 @@ const AdminTrips = () => {
       return data;
     },
   });
+
+  const handleStartDate = (date: Date | undefined) => {
+    const iso = date ? toLocalISODate(date) : "";
+    setForm((prev) => {
+      const endDate = prev.end_date ? fromLocalISODate(prev.end_date) : undefined;
+      if (date && endDate && endDate > date) {
+        const days = Math.round((endDate.getTime() - date.getTime()) / 86400000) + 1;
+        const nights = days - 1;
+        return {
+          ...prev,
+          start_date: iso,
+          duration: `${days} jour${days > 1 ? "s" : ""} / ${nights} nuit${nights > 1 ? "s" : ""}`,
+          dates: `${formatDateFr(date)} au ${formatDateFr(endDate)}`,
+        };
+      }
+      return { ...prev, start_date: iso };
+    });
+  };
+
+  const handleEndDate = (date: Date | undefined) => {
+    const iso = date ? toLocalISODate(date) : "";
+    setForm((prev) => {
+      const startDate = prev.start_date ? fromLocalISODate(prev.start_date) : undefined;
+      if (date && startDate && date > startDate) {
+        const days = Math.round((date.getTime() - startDate.getTime()) / 86400000) + 1;
+        const nights = days - 1;
+        return {
+          ...prev,
+          end_date: iso,
+          duration: `${days} jour${days > 1 ? "s" : ""} / ${nights} nuit${nights > 1 ? "s" : ""}`,
+          dates: `${formatDateFr(startDate)} au ${formatDateFr(date)}`,
+        };
+      }
+      return { ...prev, end_date: iso };
+    });
+  };
 
   const upsertMutation = useMutation({
     mutationFn: async () => {
@@ -85,13 +150,34 @@ const AdminTrips = () => {
         payment_link: form.payment_link || null,
         slug: form.slug || slugify(form.name) || null,
         program: form.program as any,
+        start_date: form.start_date || null,
+        end_date: form.end_date || null,
       };
+
+      let tripId: string;
+
       if (editId) {
         const { error } = await supabase.from("trips").update(payload).eq("id", editId);
         if (error) throw error;
+        tripId = editId;
       } else {
-        const { error } = await supabase.from("trips").insert(payload);
+        const { data, error } = await supabase.from("trips").insert(payload).select("id").single();
         if (error) throw error;
+        tripId = data.id;
+      }
+
+      // Replace all photos for this trip
+      const { error: delError } = await supabase
+        .from("trip_photos")
+        .delete()
+        .eq("trip_id", tripId);
+      if (delError) throw delError;
+
+      if (tripPhotos.length > 0) {
+        const { error: insError } = await supabase.from("trip_photos").insert(
+          tripPhotos.map((p, i) => ({ trip_id: tripId, image_url: p.url, sort_order: i }))
+        );
+        if (insError) throw insError;
       }
     },
     onSuccess: () => {
@@ -99,6 +185,7 @@ const AdminTrips = () => {
       setModalOpen(false);
       setEditId(null);
       setForm(emptyForm);
+      setTripPhotos([]);
       toast({ title: editId ? "Voyage modifié" : "Voyage ajouté" });
     },
     onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
@@ -140,7 +227,30 @@ const AdminTrips = () => {
     }
   };
 
-  const openEdit = (trip: any) => {
+  const handleGalleryUpload = async (files: FileList | null) => {
+    if (!files) return;
+    setGalleryUploading(true);
+    try {
+      const uploaded: TripPhoto[] = [];
+      for (const file of Array.from(files)) {
+        const ext = file.name.split(".").pop();
+        const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const path = `trips/${filename}.${ext}`;
+        const { error } = await supabase.storage.from("gallery").upload(path, file, { upsert: true });
+        if (error) throw error;
+        const { data } = supabase.storage.from("gallery").getPublicUrl(path);
+        uploaded.push({ url: data.publicUrl });
+      }
+      setTripPhotos((prev) => [...prev, ...uploaded]);
+      toast({ title: `${uploaded.length} photo${uploaded.length > 1 ? "s" : ""} uploadée${uploaded.length > 1 ? "s" : ""}` });
+    } catch (e: any) {
+      toast({ title: "Erreur upload", description: e.message, variant: "destructive" });
+    } finally {
+      setGalleryUploading(false);
+    }
+  };
+
+  const openEdit = async (trip: any) => {
     setEditId(trip.id);
     setForm({
       name: trip.name,
@@ -155,13 +265,24 @@ const AdminTrips = () => {
       payment_link: trip.payment_link || "",
       slug: trip.slug || "",
       program: Array.isArray(trip.program) ? trip.program : [],
+      start_date: trip.start_date || "",
+      end_date: trip.end_date || "",
     });
+
+    const { data } = await supabase
+      .from("trip_photos")
+      .select("image_url")
+      .eq("trip_id", trip.id)
+      .order("sort_order");
+    setTripPhotos(data?.map((p) => ({ url: p.image_url })) || []);
+
     setModalOpen(true);
   };
 
   const openNew = () => {
     setEditId(null);
     setForm(emptyForm);
+    setTripPhotos([]);
     setModalOpen(true);
   };
 
@@ -174,6 +295,15 @@ const AdminTrips = () => {
     }));
   const removeDay = (i: number) =>
     setForm((f) => ({ ...f, program: f.program.filter((_, idx) => idx !== i) }));
+
+  const computedDuration = (() => {
+    if (!form.start_date || !form.end_date) return null;
+    const start = fromLocalISODate(form.start_date);
+    const end = fromLocalISODate(form.end_date);
+    const days = Math.round((end.getTime() - start.getTime()) / 86400000) + 1;
+    const nights = days - 1;
+    return `${days} jour${days > 1 ? "s" : ""} / ${nights} nuit${nights > 1 ? "s" : ""}`;
+  })();
 
   return (
     <div>
@@ -268,16 +398,85 @@ const AdminTrips = () => {
                 <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} required />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-medium mb-1 block">Durée *</label>
-                <Input value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} placeholder="7 jours / 6 nuits" required />
+
+            {/* Dates */}
+            <div className="space-y-3">
+              <label className="text-xs font-medium block">Dates du voyage</label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Date de début</label>
+                  <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start text-left font-normal h-10 text-sm">
+                        <CalendarIcon size={14} className="mr-2 shrink-0" />
+                        {form.start_date
+                          ? fromLocalISODate(form.start_date).toLocaleDateString("fr-FR")
+                          : <span className="text-muted-foreground">Choisir</span>
+                        }
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={form.start_date ? fromLocalISODate(form.start_date) : undefined}
+                        onSelect={(date) => { handleStartDate(date); setStartDateOpen(false); }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Date de fin</label>
+                  <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start text-left font-normal h-10 text-sm">
+                        <CalendarIcon size={14} className="mr-2 shrink-0" />
+                        {form.end_date
+                          ? fromLocalISODate(form.end_date).toLocaleDateString("fr-FR")
+                          : <span className="text-muted-foreground">Choisir</span>
+                        }
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={form.end_date ? fromLocalISODate(form.end_date) : undefined}
+                        onSelect={(date) => { handleEndDate(date); setEndDateOpen(false); }}
+                        disabled={(date) =>
+                          form.start_date ? date <= fromLocalISODate(form.start_date) : false
+                        }
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
-              <div>
-                <label className="text-xs font-medium mb-1 block">Dates *</label>
-                <Input value={form.dates} onChange={(e) => setForm({ ...form, dates: e.target.value })} placeholder="15 – 21 Juillet 2026" required />
-              </div>
+
+              {computedDuration && (
+                <p className="text-sm font-medium text-primary">{computedDuration}</p>
+              )}
+
+              {/* Fallback text fields for trips without date picker data */}
+              {!form.start_date && !form.end_date && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">Durée (texte)</label>
+                    <Input
+                      value={form.duration}
+                      onChange={(e) => setForm({ ...form, duration: e.target.value })}
+                      placeholder="7 jours / 6 nuits"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">Dates (texte)</label>
+                    <Input
+                      value={form.dates}
+                      onChange={(e) => setForm({ ...form, dates: e.target.value })}
+                      placeholder="15 – 21 Juillet 2026"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
+
             <div>
               <label className="text-xs font-medium mb-1 block">Tag</label>
               <select
@@ -299,7 +498,7 @@ const AdminTrips = () => {
               <Input value={form.includes} onChange={(e) => setForm({ ...form, includes: e.target.value })} />
             </div>
 
-            {/* Image */}
+            {/* Image de couverture */}
             <div>
               <label className="text-xs font-medium mb-1 block">Image de couverture</label>
               {form.image_url && (
@@ -321,6 +520,37 @@ const AdminTrips = () => {
                   />
                 </label>
               </div>
+            </div>
+
+            {/* Photos du voyage */}
+            <div>
+              <label className="text-xs font-medium mb-2 block">Photos du voyage</label>
+              {tripPhotos.length > 0 && (
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  {tripPhotos.map((photo, i) => (
+                    <div key={i} className="relative group">
+                      <img src={photo.url} alt="" className="w-full h-24 object-cover rounded-md" />
+                      <button
+                        type="button"
+                        onClick={() => setTripPhotos((prev) => prev.filter((_, idx) => idx !== i))}
+                        className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <label className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer w-full justify-center">
+                <Upload size={14} /> {galleryUploading ? "..." : "Ajouter des photos"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => handleGalleryUpload(e.target.files)}
+                />
+              </label>
             </div>
 
             {/* Payment link */}

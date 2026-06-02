@@ -1,9 +1,10 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { MapPin, Calendar, Clock, ArrowLeft, CheckCircle } from "lucide-react";
+import { MapPin, Calendar, Clock, ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const VoyageDetail = () => {
@@ -12,7 +13,6 @@ const VoyageDetail = () => {
   const { data: trip, isLoading } = useQuery({
     queryKey: ["trip-detail", id],
     queryFn: async () => {
-      // Try slug first, then id
       let q = await supabase.from("trips").select("*").eq("slug", id!).maybeSingle();
       if (!q.data) {
         q = await supabase.from("trips").select("*").eq("id", id!).maybeSingle();
@@ -21,6 +21,35 @@ const VoyageDetail = () => {
       return q.data;
     },
   });
+
+  const { data: tripPhotos } = useQuery({
+    queryKey: ["trip-photos", trip?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("trip_photos")
+        .select("*")
+        .eq("trip_id", trip!.id)
+        .order("sort_order");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!trip?.id,
+  });
+
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const [photoPaused, setPhotoPaused] = useState(false);
+
+  useEffect(() => {
+    setPhotoIndex(0);
+  }, [trip?.id]);
+
+  useEffect(() => {
+    if (!tripPhotos?.length || tripPhotos.length <= 1 || photoPaused) return;
+    const timer = setInterval(() => {
+      setPhotoIndex((i) => (i + 1) % tripPhotos.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [tripPhotos, photoPaused]);
 
   if (isLoading) {
     return (
@@ -46,6 +75,25 @@ const VoyageDetail = () => {
   const program: Array<{ title: string; description: string }> = Array.isArray(trip.program)
     ? (trip.program as any)
     : [];
+
+  const displayDates = (() => {
+    if (trip.start_date && trip.end_date) {
+      const start = new Date(trip.start_date + "T00:00:00");
+      const end = new Date(trip.end_date + "T00:00:00");
+      const day1 = start.getDate();
+      const day2 = end.getDate();
+      const month1 = start.toLocaleDateString("fr-FR", { month: "long" });
+      const month2 = end.toLocaleDateString("fr-FR", { month: "long" });
+      const year = end.getFullYear();
+      if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
+        return `Du ${day1} au ${day2} ${month2} ${year}`;
+      }
+      return `Du ${day1} ${month1} au ${day2} ${month2} ${year}`;
+    }
+    return trip.dates;
+  })();
+
+  const hasPhotos = tripPhotos && tripPhotos.length > 0;
 
   return (
     <div className="min-h-screen">
@@ -73,6 +121,7 @@ const VoyageDetail = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4 grid lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-12">
+            {/* Description */}
             <div>
               <h2 className="font-serif text-2xl font-bold mb-4">Description</h2>
               <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
@@ -80,6 +129,56 @@ const VoyageDetail = () => {
               </p>
             </div>
 
+            {/* Carousel photos */}
+            {hasPhotos && (
+              <div>
+                <h2 className="font-serif text-2xl font-bold mb-6">Photos</h2>
+                <div
+                  className="relative rounded-2xl overflow-hidden"
+                  onMouseEnter={() => setPhotoPaused(true)}
+                  onMouseLeave={() => setPhotoPaused(false)}
+                >
+                  <img
+                    src={tripPhotos[photoIndex].image_url}
+                    alt=""
+                    className="w-full h-80 object-cover"
+                  />
+
+                  {tripPhotos.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => setPhotoIndex((i) => (i - 1 + tripPhotos.length) % tripPhotos.length)}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-colors"
+                        aria-label="Photo précédente"
+                      >
+                        <ArrowLeft size={16} />
+                      </button>
+                      <button
+                        onClick={() => setPhotoIndex((i) => (i + 1) % tripPhotos.length)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-colors"
+                        aria-label="Photo suivante"
+                      >
+                        <ArrowRight size={16} />
+                      </button>
+                      <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+                        {tripPhotos.map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setPhotoIndex(i)}
+                            className={`rounded-full transition-all ${
+                              i === photoIndex ? "bg-white w-4 h-2" : "bg-white/50 w-2 h-2"
+                            }`}
+                            aria-label={`Photo ${i + 1}`}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Programme */}
             <div>
               <h2 className="font-serif text-2xl font-bold mb-6">Programme jour par jour</h2>
               {program.length === 0 ? (
@@ -115,7 +214,7 @@ const VoyageDetail = () => {
                 <Clock size={16} className="text-primary" /> {trip.duration}
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
-                <Calendar size={16} className="text-primary" /> {trip.dates}
+                <Calendar size={16} className="text-primary" /> {displayDates}
               </div>
             </div>
 
