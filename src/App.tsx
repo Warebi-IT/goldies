@@ -10,6 +10,8 @@ import Gallery from "./pages/Gallery.tsx";
 import Concept from "./pages/Concept.tsx";
 import ContactPage from "./pages/ContactPage.tsx";
 import Admin from "./pages/Admin.tsx";
+import MfaSetup from "./pages/MfaSetup.tsx";
+import MfaVerify from "./pages/MfaVerify.tsx";
 import SetPassword from "./pages/SetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -29,6 +31,8 @@ const App = () => (
           <Route path="/concept" element={<Concept />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/mfa-setup" element={<MfaSetup />} />
+          <Route path="/mfa-verify" element={<MfaVerify />} />
           <Route path="/set-password" element={<SetPassword />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

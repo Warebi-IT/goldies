@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import ConfirmationMFA from "@/components/admin/ConfirmationMFA";
 
 interface ProgramDay {
   title: string;
@@ -57,6 +58,9 @@ const AdminTrips = () => {
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<TripForm>(emptyForm);
   const [uploading, setUploading] = useState(false);
+  const [showMfaConfirm, setShowMfaConfirm] = useState(false);
+  const [originalPaymentLink, setOriginalPaymentLink] = useState("");
+  const mfaSucceeded = useRef(false);
 
   const { data: trips, isLoading } = useQuery({
     queryKey: ["admin-trips"],
@@ -142,6 +146,7 @@ const AdminTrips = () => {
 
   const openEdit = (trip: any) => {
     setEditId(trip.id);
+    setOriginalPaymentLink(trip.payment_link || "");
     setForm({
       name: trip.name,
       description: trip.description || "",
@@ -161,8 +166,32 @@ const AdminTrips = () => {
 
   const openNew = () => {
     setEditId(null);
+    setOriginalPaymentLink("");
     setForm(emptyForm);
     setModalOpen(true);
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (form.payment_link !== originalPaymentLink) {
+      setShowMfaConfirm(true);
+    } else {
+      upsertMutation.mutate();
+    }
+  };
+
+  const handleMfaOpenChange = (open: boolean) => {
+    if (!open && !mfaSucceeded.current) {
+      toast({ title: "Modification du lien Stripe annulée" });
+    }
+    mfaSucceeded.current = false;
+    setShowMfaConfirm(open);
+  };
+
+  const handleMfaSuccess = () => {
+    mfaSucceeded.current = true;
+    setShowMfaConfirm(false);
+    upsertMutation.mutate();
   };
 
   const addDay = () =>
@@ -247,13 +276,7 @@ const AdminTrips = () => {
               {editId ? "Modifier le voyage" : "Nouveau voyage"}
             </DialogTitle>
           </DialogHeader>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              upsertMutation.mutate();
-            }}
-            className="space-y-4"
-          >
+          <form onSubmit={handleFormSubmit} className="space-y-4">
             <div>
               <label className="text-xs font-medium mb-1 block">Nom du voyage *</label>
               <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
@@ -390,6 +413,12 @@ const AdminTrips = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmationMFA
+        open={showMfaConfirm}
+        onOpenChange={handleMfaOpenChange}
+        onSuccess={handleMfaSuccess}
+      />
     </div>
   );
 };
