@@ -23,7 +23,7 @@ const MfaSetup = () => {
     const enroll = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
-        navigate("/admin");
+        navigate("/gestion-goldies");
         return;
       }
 
@@ -34,7 +34,7 @@ const MfaSetup = () => {
           description: error?.message ?? "Impossible d'initialiser le 2FA",
           variant: "destructive",
         });
-        navigate("/admin");
+        navigate("/gestion-goldies");
         return;
       }
 
@@ -54,7 +54,7 @@ const MfaSetup = () => {
       const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code });
       if (error) throw error;
       toast({ title: "2FA activé", description: "Google Authenticator configuré avec succès" });
-      navigate("/admin");
+      navigate("/gestion-goldies");
     } catch {
       setError("Code invalide, réessayez");
       setCode("");
@@ -122,7 +122,7 @@ const MfaSetup = () => {
           </div>
 
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => navigate("/admin")} className="flex-1">
+            <Button variant="outline" onClick={() => navigate("/gestion-goldies")} className="flex-1">
               Annuler
             </Button>
             <Button

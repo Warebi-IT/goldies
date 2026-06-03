@@ -17,7 +17,7 @@ const MfaVerify = () => {
     const init = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
-        navigate("/admin");
+        navigate("/gestion-goldies");
         return;
       }
 
@@ -47,7 +47,7 @@ const MfaVerify = () => {
     try {
       const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code });
       if (error) throw error;
-      navigate("/admin");
+      navigate("/gestion-goldies");
     } catch {
       setError("Code invalide, réessayez");
       setCode("");
@@ -104,7 +104,7 @@ const MfaVerify = () => {
             variant="ghost"
             onClick={async () => {
               await supabase.auth.signOut();
-              navigate("/admin");
+              navigate("/gestion-goldies");
             }}
             className="w-full text-muted-foreground"
           >

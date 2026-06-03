@@ -48,7 +48,7 @@ const App = () => (
           <Route path="/galerie" element={<Gallery />} />
           <Route path="/concept" element={<Concept />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/gestion-goldies" element={<Admin />} />
           <Route path="/mfa-setup" element={<MfaSetup />} />
           <Route path="/mfa-verify" element={<MfaVerify />} />
           <Route path="/set-password" element={<SetPassword />} />
