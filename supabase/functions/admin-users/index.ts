@@ -102,9 +102,9 @@ Deno.serve(async (req) => {
       const email = String(body.email ?? "").trim().toLowerCase();
       if (!email) return json({ error: "email requis" }, 400);
 
-      const origin = req.headers.get("origin") ?? "";
+      const siteUrl = Deno.env.get("SITE_URL") ?? req.headers.get("origin") ?? "";
       const { data: invited, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(email, {
-        redirectTo: `${origin}/set-password`,
+        redirectTo: `${siteUrl}/set-password`,
       });
       if (inviteErr || !invited.user) {
         return json({ error: inviteErr?.message ?? "Invitation échouée" }, 400);
