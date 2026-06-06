@@ -16,6 +16,10 @@ export default {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
         serif: ["Playfair Display", "serif"],
+        control: ["var(--font-control)"],
+        "control-compressed": ["var(--font-control-compressed)"],
+        "control-cursive": ["var(--font-control-cursive)"],
+        "control-tnt": ["var(--font-control-tnt)"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -23,6 +27,13 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        "sky-canvas": "var(--color-sky-canvas)",
+        "action-blue": "var(--color-action-blue)",
+        "action-green": "var(--color-action-green)",
+        "midnight-ink": "var(--color-midnight-ink)",
+        "cloud-white": "var(--color-cloud-white)",
+        "charcoal-text": "var(--color-charcoal-text)",
+        "haze-grey": "var(--color-haze-grey)",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -70,6 +81,11 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        cards: "var(--radius-cards)",
+        links: "var(--radius-links)",
+        images: "var(--radius-images)",
+        inputs: "var(--radius-inputs)",
+        buttons: "var(--radius-buttons)",
       },
       keyframes: {
         "accordion-down": {
