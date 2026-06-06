@@ -25,24 +25,21 @@ const steps = [
 
 const AboutConcept = () => {
   return (
-    <section id="concept" className="py-24 bg-sky-canvas border-t border-cloud-white/10">
-      <div className="container mx-auto px-6">
+    <section id="concept" className="py-20 border-t border-ink/20">
+      <div className="container mx-auto max-w-[1280px] px-6">
         {/* About intro */}
         <div className="max-w-3xl mx-auto text-center mb-20">
-          <p className="font-control-tnt text-xs uppercase tracking-[0.2em] text-action-blue font-bold mb-3">
-            [ QUI SOMMES-NOUS ]
+          <p className="font-dm-sans text-sm uppercase tracking-wider text-citra-orange font-bold mb-3">
+            QUI SOMMES-NOUS
           </p>
-          <h2 className="font-control-compressed text-4xl md:text-6xl font-black text-cloud-white uppercase tracking-tight mb-2">
-            Goldies Travel, c'est quoi ?
+          <h2 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-ink uppercase tracking-tight mb-6">
+            Goldies Travel,<br /> c'est quoi ?
           </h2>
-          <span className="font-control-cursive text-2xl text-cloud-white/80 block mb-8">
-            Une aventure humaine d'empouvoirement et de partage
-          </span>
-          <div className="text-base md:text-lg text-cloud-white/90 leading-relaxed space-y-6 mb-12">
+          <div className="text-base md:text-lg font-dm-sans font-medium text-ink/80 leading-relaxed space-y-6 mb-12">
             <p>
-              <strong className="text-cloud-white font-bold underline decoration-action-blue decoration-2">Goldies Travel</strong> est une agence de voyage spécialisée dans
+              <strong className="text-ink font-bold bg-hazard-yellow/50 px-1">Goldies Travel</strong> est une agence de voyage spécialisée dans
               l'organisation d'expériences touristiques et solidaires en groupe,{" "}
-              <strong className="text-cloud-white font-bold underline decoration-action-blue decoration-2">100% féminin</strong>. Notre mission : permettre aux femmes
+              <strong className="text-ink font-bold bg-hazard-yellow/50 px-1">100% féminin</strong>. Notre mission : permettre aux femmes
               francophones de 18 à 45 ans de découvrir l'Afrique dans un cadre
               sécurisé, bienveillant et enrichissant.
             </p>
@@ -52,17 +49,17 @@ const AboutConcept = () => {
               associatif pour soutenir activement le travail des communautés locales.
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-8 border border-cloud-white/10 p-8 rounded-cards bg-cloud-white/5 backdrop-blur-sm">
+          <div className="grid grid-cols-3 gap-6 border border-ink bg-cream-card p-8 rounded-cards">
             {[
               { value: "500+", label: "Voyageuses" },
               { value: "2", label: "Destinations" },
               { value: "100%", label: "Féminin" },
             ].map((s) => (
               <div key={s.label}>
-                <p className="font-control-compressed text-3xl md:text-5xl font-black text-cloud-white">
+                <p className="font-pp-neue-corp-compact text-4xl md:text-6xl font-black text-citra-orange leading-none mb-2">
                   {s.value}
                 </p>
-                <p className="font-control-tnt text-xs text-cloud-white/70 uppercase tracking-wider mt-1">{s.label}</p>
+                <p className="font-dm-sans text-xs text-ink/70 uppercase tracking-wider font-bold">{s.label}</p>
               </div>
             ))}
           </div>
@@ -70,33 +67,33 @@ const AboutConcept = () => {
 
         {/* Concept steps */}
         <div className="text-center mb-16">
-          <p className="font-control-tnt text-xs uppercase tracking-[0.2em] text-action-blue font-bold mb-3">
-            [ NOTRE CONCEPT ]
+          <p className="font-dm-sans text-sm uppercase tracking-wider text-citra-orange font-bold mb-3">
+            NOTRE CONCEPT
           </p>
-          <h2 className="font-control-compressed text-4xl md:text-6xl font-black text-cloud-white uppercase tracking-tight mb-2">
+          <h2 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-ink uppercase tracking-tight mb-4">
             Comment ça fonctionne ?
           </h2>
-          <p className="max-w-xl mx-auto text-sm font-control text-cloud-white/80 leading-relaxed">
+          <p className="max-w-xl mx-auto text-lg font-dm-sans font-medium text-ink/80 leading-relaxed">
             Un parcours simplifié pour vous donner la confiance d'oser l'inconnu en toute sérénité.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {steps.map((s, i) => (
             <div
               key={s.title}
-              className="bg-haze-grey rounded-[12px] p-8 text-center border border-midnight-ink/10 hover:border-action-blue transition-all duration-300 flex flex-col shadow-none"
+              className="bg-cream-card rounded-cards p-8 text-center border border-ink hover:bg-ink group transition-colors flex flex-col"
             >
-              <div className="w-14 h-14 mx-auto rounded-full border border-midnight-ink/10 flex items-center justify-center mb-6 text-action-blue bg-cloud-white shadow-sm">
-                <s.icon size={24} />
+              <div className="w-16 h-16 mx-auto rounded-full border border-ink flex items-center justify-center mb-6 bg-hazard-yellow text-ink transition-colors group-hover:border-cream-card">
+                <s.icon size={28} />
               </div>
-              <span className="font-control-tnt text-xs font-bold text-action-blue uppercase tracking-wider mb-2 block">
+              <span className="font-dm-sans text-xs font-bold text-citra-orange uppercase tracking-wider mb-3 block">
                 Étape [0{i + 1}]
               </span>
-              <h3 className="font-control-compressed text-lg font-black text-midnight-ink uppercase tracking-tight mb-3">
+              <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-4 group-hover:text-cream-card transition-colors">
                 {s.title}
               </h3>
-              <p className="text-sm font-control text-charcoal-text/80 leading-relaxed flex-1">
+              <p className="text-base font-dm-sans font-medium text-ink/80 leading-relaxed flex-1 group-hover:text-cream-card/80 transition-colors">
                 {s.desc}
               </p>
             </div>

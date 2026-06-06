@@ -48,36 +48,16 @@ const GalleryCarousel = () => {
   const displayPhotos = [...photos, ...photos];
 
   return (
-    <section className="py-28" style={{ backgroundColor: "var(--color-haze-grey)" }}>
+    <section className="py-20 bg-cream-card">
       {/* Section header */}
       <div className="container mx-auto px-6 mb-12 text-center">
-        <p
-          className="text-xs uppercase tracking-[0.2em] font-bold mb-4"
-          style={{
-            fontFamily: "var(--font-control-tnt)",
-            color: "var(--color-action-blue)",
-          }}
-        >
-          [ Galerie ]
+        <p className="text-sm font-dm-sans uppercase tracking-wider font-bold text-citra-orange mb-4">
+          GALERIE
         </p>
-        <h2
-          className="font-black uppercase tracking-tight leading-none mb-2"
-          style={{
-            fontFamily: "var(--font-control-compressed)",
-            fontSize: "clamp(2rem, 5vw, 3.5rem)",
-            color: "var(--color-midnight-ink)",
-          }}
-        >
+        <h2 className="font-pp-neue-corp-compact font-black uppercase tracking-tight text-ink text-5xl md:text-7xl mb-4">
           Nos plus beaux moments
         </h2>
-        <span
-          className="block"
-          style={{
-            fontFamily: "var(--font-control-cursive)",
-            fontSize: "clamp(1.1rem, 2vw, 1.5rem)",
-            color: "var(--color-action-blue)",
-          }}
-        >
+        <span className="block font-dm-sans font-medium text-lg text-ink/80">
           Des souvenirs qui durent toute une vie
         </span>
       </div>
@@ -87,52 +67,33 @@ const GalleryCarousel = () => {
         ref={scrollRef}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
-        className="flex gap-4 overflow-hidden cursor-grab"
-        style={{ scrollbarWidth: "none", paddingLeft: "1.5rem", paddingRight: "1.5rem" }}
+        className="flex gap-4 overflow-hidden cursor-grab px-6"
+        style={{ scrollbarWidth: "none" }}
       >
         {displayPhotos.map((photo, i) => (
           <div
             key={`${photo.id}-${i}`}
-            className="flex-shrink-0 overflow-hidden"
-            style={{
-              width: "300px",
-              height: "220px",
-              borderRadius: "var(--radius-images)",
-            }}
+            className="flex-shrink-0 overflow-hidden rounded-cards border border-ink/20"
+            style={{ width: "300px", height: "220px" }}
           >
-            <img
-              src={photo.image_url}
-              alt={photo.caption || "Souvenir de voyage Goldies"}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-              loading="lazy"
-            />
+            <div className="w-full h-full relative">
+              <div className="absolute inset-0 bg-gradient-to-tr from-citra-orange to-ion-violet mix-blend-color z-10 opacity-30 hover:opacity-0 transition-opacity"></div>
+              <img
+                src={photo.image_url}
+                alt={photo.caption || "Souvenir de voyage Goldies"}
+                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                loading="lazy"
+              />
+            </div>
           </div>
         ))}
       </div>
 
-      {/* CTA */}
+      {/* Ghost Secondary Button CTA */}
       <div className="text-center mt-12">
         <Link
           to="/galerie"
-          className="inline-flex items-center gap-2 transition-all"
-          style={{
-            fontFamily: "var(--font-control)",
-            fontSize: "0.875rem",
-            fontWeight: 600,
-            border: "2px solid var(--color-action-blue)",
-            color: "var(--color-action-blue)",
-            background: "transparent",
-            borderRadius: "100px",
-            padding: "12px 32px",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.background = "var(--color-action-blue)";
-            (e.currentTarget as HTMLAnchorElement).style.color = "#fff";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-            (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-action-blue)";
-          }}
+          className="inline-flex items-center gap-2 bg-transparent border border-ink text-ink font-dm-sans font-medium text-base px-8 py-3 rounded-buttons hover:bg-ink hover:text-cream-card transition-colors"
         >
           Voir toute la galerie
           <ArrowRight size={16} />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation, NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import logo from "@/assets/logo.png";
 import { Menu, X } from "lucide-react";
 
@@ -13,28 +13,34 @@ const navLinks = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const location = useLocation();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-cloud-white/80 backdrop-blur-md border-b border-midnight-ink/10">
-      <div className="container mx-auto flex items-center justify-between py-3.5 px-6">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="Goldies Travel" className="h-10 w-10 object-contain" />
-          <span className="font-control-compressed text-2xl font-black uppercase tracking-tight text-midnight-ink">
-            GOLDIES <span className="font-control-cursive text-action-blue capitalize font-medium text-xl ml-1">Travel</span>
+    <nav className="fixed top-6 md:top-10 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] md:w-[calc(100%-2rem)] px-4 md:px-8 z-50 flex items-center justify-between pointer-events-none">
+      
+      {/* 1. Left: Isolated Logo */}
+      <div className="pointer-events-auto">
+        <Link 
+          to="/" 
+          className="flex items-center gap-2 bg-white/95 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all"
+        >
+          <img src={logo} alt="Goldies Travel" className="h-8 w-8 object-contain" />
+          <span className="font-control-compressed text-xl font-black uppercase tracking-tight text-citra-orange leading-none mt-1">
+            GOLDIES
           </span>
         </Link>
+      </div>
 
-        {/* Desktop */}
-        <ul className="hidden md:flex items-center gap-8">
+      {/* 2. Center: Isolated Nav Links */}
+      <div className="hidden md:flex pointer-events-auto bg-white/95 backdrop-blur-md px-8 py-3 rounded-full shadow-lg">
+        <ul className="flex items-center gap-8">
           {navLinks.map((l) => (
             <li key={l.to}>
               <NavLink
                 to={l.to}
                 end={l.to === "/"}
                 className={({ isActive }) =>
-                  `text-sm font-control font-medium transition-colors tracking-wide ${
-                    isActive ? "text-action-blue border-b border-action-blue pb-1" : "text-charcoal-text hover:text-action-blue"
+                  `text-sm font-dm-sans transition-colors ${
+                    isActive ? "text-ink font-bold" : "text-ink/60 font-medium hover:text-ink"
                   }`
                 }
               >
@@ -43,44 +49,49 @@ const Navbar = () => {
             </li>
           ))}
         </ul>
+      </div>
 
+      {/* 3. Right: Isolated CTA & Mobile Menu */}
+      <div className="flex items-center gap-3 pointer-events-auto">
+        
         <Link
           to="/contact"
-          className="hidden md:inline-flex items-center justify-center border border-action-blue bg-transparent text-action-blue hover:bg-action-blue hover:text-cloud-white px-6 py-2 rounded-buttons text-sm font-control font-medium transition-all"
+          className="hidden md:inline-flex items-center justify-center bg-ink text-white px-6 py-3 rounded-full text-sm font-dm-sans font-bold shadow-lg transition-transform hover:scale-105"
         >
           Réserver
         </Link>
 
-        {/* Mobile toggle */}
+        {/* Mobile toggle (shown only on small screens) */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden text-charcoal-text p-1 hover:text-action-blue transition-colors"
+          className="md:hidden flex items-center justify-center bg-white text-ink h-12 w-12 rounded-full shadow-lg hover:bg-zinc-100 transition-colors"
           aria-label="Menu"
         >
-          {open ? <X size={24} /> : <Menu size={24} />}
+          {open ? <X size={20} /> : <Menu size={20} />}
         </button>
+
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu dropdown */}
       {open && (
-        <div className="md:hidden bg-cloud-white border-b border-midnight-ink/10 px-6 pb-6 pt-2">
+        <div className="absolute top-20 left-4 right-4 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl p-6 pointer-events-auto border border-ink/5 md:hidden">
           <ul className="flex flex-col gap-4">
             {navLinks.map((l) => (
-              <li key={l.to}>
-                <Link
-                  to={l.to}
-                  onClick={() => setOpen(false)}
-                  className="text-sm font-control font-medium text-charcoal-text hover:text-action-blue transition-colors block py-1"
-                >
-                  {l.label}
-                </Link>
-              </li>
+               <li key={l.to}>
+                 <Link
+                   to={l.to}
+                   onClick={() => setOpen(false)}
+                   className="text-lg font-dm-sans font-medium text-ink hover:text-citra-orange transition-colors block py-2 border-b border-ink/10"
+                 >
+                   {l.label}
+                 </Link>
+               </li>
             ))}
-            <li>
+            <li className="pt-4">
               <Link
                 to="/contact"
                 onClick={() => setOpen(false)}
-                className="inline-flex w-full items-center justify-center border border-action-blue bg-transparent text-action-blue hover:bg-action-blue hover:text-cloud-white px-6 py-2 rounded-buttons text-sm font-control font-medium transition-all"
+                className="inline-flex w-full items-center justify-center bg-ink text-white px-6 py-4 rounded-full text-base font-dm-sans font-bold shadow-lg"
               >
                 Réserver
               </Link>
@@ -88,6 +99,7 @@ const Navbar = () => {
           </ul>
         </div>
       )}
+      
     </nav>
   );
 };

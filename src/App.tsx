@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import BackgroundFX from "@/components/BackgroundFX";
 import Index from "./pages/Index.tsx";
 import Voyages from "./pages/Voyages.tsx";
 import VoyageDetail from "./pages/VoyageDetail.tsx";
@@ -20,20 +21,24 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/voyages" element={<Voyages />} />
-          <Route path="/voyages/:id" element={<VoyageDetail />} />
-          <Route path="/galerie" element={<Gallery />} />
-          <Route path="/concept" element={<Concept />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/set-password" element={<SetPassword />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <div className="min-h-screen bg-zinc-950 p-2 md:p-4 font-dm-sans text-ink">
+        <main className="bg-white rounded-[2rem] overflow-hidden min-h-[calc(100vh-1rem)] md:min-h-[calc(100vh-2rem)] shadow-2xl relative flex flex-col">
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/voyages" element={<Voyages />} />
+              <Route path="/voyages/:id" element={<VoyageDetail />} />
+              <Route path="/galerie" element={<Gallery />} />
+              <Route path="/concept" element={<Concept />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/set-password" element={<SetPassword />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </main>
+      </div>
     </TooltipProvider>
   </QueryClientProvider>
 );

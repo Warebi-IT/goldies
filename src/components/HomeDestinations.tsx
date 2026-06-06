@@ -28,187 +28,99 @@ const HomeDestinations = () => {
   });
 
   return (
-    <section
-      id="destinations"
-      className="py-28"
-      style={{ backgroundColor: "var(--color-sky-canvas)" }}
-    >
-      <div className="container mx-auto px-6">
+    <section id="destinations" className="py-20">
+      <div className="container mx-auto max-w-[1280px] px-6">
+        
         {/* Section header */}
         <div className="text-center mb-16">
-          <p
-            className="text-xs uppercase tracking-[0.2em] font-bold mb-4"
-            style={{
-              fontFamily: "var(--font-control-tnt)",
-              color: "var(--color-action-blue)",
-            }}
-          >
-            [ Séjours ]
+          <p className="text-sm font-dm-sans uppercase tracking-wider font-bold text-citra-orange mb-3">
+            SÉJOURS
           </p>
-          <h2
-            className="font-black uppercase tracking-tight leading-none mb-3"
-            style={{
-              fontFamily: "var(--font-control-compressed)",
-              fontSize: "clamp(2rem, 5vw, 3.75rem)",
-              color: "var(--color-midnight-ink)",
-            }}
-          >
-            Explorez l'Afrique entre femmes
+          <h2 className="font-pp-neue-corp-compact font-black uppercase tracking-tight text-ink text-5xl md:text-7xl mb-4">
+            Explorez l'Afrique
           </h2>
-          <span
-            className="block mb-5"
-            style={{
-              fontFamily: "var(--font-control-cursive)",
-              fontSize: "clamp(1.25rem, 2.5vw, 1.75rem)",
-              color: "var(--color-action-blue)",
-            }}
-          >
-            Des voyages en groupe qui inspirent confiance et sororité
-          </span>
-          <p
-            className="max-w-xl mx-auto text-sm leading-relaxed"
-            style={{
-              fontFamily: "var(--font-control)",
-              color: "var(--color-charcoal-text)",
-              opacity: 0.8,
-            }}
-          >
-            Chaque séjour est un package tout compris : hébergement, transport,
-            activités solidaires et repas. Tout est pensé pour votre tranquillité.
+          <p className="max-w-xl mx-auto text-lg font-dm-sans font-medium text-ink leading-relaxed">
+            Des voyages en groupe qui inspirent confiance et sororité. Hébergement, transport,
+            activités solidaires et repas inclus.
           </p>
         </div>
 
         {/* Trip cards */}
-        <div className="grid md:grid-cols-3 gap-7">
-          {trips?.map((d, idx) => {
+        <div className="grid md:grid-cols-3 gap-6">
+          {trips?.map((d) => {
             const img = d.image_url || fallbackImages[d.destination] || destSenegal;
+            
+            // Dynamic color logic for trip status
+            let tagColors = "bg-hazard-yellow text-ink border-ink"; // Default
+            if (d.tag) {
+              const t = d.tag.toLowerCase();
+              if (t.includes("complet") || t.includes("fermé")) {
+                tagColors = "bg-ink text-cream-card border-ink";
+              } else if (t.includes("dernier") || t.includes("bientôt") || t.includes("alerte")) {
+                tagColors = "bg-citra-orange text-ink border-ink";
+              }
+            }
+            
             return (
               <Link
                 key={d.id}
                 to={`/voyages/${d.slug || d.id}`}
-                className="group relative flex flex-col overflow-hidden transition-all duration-300"
-                style={{
-                  background: "var(--color-cloud-white)",
-                  borderRadius: "var(--radius-cards)",
-                  border: "1px solid rgba(0,0,0,0.07)",
-                  animationDelay: `${idx * 0.1}s`,
-                  boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.boxShadow =
-                    "0 8px 30px rgba(219,122,141,0.18)";
-                  (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                    "rgba(219,122,141,0.4)";
-                  (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(-4px)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.boxShadow =
-                    "0 1px 4px rgba(0,0,0,0.06)";
-                  (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                    "rgba(0,0,0,0.07)";
-                  (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(0)";
-                }}
+                className="group relative flex flex-col overflow-hidden bg-cream-card rounded-cards border border-ink p-6 transition-transform hover:-translate-y-1"
               >
                 {/* Image */}
-                <div className="aspect-[4/3] overflow-hidden" style={{ borderRadius: "var(--radius-images) var(--radius-images) 0 0" }}>
+                <div className="aspect-[4/3] overflow-hidden rounded-[20px] mb-6 relative border border-ink/20">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-citra-orange to-ion-violet mix-blend-color z-10 opacity-30 group-hover:opacity-0 transition-opacity"></div>
                   <img
                     src={img}
                     alt={d.name}
                     loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                   />
                 </div>
 
                 {/* Tag badge */}
                 {d.tag && (
-                  <span
-                    className="absolute top-4 right-4 text-[11px] font-bold uppercase tracking-wider px-3 py-1"
-                    style={{
-                      fontFamily: "var(--font-control-tnt)",
-                      background: "var(--color-cloud-white)",
-                      color: "var(--color-action-blue)",
-                      borderRadius: "100px",
-                      border: "1px solid var(--color-action-blue)",
-                    }}
-                  >
+                  <span className={`absolute top-10 right-10 text-xs font-dm-sans font-bold px-3 py-1 rounded-tags border z-20 ${tagColors}`}>
                     {d.tag}
                   </span>
                 )}
 
                 {/* Card content */}
-                <div className="flex-1 flex flex-col p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <div
-                      className="flex items-center gap-1.5"
-                      style={{ color: "var(--color-action-blue)" }}
-                    >
-                      <MapPin size={13} />
-                      <span
-                        className="text-xs font-bold uppercase tracking-wider"
-                        style={{ fontFamily: "var(--font-control-tnt)" }}
-                      >
-                        {d.destination}
-                      </span>
+                <div className="flex-1 flex flex-col">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-1 text-ink/70">
+                      <MapPin size={14} />
+                      <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{d.destination}</span>
                     </div>
-                    <span
-                      className="font-bold text-base"
-                      style={{
-                        fontFamily: "var(--font-control-tnt)",
-                        color: "var(--color-midnight-ink)",
-                      }}
-                    >
-                      {d.price} €
-                    </span>
+                    <span className="font-pp-neue-corp-compact font-black text-2xl text-ink">{d.price} €</span>
                   </div>
 
-                  <h3
-                    className="font-black uppercase tracking-tight mb-2 group-hover:text-action-blue transition-colors"
-                    style={{
-                      fontFamily: "var(--font-control-compressed)",
-                      fontSize: "1.2rem",
-                      color: "var(--color-midnight-ink)",
-                    }}
-                  >
+                  <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-3 group-hover:text-citra-orange transition-colors">
                     {d.name}
                   </h3>
 
-                  <p
-                    className="text-sm leading-relaxed line-clamp-2 mb-5 flex-1"
-                    style={{
-                      fontFamily: "var(--font-control)",
-                      color: "var(--color-charcoal-text)",
-                      opacity: 0.75,
-                    }}
-                  >
+                  <p className="text-sm font-dm-sans font-medium text-ink/80 leading-relaxed line-clamp-2 mb-6 flex-1">
                     {d.description}
                   </p>
 
                   {/* Meta row */}
-                  <div className="flex items-center gap-4 mb-4 text-xs" style={{ color: "var(--color-charcoal-text)", opacity: 0.6, fontFamily: "var(--font-control)" }}>
+                  <div className="flex items-center gap-4 mb-6 text-xs font-dm-sans font-medium text-ink/60">
                     {d.duration && (
                       <span className="flex items-center gap-1">
-                        <Calendar size={11} />
+                        <Calendar size={14} />
                         {d.duration}
                       </span>
                     )}
                     {d.max_participants && (
                       <span className="flex items-center gap-1">
-                        <Users size={11} />
+                        <Users size={14} />
                         {d.max_participants} places max
                       </span>
                     )}
                   </div>
 
-                  <span
-                    className="block text-center w-full py-2.5 text-xs font-semibold transition-all"
-                    style={{
-                      fontFamily: "var(--font-control)",
-                      border: "1.5px solid var(--color-action-blue)",
-                      color: "var(--color-action-blue)",
-                      borderRadius: "var(--radius-buttons)",
-                      background: "transparent",
-                    }}
-                  >
+                  {/* Ghost Button CTA inside card */}
+                  <span className="block text-center w-full bg-transparent text-ink border border-ink rounded-buttons py-3 text-sm font-dm-sans font-medium transition-colors group-hover:bg-ink group-hover:text-cream-card">
                     Voir le séjour →
                   </span>
                 </div>
@@ -217,32 +129,14 @@ const HomeDestinations = () => {
           })}
         </div>
 
-        {/* CTA */}
-        <div className="text-center mt-14">
+        {/* Global CTA */}
+        <div className="text-center mt-12">
           <Link
             to="/voyages"
-            className="inline-flex items-center justify-center gap-2 transition-all"
-            style={{
-              fontFamily: "var(--font-control)",
-              fontSize: "0.875rem",
-              fontWeight: 600,
-              border: "2px solid var(--color-action-blue)",
-              color: "var(--color-action-blue)",
-              background: "transparent",
-              borderRadius: "var(--radius-buttons)",
-              padding: "12px 32px",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.background = "var(--color-action-blue)";
-              (e.currentTarget as HTMLAnchorElement).style.color = "#fff";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-              (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-action-blue)";
-            }}
+            className="inline-flex items-center justify-center gap-2 bg-citra-orange text-ink px-8 py-3 rounded-buttons text-base font-dm-sans font-medium transition-transform hover:scale-[1.02]"
           >
             Voir tous nos voyages
-            <ArrowRight size={16} />
+            <ArrowRight size={18} />
           </Link>
         </div>
       </div>
