@@ -28,7 +28,7 @@ const HomeDestinations = () => {
   });
 
   return (
-    <section id="destinations" className="py-20">
+    <section id="destinations" className="relative z-10 py-20">
       <div className="container mx-auto max-w-[1280px] px-6">
         
         {/* Section header */}

@@ -24,7 +24,7 @@ const Navbar = () => {
           className="flex items-center gap-2 bg-white/95 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all"
         >
           <img src={logo} alt="Goldies Travel" className="h-8 w-8 object-contain" />
-          <span className="font-control-compressed text-xl font-black uppercase tracking-tight text-citra-orange leading-none mt-1">
+          <span className="font-control-compressed text-xl font-black uppercase tracking-tight text-[#e99ba9] leading-none mt-1">
             GOLDIES
           </span>
         </Link>
