@@ -2,13 +2,12 @@ import React, { useEffect, useRef } from 'react';
 
 // Base low-res map of Africa
 const BASE_GRID = [
-  "                 xxxxxxxx               ",
-  "             xxxxxxxxxxxxxxx            ",
-  "           xxxxxxxxxxxxxxxxxxxx         ", 
+
+  "           xxxxxxxxxxxxxxxxxxxx         ",
   "         xxxxxxxxxxxxxxxxxxxxxxxx       ",
   "       xxxxxxxxxxxxxxxxxxxxxxxxxxx      ", // Morocco area
   "      xxxxxxxxxxxxxxxxxxxxxxxxxxxxx     ",
-  "     xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx    ", 
+  "     xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx    ",
   "    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   ", // Senegal area
   "    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   ",
   "     xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   ",
@@ -55,9 +54,23 @@ const HIGH_RES_GRID = getHighResGrid();
 // Morocco was around row 4, col 7 on low-res -> row 8-9, col 14-15 on high-res
 // Senegal was around row 7, col 4 on low-res -> row 14-15, col 8-9 on high-res
 const isHighlight = (r: number, c: number) => {
-  const isMorocco = (r >= 8 && r <= 11) && (c >= 13 && c <= 17);
-  const isSenegal = (r >= 14 && r <= 17) && (c >= 7 && c <= 11);
-  return isMorocco || isSenegal;
+  const isMorocco = (r >= 2 && r <= 5) && (c >= 16 && c <= 21);
+  const isSenegal = (r >= 10 && r <= 13) && (c >= 6 && c <= 11);
+
+  // Contour detection
+  let isContour = false;
+  if (
+    r === 0 || r === HIGH_RES_GRID.length - 1 ||
+    c === 0 || c === HIGH_RES_GRID[0].length - 1 ||
+    HIGH_RES_GRID[r - 1][c] === ' ' ||
+    HIGH_RES_GRID[r + 1][c] === ' ' ||
+    HIGH_RES_GRID[r][c - 1] === ' ' ||
+    HIGH_RES_GRID[r][c + 1] === ' '
+  ) {
+    isContour = true;
+  }
+
+  return isMorocco || isSenegal || isContour;
 };
 
 // Generate random particles for the wave transition at the bottom
@@ -84,7 +97,7 @@ const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = '
 
     let width = canvas.offsetWidth;
     let height = canvas.offsetHeight;
-    
+
     // Set actual canvas resolution to match display size for crisp rendering
     const setSize = () => {
       width = canvas.offsetWidth;
@@ -117,6 +130,7 @@ const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = '
 
     const rows = HIGH_RES_GRID.length;
     const cols = HIGH_RES_GRID[0].length;
+    let lastVibratedPoint = "";
 
     const render = () => {
       time += 0.03; // Wave speed
@@ -127,7 +141,8 @@ const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = '
       const heroHeight = height / 2.0;
       const mapHeight = heroHeight * 0.8;
       const gap = mapHeight / rows;
-      const mapWidth = cols * gap;
+      const gapX = gap * 0.55; // Compress horizontally to match true map aspect ratio
+      const mapWidth = cols * gapX;
 
       // Center the map in the Hero's vertical space
       const offsetX = (width - mapWidth) / 2;
@@ -136,13 +151,13 @@ const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = '
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           if (HIGH_RES_GRID[r][c] === 'x') {
-            const baseX = offsetX + c * gap;
+            const baseX = offsetX + c * gapX;
             const baseY = offsetY + r * gap;
 
             // 1. Math Wave (Ocean effect)
             const wave = Math.sin(time + c * 0.1 + r * 0.1);
             const yOffset = wave * (gap * 0.5); // move up/down
-            
+
             const x = baseX;
             const y = baseY + yOffset;
 
@@ -150,11 +165,23 @@ const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = '
             const dx = mouseX - x;
             const dy = mouseY - y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            
+
             const maxDist = 120; // radius of mouse light
             let hoverRatio = 0;
             if (dist < maxDist) {
               hoverRatio = 1 - (dist / maxDist);
+
+              // Haptic feedback (crackling effect)
+              if (dist < gap * 0.8) {
+                const pointKey = `${r}-${c}`;
+                if (lastVibratedPoint !== pointKey) {
+                  lastVibratedPoint = pointKey;
+                  // Short 10ms vibration creates a "tick" or "crackle" as the mouse drags across points
+                  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                    navigator.vibrate(10);
+                  }
+                }
+              }
             }
 
             // 3. Highlight Check
@@ -162,11 +189,11 @@ const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = '
 
             // Determine radius & color
             let radius = gap * 0.15; // default small dot
-            
+
             // Base color is a muted pink/grey matching the background, or vivid pink if specified
             let rC = 200, gC = 190, bC = 190;
             let alpha = 0.3 + wave * 0.2; // pulse alpha slightly
-            
+
             if (variant === 'vivid') {
               rC = 255; gC = 107; bC = 158; // #FF6B9E (Heart Logo pink)
               alpha = 0.4 + wave * 0.3; // slightly more opaque
@@ -203,7 +230,7 @@ const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = '
         // Position them starting exactly below the Hero section
         const baseX = offsetX + (cols / 2 + p.colOffset) * gap;
         const baseY = heroHeight + (p.rowOffset * gap);
-        
+
         const wave = Math.sin(time * (0.5 + p.speedOffset) + p.colOffset * 0.1 + p.rowOffset * 0.05);
         const yOffset = wave * (gap * 3); // Bigger wave movement for scattered points
 
@@ -221,24 +248,24 @@ const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = '
         if (dist < 120) hoverRatio = 1 - (dist / 120);
 
         let radius = gap * 0.15; // default base size
-        
+
         // Natural swelling: points grow ONLY when the wave peaks over them
         if (wave > 0) {
           // Square the wave to make the swelling smoother and the peak sharper
           radius += (wave * wave) * (gap * 0.2 * p.growthPotential);
         }
-        
+
         radius = Math.max(0.5, radius); // Prevent negative radius
-        
+
         // Fade out as they go further down
         let baseAlpha = Math.max(0, 0.6 - (p.rowOffset / 80));
         let alpha = baseAlpha * (0.3 + wave * 0.7);
-        
+
         // Color is pink (#e99ba9) for the transition wave, or vivid pink
         let rC = variant === 'vivid' ? 255 : 233;
         let gC = variant === 'vivid' ? 107 : 155;
         let bC = variant === 'vivid' ? 158 : 169;
-        
+
         if (hoverRatio > 0) {
           radius += hoverRatio * (gap * 0.4);
           alpha = Math.min(1, alpha + hoverRatio);
@@ -265,8 +292,8 @@ const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = '
   }, []);
 
   return (
-    <canvas 
-      ref={canvasRef} 
+    <canvas
+      ref={canvasRef}
       className="absolute top-0 left-0 w-full h-[200%] z-0 pointer-events-auto"
       style={{ touchAction: 'none' }}
     />

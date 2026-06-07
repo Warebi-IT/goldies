@@ -28,40 +28,42 @@ const Contact = () => {
       {/* Form & Text Container */}
       <div className="container mx-auto px-6 lg:px-12 relative z-10 flex flex-col lg:flex-row items-center justify-end w-full max-w-none min-h-[calc(100vh-8rem)] mt-20 lg:mt-0">
           
-          {/* Text at Bottom Left */}
-          <div className="lg:absolute lg:bottom-[300px] lg:left-12 text-left text-white w-full lg:w-auto mb-10 lg:mb-0 self-end lg:self-auto z-20">
-            <p className="font-dm-sans text-sm uppercase tracking-wider font-bold mb-2 text-white drop-shadow-md pointer-events-none">
-              [ NOUS CONTACTER ]
+          {/* Text at Left (Top on Mobile) */}
+          <div className="lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:left-12 text-center lg:text-left text-white w-full lg:w-auto mb-12 lg:mb-0 z-20 flex flex-col items-center lg:items-start">
+            <p className="font-dm-sans text-sm uppercase tracking-widest font-bold mb-3 text-white/90 drop-shadow-md pointer-events-none bg-white/10 px-4 py-1.5 rounded-full backdrop-blur-sm border border-white/20 w-max">
+              Nous contacter
             </p>
-            <h2 className="font-pp-neue-corp-compact text-6xl md:text-8xl font-black uppercase tracking-tight leading-[1.1] drop-shadow-2xl pointer-events-none mb-6">
-              Prête à <br/>partir ?
+            <h2 className="font-pp-neue-corp-compact text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight leading-[1.05] drop-shadow-2xl pointer-events-none mb-8 mt-2">
+              Prête à <br className="hidden lg:block"/>partir ?
             </h2>
             
             {/* Social Links */}
-            <div className="flex items-center gap-4 pointer-events-auto">
-              <p className="font-dm-sans font-medium text-white/90 drop-shadow-md hidden sm:block">
-                Rejoignez la communauté :
+            <div className="flex flex-col sm:flex-row items-center gap-4 pointer-events-auto bg-white/10 backdrop-blur-md px-6 py-4 rounded-3xl border border-white/20 shadow-xl">
+              <p className="font-dm-sans text-sm font-medium text-white/90 drop-shadow-md">
+                Rejoignez la communauté
               </p>
-              <a
-                href="https://www.instagram.com/goldies.travel?igsh=MTV6dThwbjlrYzg0MA=="
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 rounded-full shadow-lg bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white hover:bg-citra-orange hover:text-ink hover:scale-110 transition-all duration-300"
-                aria-label="Instagram"
-              >
-                <Instagram size={20} />
-              </a>
-              <a
-                href="https://www.tiktok.com/@goldies_travel?_r=1&_t=ZN-9716IvKcjKQ"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 rounded-full shadow-lg bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white hover:bg-citra-orange hover:text-ink hover:scale-110 transition-all duration-300"
-                aria-label="TikTok"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
-                </svg>
-              </a>
+              <div className="flex items-center gap-3">
+                <a
+                  href="https://www.instagram.com/goldies.travel?igsh=MTV6dThwbjlrYzg0MA=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full shadow-lg bg-white/20 border border-white/30 flex items-center justify-center text-white hover:bg-citra-orange hover:text-ink hover:scale-110 transition-all duration-300"
+                  aria-label="Instagram"
+                >
+                  <Instagram size={18} />
+                </a>
+                <a
+                  href="https://www.tiktok.com/@goldies_travel?_r=1&_t=ZN-9716IvKcjKQ"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full shadow-lg bg-white/20 border border-white/30 flex items-center justify-center text-white hover:bg-citra-orange hover:text-ink hover:scale-110 transition-all duration-300"
+                  aria-label="TikTok"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
 

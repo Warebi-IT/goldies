@@ -52,7 +52,7 @@ const Navbar = () => {
                   }`
                 }
               >
-                <l.icon size={16} strokeWidth={2.5} className="mb-0.5" />
+                <l.icon size={14} strokeWidth={2} className="mb-0.5" />
                 {l.label}
               </NavLink>
             </li>
@@ -91,7 +91,7 @@ const Navbar = () => {
           to="/contact"
           className="hidden md:inline-flex items-center justify-center gap-2 bg-ink text-white px-6 py-3 rounded-full text-sm font-dm-sans font-bold shadow-lg transition-transform hover:scale-105"
         >
-          <CalendarPlus size={16} strokeWidth={2.5} />
+          <CalendarPlus size={14} strokeWidth={2} />
           Réserver
         </Link>
 
@@ -121,7 +121,7 @@ const Navbar = () => {
                      }`
                    }
                  >
-                   <l.icon size={20} strokeWidth={2.5} />
+                   <l.icon size={18} strokeWidth={2} />
                    {l.label}
                  </NavLink>
                </li>
@@ -132,7 +132,7 @@ const Navbar = () => {
                 onClick={() => setOpen(false)}
                 className="inline-flex w-full items-center justify-center gap-2 bg-ink text-white px-6 py-4 rounded-full text-base font-dm-sans font-bold shadow-lg"
               >
-                <CalendarPlus size={20} strokeWidth={2.5} />
+                <CalendarPlus size={18} strokeWidth={2} />
                 Réserver
               </Link>
             </li>
