@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { MapPin, Clock, Users } from "lucide-react";
 import destSenegal from "@/assets/dest-senegal.jpg";
 import destMaroc from "@/assets/dest-maroc.jpg";
 import destTanzanie from "@/assets/dest-tanzanie.jpg";
@@ -113,11 +113,23 @@ const Destinations = () => {
                     <span className="font-pp-neue-corp-compact font-black text-2xl text-ink">{d.price} €</span>
                   </div>
                   
-                  <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-3">
+                  <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-2">
                     {d.name}
                   </h3>
+
+                  <div className="flex items-center gap-3 text-ink/70 mb-3 text-xs font-dm-sans font-bold">
+                    <div className="flex items-center gap-1">
+                      <Clock size={14} />
+                      <span>{d.duration}</span>
+                    </div>
+                    <span>•</span>
+                    <div className="flex items-center gap-1">
+                      <Users size={14} />
+                      <span>{(d as any).spots_left ?? 8} Places restantes</span>
+                    </div>
+                  </div>
                   
-                  <p className="text-sm font-dm-sans font-medium text-ink/80 leading-relaxed line-clamp-3 mb-6 flex-1">
+                  <p className="text-sm font-dm-sans font-medium text-ink/80 leading-relaxed line-clamp-2 mb-6 flex-1">
                     {d.description}
                   </p>
                   

@@ -69,7 +69,11 @@ const EXTRA_PARTICLES = Array.from({ length: 2000 }).map((_, index) => ({
   growthPotential: index < 10 ? 10 + Math.random() * 15 : Math.random() * 1.5
 }));
 
-const InteractiveAfricaMap: React.FC = () => {
+type InteractiveAfricaMapProps = {
+  variant?: 'default' | 'vivid';
+};
+
+const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = 'default' }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -159,13 +163,22 @@ const InteractiveAfricaMap: React.FC = () => {
             // Determine radius & color
             let radius = gap * 0.15; // default small dot
             
-            // Base color is a muted pink/grey matching the background
+            // Base color is a muted pink/grey matching the background, or vivid pink if specified
             let rC = 200, gC = 190, bC = 190;
             let alpha = 0.3 + wave * 0.2; // pulse alpha slightly
+            
+            if (variant === 'vivid') {
+              rC = 255; gC = 107; bC = 158; // #FF6B9E (Heart Logo pink)
+              alpha = 0.4 + wave * 0.3; // slightly more opaque
+            }
 
             if (highlighted) {
               // Highlighted regions (Senegal & Morocco) glow pink/orange
-              rC = 233; gC = 155; bC = 169; // #e99ba9
+              if (variant === 'vivid') {
+                rC = 255; gC = 80; bC = 130; // slightly deeper for highlights
+              } else {
+                rC = 233; gC = 155; bC = 169; // #e99ba9
+              }
               alpha = 0.8 + wave * 0.2;
               radius = gap * 0.25;
             }
@@ -221,8 +234,10 @@ const InteractiveAfricaMap: React.FC = () => {
         let baseAlpha = Math.max(0, 0.6 - (p.rowOffset / 80));
         let alpha = baseAlpha * (0.3 + wave * 0.7);
         
-        // Color is pink (#e99ba9) for the transition wave
-        let rC = 233, gC = 155, bC = 169;
+        // Color is pink (#e99ba9) for the transition wave, or vivid pink
+        let rC = variant === 'vivid' ? 255 : 233;
+        let gC = variant === 'vivid' ? 107 : 155;
+        let bC = variant === 'vivid' ? 158 : 169;
         
         if (hoverRatio > 0) {
           radius += hoverRatio * (gap * 0.4);

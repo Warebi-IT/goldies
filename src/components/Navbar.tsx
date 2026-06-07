@@ -45,10 +45,10 @@ const Navbar = () => {
                 to={l.to}
                 end={l.to === "/"}
                 className={({ isActive }) =>
-                  `text-sm font-dm-sans transition-colors relative px-1 ${
+                  `font-dm-sans transition-colors relative px-1 flex items-center ${
                     isActive 
-                      ? "text-citra-orange font-bold after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[2px] after:bg-citra-orange after:rounded-full" 
-                      : "text-ink/60 font-medium hover:text-citra-orange"
+                      ? "text-ink font-bold text-base after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[2px] after:bg-ink after:rounded-full" 
+                      : "text-ink/60 font-medium text-sm hover:text-citra-orange"
                   }`
                 }
               >
@@ -90,8 +90,8 @@ const Navbar = () => {
                    to={l.to}
                    onClick={() => setOpen(false)}
                    className={({ isActive }) => 
-                     `text-lg font-dm-sans block py-2 border-b border-ink/10 transition-colors ${
-                       isActive ? "text-citra-orange font-bold" : "text-ink font-medium hover:text-citra-orange"
+                     `font-dm-sans block py-2 border-b border-ink/10 transition-colors ${
+                       isActive ? "text-ink font-bold text-xl" : "text-ink text-lg font-medium hover:text-citra-orange"
                      }`
                    }
                  >

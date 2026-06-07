@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { MapPin, ArrowRight, Users, Calendar } from "lucide-react";
+import { MapPin, ArrowRight, Users, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import destSenegal from "@/assets/dest-senegal.jpg";
 import destMaroc from "@/assets/dest-maroc.jpg";
@@ -99,29 +99,25 @@ const HomeDestinations = () => {
                     <span className="font-pp-neue-corp-compact font-black text-2xl text-ink">{d.price} €</span>
                   </div>
 
-                  <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-3 group-hover:text-citra-orange transition-colors">
+                  <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-2 group-hover:text-citra-orange transition-colors">
                     {d.name}
                   </h3>
+
+                  <div className="flex items-center gap-3 text-ink/70 mb-3 text-xs font-dm-sans font-bold">
+                    <div className="flex items-center gap-1">
+                      <Clock size={14} />
+                      <span>{d.duration}</span>
+                    </div>
+                    <span>•</span>
+                    <div className="flex items-center gap-1">
+                      <Users size={14} />
+                      <span>{(d as any).spots_left ?? 8} Places restantes</span>
+                    </div>
+                  </div>
 
                   <p className="text-sm font-dm-sans font-medium text-ink/80 leading-relaxed line-clamp-2 mb-6 flex-1">
                     {d.description}
                   </p>
-
-                  {/* Meta row */}
-                  <div className="flex items-center gap-4 mb-6 text-xs font-dm-sans font-medium text-ink/60">
-                    {d.duration && (
-                      <span className="flex items-center gap-1">
-                        <Calendar size={14} />
-                        {d.duration}
-                      </span>
-                    )}
-                    {d.max_participants && (
-                      <span className="flex items-center gap-1">
-                        <Users size={14} />
-                        {d.max_participants} places max
-                      </span>
-                    )}
-                  </div>
 
                   {/* Ghost Button CTA inside card */}
                   <span className="block text-center w-full bg-white/50 backdrop-blur-sm text-ink shadow-sm rounded-buttons py-3 text-sm font-dm-sans font-medium transition-colors group-hover:bg-ink group-hover:text-cream-card">

@@ -48,7 +48,7 @@ const Avis = () => {
 
       {/* Background Map */}
       <div className="fixed inset-0 z-[-1] pointer-events-none opacity-20">
-        <InteractiveAfricaMap />
+        <InteractiveAfricaMap variant="vivid" />
       </div>
       
       {/* Hero Section */}

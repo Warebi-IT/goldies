@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { MapPin, Calendar, Clock, ArrowLeft, CheckCircle } from "lucide-react";
+import { MapPin, Calendar, Clock, ArrowLeft, CheckCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BookingFormModal from "@/components/BookingFormModal";
 
 const VoyageDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   const { data: trip, isLoading } = useQuery({
     queryKey: ["trip-detail", id],
@@ -113,7 +116,13 @@ const VoyageDetail = () => {
             <div className="space-y-4 text-sm border-t border-ink/5 pt-6">
               <div className="flex items-center gap-3 font-dm-sans text-ink/80">
                 <Clock size={18} className="text-citra-orange" />
-                <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{trip.duration}</span>
+                <span className="font-dm-sans text-sm font-bold uppercase tracking-wider">{trip.duration}</span>
+              </div>
+              <div className="flex items-center gap-3 font-dm-sans text-ink/80">
+                <Users size={18} className="text-citra-orange" />
+                <span className="font-dm-sans text-sm font-bold uppercase tracking-wider">
+                  {(trip as any).spots_left ?? 8} places restantes sur {(trip as any).total_spots ?? 12}
+                </span>
               </div>
               <div className="flex items-center gap-3 font-dm-sans text-ink/80">
                 <Calendar size={18} className="text-citra-orange" />
@@ -135,10 +144,11 @@ const VoyageDetail = () => {
             )}
 
             {trip.payment_link ? (
-              <Button asChild className="w-full rounded-full shadow-md bg-white/50 backdrop-blur-sm text-ink hover:bg-ink hover:text-cream-card font-dm-sans font-bold h-14 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl mt-4">
-                <a href={trip.payment_link} target="_blank" rel="noopener noreferrer">
-                  Réserver maintenant
-                </a>
+              <Button 
+                onClick={() => setIsBookingModalOpen(true)}
+                className="w-full rounded-full shadow-md bg-white/50 backdrop-blur-sm text-ink hover:bg-ink hover:text-cream-card font-dm-sans font-bold h-14 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl mt-4"
+              >
+                Réserver maintenant
               </Button>
             ) : (
               <Button disabled className="w-full rounded-full shadow-sm h-14 bg-white/30 text-ink/40 font-dm-sans cursor-not-allowed mt-4">
@@ -150,6 +160,14 @@ const VoyageDetail = () => {
       </section>
 
       <Footer />
+
+      {trip && (
+        <BookingFormModal 
+          isOpen={isBookingModalOpen} 
+          onClose={() => setIsBookingModalOpen(false)} 
+          trip={trip} 
+        />
+      )}
     </div>
   );
 };
