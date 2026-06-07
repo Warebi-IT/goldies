@@ -130,6 +130,7 @@ export type Database = {
           payment_link: string | null
           price: number
           program: Json
+          qte: number | null
           slug: string | null
           start_date: string | null
           tag: string
@@ -150,6 +151,7 @@ export type Database = {
           payment_link?: string | null
           price: number
           program?: Json
+          qte?: number | null
           slug?: string | null
           start_date?: string | null
           tag?: string
@@ -170,6 +172,7 @@ export type Database = {
           payment_link?: string | null
           price?: number
           program?: Json
+          qte?: number | null
           slug?: string | null
           start_date?: string | null
           tag?: string

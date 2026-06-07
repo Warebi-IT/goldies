@@ -25,6 +25,7 @@ interface TripForm {
   description: string;
   destination: string;
   price: number;
+  qte: number | null;
   duration: string;
   dates: string;
   includes: string;
@@ -42,6 +43,7 @@ const emptyForm: TripForm = {
   description: "",
   destination: "",
   price: 0,
+  qte: null,
   duration: "",
   dates: "",
   includes: "Logement, Transport, Repas, Activités touristiques, Budget association",
@@ -146,6 +148,7 @@ const AdminTrips = () => {
         description: form.description,
         destination: form.destination,
         price: form.price,
+        qte: form.qte ?? null,
         duration: form.duration,
         dates: form.dates,
         includes: form.includes.split(",").map((s) => s.trim()).filter(Boolean),
@@ -262,6 +265,7 @@ const AdminTrips = () => {
       description: trip.description || "",
       destination: trip.destination,
       price: trip.price,
+      qte: trip.qte ?? null,
       duration: trip.duration,
       dates: trip.dates,
       includes: (trip.includes || []).join(", "),
@@ -420,6 +424,16 @@ const AdminTrips = () => {
                 <label className="text-xs font-medium mb-1 block">Prix (€) *</label>
                 <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} required />
               </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium mb-1 block">Quantité de places</label>
+              <Input
+                type="number"
+                min={0}
+                value={form.qte ?? ""}
+                onChange={(e) => setForm({ ...form, qte: e.target.value === "" ? null : Number(e.target.value) })}
+                placeholder="Nombre de places disponibles"
+              />
             </div>
 
             {/* Dates */}
