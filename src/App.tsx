@@ -13,6 +13,7 @@ import ContactPage from "./pages/ContactPage.tsx";
 import Admin from "./pages/Admin.tsx";
 import SetPassword from "./pages/SetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Avis from "./pages/Avis.tsx";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/voyages/:id" element={<VoyageDetail />} />
               <Route path="/galerie" element={<Gallery />} />
               <Route path="/concept" element={<Concept />} />
+              <Route path="/avis" element={<Avis />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/set-password" element={<SetPassword />} />
