@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import AnimatedLogo from "@/components/AnimatedLogo";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Instagram, Home, Compass, Sparkles, Camera, Star, Mail, CalendarPlus } from "lucide-react";
 
 const navLinks = [
-  { label: "Accueil", to: "/" },
-  { label: "Voyages", to: "/voyages" },
-  { label: "Concept", to: "/concept" },
-  { label: "Galerie", to: "/galerie" },
-  { label: "Avis", to: "/avis" },
-  { label: "Contact", to: "/contact" },
+  { label: "Accueil", to: "/", icon: Home },
+  { label: "Voyages", to: "/voyages", icon: Compass },
+  { label: "Concept", to: "/concept", icon: Sparkles },
+  { label: "Galerie", to: "/galerie", icon: Camera },
+  { label: "Avis", to: "/avis", icon: Star },
+  { label: "Contact", to: "/contact", icon: Mail },
 ];
 
 const Navbar = () => {
@@ -45,13 +45,14 @@ const Navbar = () => {
                 to={l.to}
                 end={l.to === "/"}
                 className={({ isActive }) =>
-                  `font-dm-sans transition-colors relative px-1 flex items-center ${
+                  `font-dm-sans transition-colors relative px-1 flex items-center gap-1.5 ${
                     isActive 
                       ? "text-ink font-bold text-base after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[2px] after:bg-ink after:rounded-full" 
                       : "text-ink/60 font-medium text-sm hover:text-citra-orange"
                   }`
                 }
               >
+                <l.icon size={16} strokeWidth={2.5} className="mb-0.5" />
                 {l.label}
               </NavLink>
             </li>
@@ -62,10 +63,35 @@ const Navbar = () => {
       {/* 3. Right: Isolated CTA & Mobile Menu */}
       <div className="flex items-center gap-3 pointer-events-auto">
         
+        {/* Social Links (Desktop) */}
+        <div className="hidden md:flex items-center gap-2 mr-2 bg-white/95 backdrop-blur-md px-3 py-2 rounded-full shadow-lg">
+          <a
+            href="https://www.instagram.com/goldies.travel?igsh=MTV6dThwbjlrYzg0MA=="
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-ink/70 hover:bg-citra-orange hover:text-ink transition-all"
+            aria-label="Instagram"
+          >
+            <Instagram size={16} />
+          </a>
+          <a
+            href="https://www.tiktok.com/@goldies_travel?_r=1&_t=ZN-9716IvKcjKQ"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-ink/70 hover:bg-citra-orange hover:text-ink transition-all"
+            aria-label="TikTok"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+            </svg>
+          </a>
+        </div>
+        
         <Link
           to="/contact"
-          className="hidden md:inline-flex items-center justify-center bg-ink text-white px-6 py-3 rounded-full text-sm font-dm-sans font-bold shadow-lg transition-transform hover:scale-105"
+          className="hidden md:inline-flex items-center justify-center gap-2 bg-ink text-white px-6 py-3 rounded-full text-sm font-dm-sans font-bold shadow-lg transition-transform hover:scale-105"
         >
+          <CalendarPlus size={16} strokeWidth={2.5} />
           Réserver
         </Link>
 
@@ -90,11 +116,12 @@ const Navbar = () => {
                    to={l.to}
                    onClick={() => setOpen(false)}
                    className={({ isActive }) => 
-                     `font-dm-sans block py-2 border-b border-ink/10 transition-colors ${
+                     `font-dm-sans py-2 border-b border-ink/10 transition-colors flex items-center gap-3 ${
                        isActive ? "text-ink font-bold text-xl" : "text-ink text-lg font-medium hover:text-citra-orange"
                      }`
                    }
                  >
+                   <l.icon size={20} strokeWidth={2.5} />
                    {l.label}
                  </NavLink>
                </li>
@@ -103,8 +130,9 @@ const Navbar = () => {
               <Link
                 to="/contact"
                 onClick={() => setOpen(false)}
-                className="inline-flex w-full items-center justify-center bg-ink text-white px-6 py-4 rounded-full text-base font-dm-sans font-bold shadow-lg"
+                className="inline-flex w-full items-center justify-center gap-2 bg-ink text-white px-6 py-4 rounded-full text-base font-dm-sans font-bold shadow-lg"
               >
+                <CalendarPlus size={20} strokeWidth={2.5} />
                 Réserver
               </Link>
             </li>

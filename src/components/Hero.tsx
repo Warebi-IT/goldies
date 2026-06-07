@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Compass, Sparkles } from "lucide-react";
 import InteractiveAfricaMap from "./InteractiveAfricaMap";
 import imgChildren from "@/assets/children.jpeg";
 import imgFourImage from "@/assets/fourimagegoldiesChlidrenWomen.jpeg";
@@ -27,7 +28,7 @@ const Hero = () => {
       {/* 
         Left Content (Text)
       */}
-      <div className="relative z-10 w-full lg:w-[70%] xl:w-[75%] flex flex-col items-start text-left mt-[15vh] pointer-events-none pr-0 lg:pr-12">
+      <div className="relative z-10 w-full lg:w-[70%] xl:w-[75%] flex flex-col items-start text-left mt-24 lg:mt-[15vh] pointer-events-none pr-0 lg:pr-12">
 
         {/* Badges */}
         <div className="flex flex-col gap-3 mb-6 pointer-events-none">
@@ -59,14 +60,16 @@ const Hero = () => {
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto pointer-events-auto">
           <Link 
             to="/voyages"
-            className="w-full sm:w-auto inline-flex items-center justify-center bg-[#e99ba9] text-white px-8 py-4 rounded-full text-base font-dm-sans font-bold transition-transform hover:scale-105 shadow-[0_8px_30px_rgb(233,155,169,0.3)]"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#e99ba9] text-white px-8 py-4 rounded-full text-base font-dm-sans font-bold transition-transform hover:scale-105 shadow-[0_8px_30px_rgb(233,155,169,0.3)]"
           >
+            <Compass size={20} strokeWidth={2.5} />
             Découvrir nos séjours
           </Link>
           <Link 
             to="/concept"
-            className="w-full sm:w-auto inline-flex items-center justify-center bg-white/80 backdrop-blur-md text-ink px-8 py-4 rounded-full text-base font-dm-sans font-bold transition-all hover:bg-white shadow-lg hover:shadow-xl hover:scale-105"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/80 backdrop-blur-md text-ink px-8 py-4 rounded-full text-base font-dm-sans font-bold transition-all hover:bg-white shadow-lg hover:shadow-xl hover:scale-105"
           >
+            <Sparkles size={20} strokeWidth={2.5} />
             Notre concept
           </Link>
         </div>
@@ -77,7 +80,7 @@ const Hero = () => {
         Right Content (Photos)
         A beautiful collage of photos perfectly balancing the right edge.
       */}
-      <div className="relative z-10 w-full lg:w-[30%] xl:w-[25%] mt-[5vh] lg:mt-[15vh] flex justify-center lg:justify-end pointer-events-none">
+      <div className="relative z-10 w-full lg:w-[30%] xl:w-[25%] mt-[5vh] lg:mt-[15vh] hidden lg:flex justify-center lg:justify-end pointer-events-none">
         <div className="relative w-full max-w-[320px] md:max-w-[400px] aspect-[3/4]">
            
            {/* Backdrop for active image */}

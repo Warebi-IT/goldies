@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Send } from "lucide-react";
+import { Send, Instagram } from "lucide-react";
 import videoSenegal from "@/assets/goldiessenegalversion.mp4";
 
 const Contact = () => {
@@ -19,7 +19,7 @@ const Contact = () => {
           loop 
           muted 
           playsInline 
-          className="w-full h-full object-cover contrast-110 saturate-110"
+          className="w-full h-full object-cover transform-gpu"
         >
           <source src={videoSenegal} type="video/mp4" />
         </video>
@@ -29,13 +29,40 @@ const Contact = () => {
       <div className="container mx-auto px-6 lg:px-12 relative z-10 flex flex-col lg:flex-row items-center justify-end w-full max-w-none min-h-[calc(100vh-8rem)] mt-20 lg:mt-0">
           
           {/* Text at Bottom Left */}
-          <div className="lg:absolute lg:bottom-[300px] lg:left-12 text-left text-white w-full lg:w-auto mb-10 lg:mb-0 pointer-events-none self-end lg:self-auto">
-            <p className="font-dm-sans text-sm uppercase tracking-wider font-bold mb-2 text-white drop-shadow-md">
+          <div className="lg:absolute lg:bottom-[300px] lg:left-12 text-left text-white w-full lg:w-auto mb-10 lg:mb-0 self-end lg:self-auto z-20">
+            <p className="font-dm-sans text-sm uppercase tracking-wider font-bold mb-2 text-white drop-shadow-md pointer-events-none">
               [ NOUS CONTACTER ]
             </p>
-            <h2 className="font-pp-neue-corp-compact text-6xl md:text-8xl font-black uppercase tracking-tight leading-[1.1] drop-shadow-2xl">
+            <h2 className="font-pp-neue-corp-compact text-6xl md:text-8xl font-black uppercase tracking-tight leading-[1.1] drop-shadow-2xl pointer-events-none mb-6">
               Prête à <br/>partir ?
             </h2>
+            
+            {/* Social Links */}
+            <div className="flex items-center gap-4 pointer-events-auto">
+              <p className="font-dm-sans font-medium text-white/90 drop-shadow-md hidden sm:block">
+                Rejoignez la communauté :
+              </p>
+              <a
+                href="https://www.instagram.com/goldies.travel?igsh=MTV6dThwbjlrYzg0MA=="
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 rounded-full shadow-lg bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white hover:bg-citra-orange hover:text-ink hover:scale-110 transition-all duration-300"
+                aria-label="Instagram"
+              >
+                <Instagram size={20} />
+              </a>
+              <a
+                href="https://www.tiktok.com/@goldies_travel?_r=1&_t=ZN-9716IvKcjKQ"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 rounded-full shadow-lg bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white hover:bg-citra-orange hover:text-ink hover:scale-110 transition-all duration-300"
+                aria-label="TikTok"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                </svg>
+              </a>
+            </div>
           </div>
 
           {/* Right Form (Glassmorphism) */}

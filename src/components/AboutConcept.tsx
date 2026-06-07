@@ -35,18 +35,23 @@ const AboutConcept = () => {
           <h2 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-ink uppercase tracking-tight mb-6">
             Goldies Travel,<br /> c'est quoi ?
           </h2>
-          <div className="text-base md:text-lg font-dm-sans font-medium text-ink/80 leading-relaxed space-y-6 mb-12">
-            <p>
-              <strong className="text-ink font-bold bg-hazard-yellow/50 px-1">Goldies Travel</strong> est une agence de voyage spécialisée dans
-              l'organisation d'expériences touristiques et solidaires en groupe,{" "}
-              <strong className="text-ink font-bold bg-hazard-yellow/50 px-1">100% féminin</strong>. Notre mission : permettre aux femmes
-              francophones de 18 à 45 ans de découvrir l'Afrique dans un cadre
-              sécurisé, bienveillant et enrichissant.
+          <div className="text-base md:text-lg font-dm-sans text-ink/80 leading-relaxed space-y-8 mb-16 text-left md:text-center">
+            <p className="font-medium text-xl md:text-2xl text-ink leading-relaxed">
+              <strong className="font-bold text-citra-orange">Bienvenue chez Goldies Travel.</strong> C'est une agence qui a été créée par deux femmes, toutes les deux passionnées par le voyage, l'aventure et surtout les expériences.
             </p>
-            <p>
-              Nous croyons fermement que le voyage est un vecteur puissant de transformation
-              personnelle et de solidarité. Chaque séjour intègre un volet
-              associatif pour soutenir activement le travail des communautés locales.
+            
+            <div className="relative bg-white/60 backdrop-blur-sm border border-citra-orange/20 p-8 md:p-10 rounded-[32px] text-left md:text-center shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-citra-orange/30 text-8xl font-serif">"</div>
+              <p className="relative z-10 text-xl md:text-2xl font-dm-sans font-medium text-ink/90 leading-relaxed">
+                Goldies Travel, ce n'est pas seulement voyager, c'est <strong className="text-citra-orange">aider, contribuer, partager.</strong> Nous organisons des voyages entre femmes au Maroc, au Sénégal et dans toute l'Afrique pour vous impacter et vous faire vivre des expériences inoubliables.
+              </p>
+            </div>
+
+            <p className="font-medium text-lg md:text-xl">
+              Si tu es une jeune femme en quête d'impact, n'hésite pas à nous contacter.<br/>
+              <span className="inline-block mt-4 bg-hazard-yellow/40 px-4 py-2 rounded-full text-ink font-bold uppercase tracking-wider text-sm shadow-sm">
+                Humanitaire entre femmes
+              </span>
             </p>
           </div>
           <div className="grid grid-cols-3 gap-6 bg-white/80 backdrop-blur-sm shadow-xl p-8 rounded-[32px]">

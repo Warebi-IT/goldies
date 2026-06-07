@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { MapPin, Clock, Users } from "lucide-react";
+import { MapPin, Clock, Users, ArrowRight } from "lucide-react";
 import destSenegal from "@/assets/dest-senegal.jpg";
 import destMaroc from "@/assets/dest-maroc.jpg";
 import destTanzanie from "@/assets/dest-tanzanie.jpg";
@@ -134,8 +134,9 @@ const Destinations = () => {
                   </p>
                   
                   {/* Glassmorphism CTA inside card */}
-                  <span className="block text-center w-full bg-white/50 backdrop-blur-sm text-ink shadow-sm rounded-buttons py-3 text-sm font-dm-sans font-medium transition-colors group-hover:bg-ink group-hover:text-cream-card">
-                    Voir le séjour →
+                  <span className="flex items-center justify-center gap-2 w-full bg-white/50 backdrop-blur-sm text-ink shadow-sm rounded-buttons py-3 text-sm font-dm-sans font-medium transition-colors group-hover:bg-ink group-hover:text-cream-card">
+                    Voir le séjour
+                    <ArrowRight size={16} strokeWidth={2.5} />
                   </span>
                 </div>
               </Link>

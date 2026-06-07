@@ -50,18 +50,24 @@ const Footer = () => {
             </h4>
             <div className="flex gap-4">
               <a
-                href="#"
+                href="https://www.instagram.com/goldies.travel?igsh=MTV6dThwbjlrYzg0MA=="
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                 aria-label="Instagram"
               >
                 <Instagram size={20} />
               </a>
               <a
-                href="#"
+                href="https://www.tiktok.com/@goldies_travel?_r=1&_t=ZN-9716IvKcjKQ"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
-                aria-label="Facebook"
+                aria-label="TikTok"
               >
-                <Facebook size={20} />
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                </svg>
               </a>
               <a
                 href="mailto:contact@goldiestravel.com"
