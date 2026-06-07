@@ -1,5 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* Leaflet map fix — keeps tiles and controls above page background */
+.leaflet-container {
+  z-index: 0;
+}
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-map-pane svg,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+  position: absolute;
+}
+.leaflet-control {
+  position: relative;
+  z-index: 1;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

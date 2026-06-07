@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import TripMap from "@/components/TripMap";
 import { MapPin, Calendar, Clock, ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -204,7 +205,13 @@ const VoyageDetail = () => {
           </div>
 
           {/* Sidebar */}
-          <aside className="lg:sticky lg:top-24 h-fit bg-card rounded-2xl p-6 shadow-md space-y-5">
+          <aside className="lg:sticky lg:top-24 h-fit bg-card rounded-2xl shadow-md overflow-hidden space-y-0">
+            {/* Carte carrée */}
+            <div className="aspect-square w-full">
+              <TripMap lat={trip.lat} lng={trip.lng} destination={trip.destination} />
+            </div>
+
+            <div className="p-6 space-y-5">
             <div className="flex items-baseline justify-between">
               <span className="text-sm text-muted-foreground">À partir de</span>
               <span className="font-serif text-3xl font-bold text-secondary">{trip.price} €</span>
@@ -242,6 +249,7 @@ const VoyageDetail = () => {
                 Réservation bientôt disponible
               </Button>
             )}
+            </div>
           </aside>
         </div>
       </section>

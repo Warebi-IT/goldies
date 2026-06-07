@@ -126,6 +126,8 @@ export type Database = {
           image_url: string | null
           includes: string[]
           is_active: boolean
+          lat: number | null
+          lng: number | null
           name: string
           payment_link: string | null
           price: number
@@ -147,6 +149,8 @@ export type Database = {
           image_url?: string | null
           includes?: string[]
           is_active?: boolean
+          lat?: number | null
+          lng?: number | null
           name: string
           payment_link?: string | null
           price: number
@@ -168,6 +172,8 @@ export type Database = {
           image_url?: string | null
           includes?: string[]
           is_active?: boolean
+          lat?: number | null
+          lng?: number | null
           name?: string
           payment_link?: string | null
           price?: number

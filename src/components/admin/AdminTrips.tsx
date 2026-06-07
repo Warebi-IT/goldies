@@ -10,6 +10,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, X, Calendar as CalendarIcon } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import ConfirmationMFA from "@/components/admin/ConfirmationMFA";
+import MapPicker from "@/components/MapPicker";
 
 interface ProgramDay {
   title: string;
@@ -36,8 +37,11 @@ interface TripForm {
   program: ProgramDay[];
   start_date: string;
   end_date: string;
+  lat: number | null;
+  lng: number | null;
 }
 
+// Paris par défaut
 const emptyForm: TripForm = {
   name: "",
   description: "",
@@ -54,6 +58,8 @@ const emptyForm: TripForm = {
   program: [],
   start_date: "",
   end_date: "",
+  lat: 48.8566,
+  lng: 2.3522,
 };
 
 const slugify = (s: string) =>
@@ -159,6 +165,8 @@ const AdminTrips = () => {
         program: form.program as any,
         start_date: form.start_date || null,
         end_date: form.end_date || null,
+        lat: form.lat,
+        lng: form.lng,
       };
 
       let tripId: string;
@@ -276,6 +284,8 @@ const AdminTrips = () => {
       program: Array.isArray(trip.program) ? trip.program : [],
       start_date: trip.start_date || "",
       end_date: trip.end_date || "",
+      lat: trip.lat ?? 48.8566,
+      lng: trip.lng ?? 2.3522,
     });
 
     const { data } = await supabase
@@ -588,6 +598,16 @@ const AdminTrips = () => {
                   onChange={(e) => handleGalleryUpload(e.target.files)}
                 />
               </label>
+            </div>
+
+            {/* Localisation */}
+            <div>
+              <label className="text-xs font-medium mb-2 block">Localisation sur la carte</label>
+              <MapPicker
+                lat={form.lat}
+                lng={form.lng}
+                onChange={(lat, lng) => setForm((f) => ({ ...f, lat: lat ?? null, lng: lng ?? null }))}
+              />
             </div>
 
             {/* Payment link */}
