@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 // Base low-res map of Africa
 const BASE_GRID = [
 
-  "           xxxxxxxxxxxxxxxxxxxx         ",
+  "           xxxxxxxxxxxxxxxxxx         ",
   "         xxxxxxxxxxxxxxxxxxxxxxxx       ",
   "       xxxxxxxxxxxxxxxxxxxxxxxxxxx      ", // Morocco area
   "      xxxxxxxxxxxxxxxxxxxxxxxxxxxxx     ",
@@ -144,9 +144,9 @@ const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = '
       const gapX = gap * 0.55; // Compress horizontally to match true map aspect ratio
       const mapWidth = cols * gapX;
 
-      // Center the map in the Hero's vertical space
+      // Center the map in the Hero's vertical space, and push it down by 25px (remonté encore de 50px)
       const offsetX = (width - mapWidth) / 2;
-      const offsetY = (heroHeight - mapHeight) / 2;
+      const offsetY = ((heroHeight - mapHeight) / 2) + 25;
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
