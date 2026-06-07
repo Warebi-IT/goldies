@@ -34,7 +34,7 @@ const HomeTeasers = () => (
         {trustBadges.map(({ icon: Icon, text }) => (
           <div
             key={text}
-            className="flex items-center gap-3 px-6 py-3 bg-cream-card rounded-tags border border-ink text-ink font-dm-sans font-medium text-sm"
+            className="flex items-center gap-3 px-6 py-3 bg-white/80 backdrop-blur-sm shadow-sm rounded-full text-ink font-dm-sans font-medium text-sm"
           >
             <Icon size={16} className="text-citra-orange" />
             <span>{text}</span>
@@ -48,10 +48,10 @@ const HomeTeasers = () => (
           <Link
             key={to}
             to={to}
-            className="group flex flex-col p-8 md:p-12 bg-cream-card rounded-cards border border-ink transition-transform hover:-translate-y-1"
+            className="group flex flex-col p-8 md:p-12 bg-white/80 backdrop-blur-sm rounded-[32px] shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
           >
             {/* Icon bubble */}
-            <div className="w-14 h-14 flex items-center justify-center rounded-full bg-hazard-yellow border border-ink mb-6">
+            <div className="w-14 h-14 flex items-center justify-center rounded-full bg-hazard-yellow shadow-md mb-6">
               <Icon size={24} className="text-ink" />
             </div>
 

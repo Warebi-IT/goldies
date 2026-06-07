@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import logo from "@/assets/logo.png";
+import AnimatedLogo from "@/components/AnimatedLogo";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
@@ -21,12 +21,17 @@ const Navbar = () => {
       <div className="pointer-events-auto">
         <Link 
           to="/" 
-          className="flex items-center gap-2 bg-white/95 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all"
+          className="flex items-center gap-2 bg-white/95 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all group"
         >
-          <img src={logo} alt="Goldies Travel" className="h-8 w-8 object-contain" />
-          <span className="font-control-compressed text-xl font-black uppercase tracking-tight text-[#e99ba9] leading-none mt-1">
-            GOLDIES
-          </span>
+          <AnimatedLogo className="h-8 w-8" />
+          <div className="flex items-baseline gap-1 mt-1">
+            <span className="font-pp-neue-corp-compact text-xl font-black uppercase tracking-tight text-[#e99ba9] leading-none group-hover:text-citra-orange transition-colors">
+              GOLDIES
+            </span>
+            <span className="font-pp-neue-corp-compact text-sm font-black uppercase tracking-tight text-[#BCE3F1] leading-none">
+              TRAVEL
+            </span>
+          </div>
         </Link>
       </div>
 
@@ -39,8 +44,10 @@ const Navbar = () => {
                 to={l.to}
                 end={l.to === "/"}
                 className={({ isActive }) =>
-                  `text-sm font-dm-sans transition-colors ${
-                    isActive ? "text-ink font-bold" : "text-ink/60 font-medium hover:text-ink"
+                  `text-sm font-dm-sans transition-colors relative px-1 ${
+                    isActive 
+                      ? "text-citra-orange font-bold after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[2px] after:bg-citra-orange after:rounded-full" 
+                      : "text-ink/60 font-medium hover:text-citra-orange"
                   }`
                 }
               >
@@ -78,13 +85,17 @@ const Navbar = () => {
           <ul className="flex flex-col gap-4">
             {navLinks.map((l) => (
                <li key={l.to}>
-                 <Link
+                 <NavLink
                    to={l.to}
                    onClick={() => setOpen(false)}
-                   className="text-lg font-dm-sans font-medium text-ink hover:text-citra-orange transition-colors block py-2 border-b border-ink/10"
+                   className={({ isActive }) => 
+                     `text-lg font-dm-sans block py-2 border-b border-ink/10 transition-colors ${
+                       isActive ? "text-citra-orange font-bold" : "text-ink font-medium hover:text-citra-orange"
+                     }`
+                   }
                  >
                    {l.label}
-                 </Link>
+                 </NavLink>
                </li>
             ))}
             <li className="pt-4">

@@ -1,21 +1,21 @@
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo.png";
+import AnimatedLogo from "@/components/AnimatedLogo";
 import { Instagram, Facebook, Mail } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="py-16 border-t border-ink/20">
+    <footer className="py-16 mt-20 bg-ink text-cream-card">
       <div className="container mx-auto max-w-[1280px] px-6">
         <div className="grid md:grid-cols-3 gap-12 mb-12">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-6">
-              <img src={logo} alt="Goldies Travel" className="h-10 w-10 object-contain grayscale" />
-              <span className="font-pp-neue-corp-compact text-3xl font-black uppercase tracking-tight text-ink leading-none">
+              <AnimatedLogo className="h-10 w-10 grayscale invert opacity-90" />
+              <span className="font-pp-neue-corp-compact text-3xl font-black uppercase tracking-tight text-cream-card leading-none">
                 GOLDIES TRAVEL
               </span>
             </div>
-            <p className="text-ink/80 text-sm font-dm-sans font-medium leading-relaxed">
+            <p className="text-cream-card/80 text-sm font-dm-sans font-medium leading-relaxed">
               Agence de voyage solidaire et d'empouvoirement 100% féminin.
               Découvrez l'Afrique autrement.
             </p>
@@ -23,7 +23,7 @@ const Footer = () => {
 
           {/* Links */}
           <div>
-            <h4 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-4">
+            <h4 className="font-pp-neue-corp-compact text-2xl font-black text-cream-card uppercase tracking-tight mb-4">
               Navigation
             </h4>
             <ul className="space-y-3">
@@ -35,7 +35,7 @@ const Footer = () => {
                 { label: "Contact", to: "/contact" },
               ].map((l) => (
                 <li key={l.label}>
-                  <Link to={l.to} className="text-sm font-dm-sans font-medium text-ink/70 hover:text-citra-orange transition-colors">
+                  <Link to={l.to} className="text-sm font-dm-sans font-medium text-cream-card/70 hover:text-citra-orange transition-colors">
                     {l.label}
                   </Link>
                 </li>
@@ -45,27 +45,27 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h4 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-4">
+            <h4 className="font-pp-neue-corp-compact text-2xl font-black text-cream-card uppercase tracking-tight mb-4">
               Nous suivre
             </h4>
             <div className="flex gap-4">
               <a
                 href="#"
-                className="w-12 h-12 rounded-full border border-ink flex items-center justify-center text-ink hover:bg-citra-orange hover:text-ink hover:border-citra-orange transition-colors"
+                className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                 aria-label="Instagram"
               >
                 <Instagram size={20} />
               </a>
               <a
                 href="#"
-                className="w-12 h-12 rounded-full border border-ink flex items-center justify-center text-ink hover:bg-citra-orange hover:text-ink hover:border-citra-orange transition-colors"
+                className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                 aria-label="Facebook"
               >
                 <Facebook size={20} />
               </a>
               <a
                 href="mailto:contact@goldiestravel.com"
-                className="w-12 h-12 rounded-full border border-ink flex items-center justify-center text-ink hover:bg-citra-orange hover:text-ink hover:border-citra-orange transition-colors"
+                className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                 aria-label="Email"
               >
                 <Mail size={20} />
@@ -74,8 +74,8 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-ink/20 pt-8 text-left md:text-center">
-          <p className="text-xs font-dm-sans font-medium uppercase tracking-widest text-ink/60">
+        <div className="pt-8 text-left md:text-center mt-8 border-t border-cream-card/10">
+          <p className="text-xs font-dm-sans font-medium uppercase tracking-widest text-cream-card/60">
             © {new Date().getFullYear()} GOLDIES TRAVEL. TOUS DROITS RÉSERVÉS.
           </p>
         </div>

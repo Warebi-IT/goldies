@@ -5,15 +5,22 @@
 @tailwind utilities;
 
 :root {
-  /* Colors */
-  --color-concrete-canvas: #e2e2df;
-  --color-cream-card: #f7f6f2;
-  --color-ink: #070607;
+  /* Colors - Pastel DA */
+  --color-concrete-canvas: #FAF7F2; /* Very Pale Warm Off-White (Lighter) */
+  --color-cream-card: #FDFBF7;      /* Extremely Light Cream */
+  --color-ink: #422F24;             /* Deep Espresso Brown */
   --color-pure-black: #000000;
   --color-paper-white: #ffffff;
-  --color-citra-orange: #fc5000;
-  --color-ion-violet: #524ae9;
-  --color-hazard-yellow: #f5f28e;
+  --color-citra-orange: #DD6B4D;    /* Soft Terracotta/Peach */
+  --color-ion-violet: #A96F70;      /* Dusty Rose/Burgundy */
+  --color-hazard-yellow: #E7F2BE;   /* Soft Pastel Lime/Yellow */
+
+  /* Pastel Palette Variables */
+  --color-pastel-sand: #FAEDDB;
+  --color-pastel-sage: #DCE5D1;
+  --color-pastel-rose: #DFB4B5;
+  --color-pastel-peach: #F9BA7B;
+  --color-pastel-lime: #E7F2BE;
 
   /* Typography — Font Families */
   --font-sans-serif: 'sans-serif', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;

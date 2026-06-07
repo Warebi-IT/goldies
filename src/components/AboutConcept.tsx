@@ -25,7 +25,7 @@ const steps = [
 
 const AboutConcept = () => {
   return (
-    <section id="concept" className="py-20 border-t border-ink/20">
+    <section id="concept" className="py-20">
       <div className="container mx-auto max-w-[1280px] px-6">
         {/* About intro */}
         <div className="max-w-3xl mx-auto text-center mb-20">
@@ -49,7 +49,7 @@ const AboutConcept = () => {
               associatif pour soutenir activement le travail des communautés locales.
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-6 border border-ink bg-cream-card p-8 rounded-cards">
+          <div className="grid grid-cols-3 gap-6 bg-white/80 backdrop-blur-sm shadow-xl p-8 rounded-[32px]">
             {[
               { value: "500+", label: "Voyageuses" },
               { value: "2", label: "Destinations" },
@@ -82,18 +82,18 @@ const AboutConcept = () => {
           {steps.map((s, i) => (
             <div
               key={s.title}
-              className="bg-cream-card rounded-cards p-8 text-center border border-ink hover:bg-ink group transition-colors flex flex-col"
+              className="bg-white/80 backdrop-blur-sm rounded-[32px] shadow-lg p-8 text-center group transition-all duration-300 flex flex-col hover:-translate-y-1 hover:shadow-xl"
             >
-              <div className="w-16 h-16 mx-auto rounded-full border border-ink flex items-center justify-center mb-6 bg-hazard-yellow text-ink transition-colors group-hover:border-cream-card">
+              <div className="w-16 h-16 mx-auto rounded-full shadow-md flex items-center justify-center mb-6 bg-hazard-yellow text-ink transition-colors group-hover:bg-citra-orange">
                 <s.icon size={28} />
               </div>
               <span className="font-dm-sans text-xs font-bold text-citra-orange uppercase tracking-wider mb-3 block">
                 Étape [0{i + 1}]
               </span>
-              <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-4 group-hover:text-cream-card transition-colors">
+              <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-4 transition-colors">
                 {s.title}
               </h3>
-              <p className="text-base font-dm-sans font-medium text-ink/80 leading-relaxed flex-1 group-hover:text-cream-card/80 transition-colors">
+              <p className="text-base font-dm-sans font-medium text-ink/80 leading-relaxed flex-1 transition-colors">
                 {s.desc}
               </p>
             </div>

@@ -37,7 +37,13 @@ export default {
         "citra-orange": "var(--color-citra-orange)",
         "ion-violet": "var(--color-ion-violet)",
         "hazard-yellow": "var(--color-hazard-yellow)",
-        
+        /* New Pastel Colors from reference images */
+        "pastel-sand": "var(--color-pastel-sand)",
+        "pastel-sage": "var(--color-pastel-sage)",
+        "pastel-rose": "var(--color-pastel-rose)",
+        "pastel-peach": "var(--color-pastel-peach)",
+        "pastel-lime": "var(--color-pastel-lime)",
+
         /* Legacy aliases mapping to Caldera */
         "sky-canvas": "var(--color-concrete-canvas)",
         "action-blue": "var(--color-citra-orange)",
@@ -105,10 +111,18 @@ export default {
             height: "0",
           },
         },
+        "heartbeat": {
+          "0%, 100%": { transform: "scale(1)" },
+          "15%": { transform: "scale(1.15)" },
+          "30%": { transform: "scale(1)" },
+          "45%": { transform: "scale(1.15)" },
+          "60%": { transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "heartbeat": "heartbeat 1.5s ease-in-out infinite",
         "noise-jitter": "noise-jitter 0.8s infinite",
         "float-slow": "float-slow 20s ease-in-out infinite",
         "pan-slow": "pan-slow 30s ease-in-out infinite alternate",

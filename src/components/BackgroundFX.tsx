@@ -89,7 +89,7 @@ const BackgroundFX: React.FC = () => {
           <img 
             src={destSenegal} 
             alt="" 
-            className="w-full h-full object-cover grayscale animate-pan-slow"
+            className="w-full h-full object-cover animate-pan-slow"
           />
         </div>
       </div>
@@ -110,7 +110,7 @@ const BackgroundFX: React.FC = () => {
           <img 
             src={destMaroc} 
             alt="" 
-            className="w-full h-full object-cover grayscale animate-pan-slow"
+            className="w-full h-full object-cover animate-pan-slow"
             style={{ animationDirection: "alternate-reverse", animationDuration: "35s" }}
           />
         </div>
@@ -131,7 +131,7 @@ const BackgroundFX: React.FC = () => {
           <img 
             src={destTanzanie} 
             alt="" 
-            className="w-full h-full object-cover grayscale animate-pan-slow"
+            className="w-full h-full object-cover animate-pan-slow"
             style={{ animationDuration: "40s" }}
           />
         </div>

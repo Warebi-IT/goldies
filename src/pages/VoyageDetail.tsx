@@ -48,53 +48,53 @@ const VoyageDetail = () => {
     : [];
 
   return (
-    <div className="min-h-screen bg-sky-canvas text-cloud-white">
+    <div className="min-h-screen bg-concrete-canvas text-ink">
       <Navbar />
 
       {/* Hero */}
-      <section className="relative h-[60vh] min-h-[400px] mt-16 border-b border-cloud-white/10">
+      <section className="relative h-[60vh] min-h-[400px] mt-16">
         {trip.image_url && (
           <img src={trip.image_url} alt={trip.name} className="absolute inset-0 w-full h-full object-cover" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-sky-canvas via-sky-canvas/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-concrete-canvas via-concrete-canvas/60 to-transparent" />
         <div className="relative z-10 h-full container mx-auto px-6 flex flex-col justify-end pb-12">
-          <Link to="/voyages" className="inline-flex items-center gap-2 text-cloud-white/90 hover:text-action-blue text-sm mb-4 transition-all duration-300 font-control font-medium">
+          <Link to="/voyages" className="inline-flex items-center gap-2 text-ink/80 hover:text-citra-orange text-sm mb-4 transition-all duration-300 font-dm-sans font-medium">
             <ArrowLeft size={16} /> Tous nos voyages
           </Link>
-          <div className="flex items-center gap-2 text-cloud-white/90 mb-2">
-            <MapPin size={16} className="text-action-blue" />
-            <span className="font-control-tnt text-xs font-bold uppercase tracking-wider">{trip.destination}</span>
+          <div className="flex items-center gap-2 text-ink/80 mb-2">
+            <MapPin size={16} className="text-citra-orange" />
+            <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{trip.destination}</span>
           </div>
-          <h1 className="font-control-compressed text-4xl md:text-6xl font-black text-cloud-white uppercase tracking-tight">{trip.name}</h1>
+          <h1 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-ink uppercase tracking-tight">{trip.name}</h1>
         </div>
       </section>
 
       {/* Body */}
-      <section className="py-16 bg-sky-canvas">
+      <section className="py-16 bg-concrete-canvas">
         <div className="container mx-auto px-6 grid lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-12">
-            <div className="backdrop-blur-md bg-cloud-white/5 border border-cloud-white/10 p-8 rounded-cards">
-              <h2 className="font-control-compressed text-2xl font-black uppercase tracking-tight mb-4">Description</h2>
-              <p className="font-control text-cloud-white/90 leading-relaxed whitespace-pre-line text-sm md:text-base">
+            <div className="bg-white/80 backdrop-blur-sm shadow-xl p-8 rounded-[32px]">
+              <h2 className="font-pp-neue-corp-compact text-2xl font-black uppercase tracking-tight mb-4">Description</h2>
+              <p className="font-dm-sans text-ink/80 leading-relaxed whitespace-pre-line text-sm md:text-base">
                 {trip.description || "Aucune description disponible."}
               </p>
             </div>
 
-            <div className="backdrop-blur-md bg-cloud-white/5 border border-cloud-white/10 p-8 rounded-cards">
-              <h2 className="font-control-compressed text-2xl font-black uppercase tracking-tight mb-6">Programme jour par jour</h2>
+            <div className="bg-white/80 backdrop-blur-sm shadow-xl p-8 rounded-[32px]">
+              <h2 className="font-pp-neue-corp-compact text-2xl font-black uppercase tracking-tight mb-6">Programme jour par jour</h2>
               {program.length === 0 ? (
-                <p className="font-control text-sm text-cloud-white/60">Programme à venir.</p>
+                <p className="font-dm-sans text-sm text-ink/60">Programme à venir.</p>
               ) : (
                 <ol className="space-y-6">
                   {program.map((day, i) => (
-                    <li key={i} className="bg-haze-grey rounded-[12px] p-6 border border-midnight-ink/10 text-charcoal-text shadow-sm">
+                    <li key={i} className="bg-white/50 backdrop-blur-sm rounded-[24px] p-6 shadow-sm">
                       <div className="flex items-center gap-3 mb-3">
-                        <span className="w-9 h-9 rounded-full border border-midnight-ink/10 bg-cloud-white text-action-blue flex items-center justify-center font-control-tnt font-bold text-sm shadow-sm">
+                        <span className="w-10 h-10 rounded-full shadow-sm bg-hazard-yellow text-ink flex items-center justify-center font-dm-sans font-bold text-sm">
                           J{i + 1}
                         </span>
-                        <h3 className="font-control-compressed text-lg font-black text-midnight-ink uppercase tracking-tight">{day.title}</h3>
+                        <h3 className="font-pp-neue-corp-compact text-lg font-black text-ink uppercase tracking-tight">{day.title}</h3>
                       </div>
-                      <p className="text-sm font-control text-charcoal-text/80 leading-relaxed whitespace-pre-line">
+                      <p className="text-sm font-dm-sans text-ink/80 leading-relaxed whitespace-pre-line">
                         {day.description}
                       </p>
                     </li>
@@ -105,29 +105,29 @@ const VoyageDetail = () => {
           </div>
 
           {/* Sidebar */}
-          <aside className="lg:sticky lg:top-24 h-fit bg-cloud-white rounded-cards p-8 border border-midnight-ink/10 text-midnight-ink space-y-6 shadow-none">
+          <aside className="lg:sticky lg:top-32 h-fit bg-white/80 backdrop-blur-sm rounded-[32px] shadow-xl p-8 text-ink space-y-6">
             <div className="flex items-baseline justify-between">
-              <span className="font-control text-sm text-charcoal-text/60">À partir de</span>
-              <span className="font-control-tnt text-3xl font-black text-action-blue">{trip.price} €</span>
+              <span className="font-dm-sans text-sm text-ink/60">À partir de</span>
+              <span className="font-pp-neue-corp-compact text-4xl font-black text-citra-orange">{trip.price} €</span>
             </div>
-            <div className="space-y-3 text-sm border-t border-midnight-ink/10 pt-6">
-              <div className="flex items-center gap-2 font-control text-charcoal-text/80">
-                <Clock size={16} className="text-action-blue" />
-                <span className="font-control-tnt text-xs font-bold uppercase tracking-wider">{trip.duration}</span>
+            <div className="space-y-4 text-sm border-t border-ink/5 pt-6">
+              <div className="flex items-center gap-3 font-dm-sans text-ink/80">
+                <Clock size={18} className="text-citra-orange" />
+                <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{trip.duration}</span>
               </div>
-              <div className="flex items-center gap-2 font-control text-charcoal-text/80">
-                <Calendar size={16} className="text-action-blue" />
-                <span className="font-control-tnt text-xs font-bold uppercase tracking-wider">{trip.dates}</span>
+              <div className="flex items-center gap-3 font-dm-sans text-ink/80">
+                <Calendar size={18} className="text-citra-orange" />
+                <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{trip.dates}</span>
               </div>
             </div>
 
             {trip.includes && trip.includes.length > 0 && (
-              <div className="border-t border-midnight-ink/10 pt-6">
-                <p className="font-control-compressed text-sm font-black uppercase tracking-wider mb-3">Inclus dans le séjour</p>
-                <ul className="space-y-2.5">
+              <div className="border-t border-ink/5 pt-6">
+                <p className="font-pp-neue-corp-compact text-sm font-black uppercase tracking-wider mb-4 text-ink/80">Inclus dans le séjour</p>
+                <ul className="space-y-3">
                   {trip.includes.map((item: string) => (
-                    <li key={item} className="flex items-center gap-2 text-sm font-control text-charcoal-text/85">
-                      <CheckCircle size={14} className="text-action-blue" /> {item}
+                    <li key={item} className="flex items-center gap-3 text-sm font-dm-sans text-ink/80">
+                      <CheckCircle size={16} className="text-citra-orange" /> {item}
                     </li>
                   ))}
                 </ul>
@@ -135,13 +135,13 @@ const VoyageDetail = () => {
             )}
 
             {trip.payment_link ? (
-              <Button asChild className="w-full rounded-buttons border border-action-blue bg-transparent text-action-blue hover:bg-action-blue hover:text-cloud-white font-control font-medium h-12 transition-all">
+              <Button asChild className="w-full rounded-full shadow-md bg-white/50 backdrop-blur-sm text-ink hover:bg-ink hover:text-cream-card font-dm-sans font-bold h-14 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl mt-4">
                 <a href={trip.payment_link} target="_blank" rel="noopener noreferrer">
                   Réserver maintenant
                 </a>
               </Button>
             ) : (
-              <Button disabled className="w-full rounded-buttons h-12 bg-haze-grey text-charcoal-text/40 border border-midnight-ink/10 cursor-not-allowed">
+              <Button disabled className="w-full rounded-full shadow-sm h-14 bg-white/30 text-ink/40 font-dm-sans cursor-not-allowed mt-4">
                 Réservation bientôt disponible
               </Button>
             )}

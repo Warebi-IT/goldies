@@ -73,15 +73,14 @@ const GalleryCarousel = () => {
         {displayPhotos.map((photo, i) => (
           <div
             key={`${photo.id}-${i}`}
-            className="flex-shrink-0 overflow-hidden rounded-cards border border-ink/20"
+            className="flex-shrink-0 overflow-hidden rounded-[32px] shadow-lg bg-white/80"
             style={{ width: "300px", height: "220px" }}
           >
             <div className="w-full h-full relative">
-              <div className="absolute inset-0 bg-gradient-to-tr from-citra-orange to-ion-violet mix-blend-color z-10 opacity-30 hover:opacity-0 transition-opacity"></div>
               <img
                 src={photo.image_url}
                 alt={photo.caption || "Souvenir de voyage Goldies"}
-                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                className="w-full h-full object-cover transition-all duration-500 hover:scale-105"
                 loading="lazy"
               />
             </div>
@@ -93,7 +92,7 @@ const GalleryCarousel = () => {
       <div className="text-center mt-12">
         <Link
           to="/galerie"
-          className="inline-flex items-center gap-2 bg-transparent border border-ink text-ink font-dm-sans font-medium text-base px-8 py-3 rounded-buttons hover:bg-ink hover:text-cream-card transition-colors"
+          className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md shadow-md text-ink font-dm-sans font-medium text-base px-8 py-3 rounded-full hover:bg-white hover:shadow-lg hover:scale-105 transition-all duration-300"
         >
           Voir toute la galerie
           <ArrowRight size={16} />

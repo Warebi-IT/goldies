@@ -47,17 +47,22 @@ const HomeDestinations = () => {
 
         {/* Trip cards */}
         <div className="grid md:grid-cols-3 gap-6">
-          {trips?.map((d) => {
+          {trips?.map((d, idx) => {
             const img = d.image_url || fallbackImages[d.destination] || destSenegal;
             
+            const bgColors = ["bg-pastel-sand", "bg-pastel-sage", "bg-pastel-rose", "bg-pastel-peach", "bg-pastel-lime"];
+            const cardBg = bgColors[idx % bgColors.length];
+            
             // Dynamic color logic for trip status
-            let tagColors = "bg-hazard-yellow text-ink border-ink"; // Default
+            let tagColors = "bg-amber-400 text-ink shadow-sm"; // Default
             if (d.tag) {
               const t = d.tag.toLowerCase();
-              if (t.includes("complet") || t.includes("fermé")) {
-                tagColors = "bg-ink text-cream-card border-ink";
-              } else if (t.includes("dernier") || t.includes("bientôt") || t.includes("alerte")) {
-                tagColors = "bg-citra-orange text-ink border-ink";
+              if (t.includes("complet") || t.includes("fermé") || t.includes("clôturé") || t.includes("cloture")) {
+                tagColors = "bg-rose-500 text-white shadow-sm";
+              } else if (t.includes("non disponible") || t.includes("bientôt") || t.includes("fermeture")) {
+                tagColors = "bg-gray-200 text-ink shadow-sm";
+              } else if (t.includes("disponible") || t.includes("ouvert")) {
+                tagColors = "bg-emerald-500 text-white shadow-sm";
               }
             }
             
@@ -65,22 +70,21 @@ const HomeDestinations = () => {
               <Link
                 key={d.id}
                 to={`/voyages/${d.slug || d.id}`}
-                className="group relative flex flex-col overflow-hidden bg-cream-card rounded-cards border border-ink p-6 transition-transform hover:-translate-y-1"
+                className={`group relative flex flex-col overflow-hidden ${cardBg} shadow-md hover:shadow-xl rounded-cards p-6 transition-all duration-300 hover:-translate-y-1`}
               >
-                {/* Image */}
-                <div className="aspect-[4/3] overflow-hidden rounded-[20px] mb-6 relative border border-ink/20">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-citra-orange to-ion-violet mix-blend-color z-10 opacity-30 group-hover:opacity-0 transition-opacity"></div>
+                {/* Thumbnail */}
+                <div className="aspect-[4/3] overflow-hidden rounded-[20px] mb-6 relative">
                   <img
                     src={img}
                     alt={d.name}
                     loading="lazy"
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                    className="w-full h-full object-cover transition-all duration-500"
                   />
                 </div>
 
                 {/* Tag badge */}
                 {d.tag && (
-                  <span className={`absolute top-10 right-10 text-xs font-dm-sans font-bold px-3 py-1 rounded-tags border z-20 ${tagColors}`}>
+                  <span className={`absolute top-10 right-10 text-xs font-dm-sans font-bold px-3 py-1 rounded-tags z-20 ${tagColors}`}>
                     {d.tag}
                   </span>
                 )}
@@ -120,7 +124,7 @@ const HomeDestinations = () => {
                   </div>
 
                   {/* Ghost Button CTA inside card */}
-                  <span className="block text-center w-full bg-transparent text-ink border border-ink rounded-buttons py-3 text-sm font-dm-sans font-medium transition-colors group-hover:bg-ink group-hover:text-cream-card">
+                  <span className="block text-center w-full bg-white/50 backdrop-blur-sm text-ink shadow-sm rounded-buttons py-3 text-sm font-dm-sans font-medium transition-colors group-hover:bg-ink group-hover:text-cream-card">
                     Voir le séjour →
                   </span>
                 </div>
@@ -133,7 +137,7 @@ const HomeDestinations = () => {
         <div className="text-center mt-12">
           <Link
             to="/voyages"
-            className="inline-flex items-center justify-center gap-2 bg-citra-orange text-ink px-8 py-3 rounded-buttons text-base font-dm-sans font-medium transition-transform hover:scale-[1.02]"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-white/80 backdrop-blur-md shadow-md text-ink rounded-full font-dm-sans font-bold text-lg transition-transform hover:scale-105"
           >
             Voir tous nos voyages
             <ArrowRight size={18} />
