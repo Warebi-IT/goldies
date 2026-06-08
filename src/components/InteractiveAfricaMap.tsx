@@ -122,8 +122,20 @@ const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = '
       mouseX = -1000;
       mouseY = -1000;
     };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const rect = canvas.getBoundingClientRect();
+        mouseX = e.touches[0].clientX - rect.left;
+        mouseY = e.touches[0].clientY - rect.top;
+      }
+    };
+
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseleave', handleMouseLeave);
+    canvas.addEventListener('touchstart', handleTouchMove, { passive: true });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: true });
+    canvas.addEventListener('touchend', handleMouseLeave);
+    canvas.addEventListener('touchcancel', handleMouseLeave);
 
     let animationFrameId: number;
     let time = 0;
@@ -287,6 +299,10 @@ const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = '
       window.removeEventListener('resize', setSize);
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
+      canvas.removeEventListener('touchstart', handleTouchMove);
+      canvas.removeEventListener('touchmove', handleTouchMove);
+      canvas.removeEventListener('touchend', handleMouseLeave);
+      canvas.removeEventListener('touchcancel', handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
@@ -295,7 +311,6 @@ const InteractiveAfricaMap: React.FC<InteractiveAfricaMapProps> = ({ variant = '
     <canvas
       ref={canvasRef}
       className="absolute top-0 left-0 w-full h-[200%] z-0 pointer-events-auto"
-      style={{ touchAction: 'none' }}
     />
   );
 };
