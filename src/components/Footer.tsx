@@ -26,21 +26,36 @@ const Footer = () => {
             <h4 className="font-pp-neue-corp-compact text-2xl font-black text-cream-card uppercase tracking-tight mb-4">
               Navigation
             </h4>
-            <ul className="space-y-3">
-              {[
-                { label: "Accueil", to: "/" },
-                { label: "Voyages", to: "/voyages" },
-                { label: "Concept", to: "/concept" },
-                { label: "Galerie", to: "/galerie" },
-                { label: "Contact", to: "/contact" },
-              ].map((l) => (
-                <li key={l.label}>
-                  <Link to={l.to} className="text-sm font-dm-sans font-medium text-cream-card/70 hover:text-citra-orange transition-colors">
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <div className="flex flex-col sm:flex-row gap-8 sm:gap-16">
+              <ul className="space-y-3">
+                {[
+                  { label: "Accueil", to: "/" },
+                  { label: "Voyages", to: "/voyages" },
+                  { label: "Concept", to: "/concept" },
+                  { label: "Galerie", to: "/galerie" },
+                  { label: "Contact", to: "/contact" },
+                ].map((l) => (
+                  <li key={l.label}>
+                    <Link to={l.to} className="text-sm font-dm-sans font-medium text-cream-card/70 hover:text-citra-orange transition-colors">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <ul className="space-y-3">
+                {[
+                  { label: "Mentions Légales", to: "/mentions-legales" },
+                  { label: "Confidentialité", to: "/politique-confidentialite" },
+                  { label: "CGV", to: "/cgv" },
+                ].map((l) => (
+                  <li key={l.label}>
+                    <Link to={l.to} className="text-sm font-dm-sans font-medium text-cream-card/70 hover:text-citra-orange transition-colors">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* Contact */}
