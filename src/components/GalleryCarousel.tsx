@@ -28,14 +28,18 @@ const GalleryCarousel = () => {
     if (!el || !photos?.length) return;
 
     let animId: number;
-    const speed = 0.5;
+    let scrollPos = el.scrollLeft;
 
     const animate = () => {
       if (!isPaused) {
-        el.scrollLeft += speed;
-        if (el.scrollLeft >= el.scrollWidth / 2) {
-          el.scrollLeft = 0;
+        scrollPos += 0.8; // Safe fractional increment with accumulator
+        if (scrollPos >= el.scrollWidth / 2) {
+          scrollPos = 0;
         }
+        el.scrollLeft = scrollPos;
+      } else {
+        // Sync accumulator with the current scroll position
+        scrollPos = el.scrollLeft;
       }
       animId = requestAnimationFrame(animate);
     };
@@ -74,8 +78,6 @@ const GalleryCarousel = () => {
       {/* Infinite scroll strip */}
       <div
         ref={scrollRef}
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
         onTouchStart={() => setIsPaused(true)}
         onTouchEnd={() => setIsPaused(false)}
         className="relative z-10 flex gap-4 overflow-x-auto cursor-grab px-6 py-4 touch-pan-x"
