@@ -76,9 +76,14 @@ const GalleryCarousel = () => {
         ref={scrollRef}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
-        className="relative z-10 flex gap-4 overflow-hidden cursor-grab px-6 py-4"
-        style={{ scrollbarWidth: "none" }}
+        onTouchStart={() => setIsPaused(true)}
+        onTouchEnd={() => setIsPaused(false)}
+        className="relative z-10 flex gap-4 overflow-x-auto cursor-grab px-6 py-4 touch-pan-x"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
+        <style dangerouslySetInnerHTML={{ __html: `
+          .touch-pan-x::-webkit-scrollbar { display: none; }
+        `}} />
         {displayPhotos.map((photo, i) => (
           <div
             key={`${photo.id}-${i}`}
