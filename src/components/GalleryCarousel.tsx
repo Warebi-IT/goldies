@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import AnimatedStrings from "./AnimatedStrings";
 
 const GalleryCarousel = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -48,9 +49,17 @@ const GalleryCarousel = () => {
   const displayPhotos = [...photos, ...photos];
 
   return (
-    <section className="py-20 bg-cream-card">
+    <section className="relative py-24 bg-[#BCE3F1] overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
+        <AnimatedStrings />
+        <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-pastel-lime/60 rounded-full blur-[120px] animate-float-slow mix-blend-multiply opacity-80"></div>
+        <div className="absolute top-20 -right-20 w-[500px] h-[500px] bg-blue-300/40 rounded-full blur-[100px] animate-float-slow mix-blend-multiply opacity-80" style={{ animationDelay: "2s" }}></div>
+        <div className="absolute -bottom-40 left-1/4 w-[800px] h-[600px] bg-emerald-300/30 rounded-full blur-[150px] animate-float-slow mix-blend-multiply opacity-80" style={{ animationDelay: "4s" }}></div>
+      </div>
+
       {/* Section header */}
-      <div className="container mx-auto px-6 mb-12 text-center">
+      <div className="relative z-10 container mx-auto px-6 mb-12 text-center">
         <p className="text-sm font-dm-sans uppercase tracking-wider font-bold text-citra-orange mb-4">
           GALERIE
         </p>
@@ -67,7 +76,7 @@ const GalleryCarousel = () => {
         ref={scrollRef}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
-        className="flex gap-4 overflow-hidden cursor-grab px-6"
+        className="relative z-10 flex gap-4 overflow-hidden cursor-grab px-6 py-4"
         style={{ scrollbarWidth: "none" }}
       >
         {displayPhotos.map((photo, i) => (
@@ -89,7 +98,7 @@ const GalleryCarousel = () => {
       </div>
 
       {/* Ghost Secondary Button CTA */}
-      <div className="text-center mt-12">
+      <div className="relative z-10 text-center mt-12">
         <Link
           to="/galerie"
           className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md shadow-md text-ink font-dm-sans font-medium text-base px-8 py-3 rounded-full hover:bg-white hover:shadow-lg hover:scale-105 transition-all duration-300"
