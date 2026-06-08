@@ -221,38 +221,41 @@ const AboutConcept = () => {
         
         <div className="container mx-auto max-w-[1280px] px-6 relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <p className="font-dm-sans text-sm uppercase tracking-widest text-citra-orange font-bold mb-4 flex items-center gap-2">
+            <div className="relative">
+              {/* Subtle dark gradient behind text for guaranteed readability */}
+              <div className="absolute -inset-10 bg-gradient-to-r from-ink/30 to-transparent blur-2xl -z-10 rounded-full"></div>
+              
+              <p className="font-dm-sans text-sm uppercase tracking-widest text-[#F7CA44] font-black mb-4 flex items-center gap-2 drop-shadow-md">
                 <Heart size={16} fill="currentColor" />
                 L'ESSENCE DE GOLDIES
               </p>
-              <h2 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-white uppercase tracking-tight mb-8 leading-[0.9]">
+              <h2 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-white uppercase tracking-tight mb-8 leading-[0.9] drop-shadow-xl">
                 Humanitaire<br/>entre femmes
               </h2>
-              <p className="font-dm-sans text-xl text-white/80 leading-relaxed mb-10 font-medium">
+              <p className="font-dm-sans text-xl md:text-2xl text-white leading-relaxed mb-10 font-medium drop-shadow-lg">
                 Si tu es une jeune femme en quête d'impact, tu es au bon endroit. Une partie de chaque séjour est systématiquement dédiée à soutenir des initiatives associatives locales.
               </p>
-              <Link to="/contact" className="inline-flex items-center gap-3 bg-citra-orange text-white px-8 py-4 rounded-full font-dm-sans font-bold hover:bg-white hover:text-citra-orange transition-all duration-300 shadow-lg shadow-citra-orange/20">
+              <Link to="/contact" className="inline-flex items-center gap-3 bg-white text-citra-orange px-8 py-4 rounded-full font-dm-sans font-black hover:bg-ink hover:text-white transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-xl hover:-translate-y-1">
                 S'engager avec nous <ArrowRight size={20} />
               </Link>
             </div>
             
             <div className="grid sm:grid-cols-2 gap-6 lg:ml-10">
-              <div className="bg-white/5 backdrop-blur-md rounded-[32px] p-8 border border-white/10 flex flex-col items-center text-center hover:bg-white/10 transition-colors duration-300">
-                <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-6">
-                  <Heart size={32} className="text-citra-orange" />
+              <div className="bg-white/10 backdrop-blur-xl rounded-[32px] p-8 border border-white/30 flex flex-col items-center text-center hover:bg-white/20 transition-all duration-300 shadow-2xl shadow-ink/10 group hover:-translate-y-2">
+                <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-6 border border-white/20 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                  <Heart size={32} className="text-white drop-shadow-md" />
                 </div>
-                <h4 className="font-dm-sans font-bold text-white text-xl mb-3">Soutien Local</h4>
-                <p className="font-dm-sans text-base text-white/60 font-medium">
+                <h4 className="font-dm-sans font-bold text-white text-xl mb-3 drop-shadow-md">Soutien Local</h4>
+                <p className="font-dm-sans text-base text-white/90 font-medium leading-relaxed drop-shadow-sm">
                   Aide directe et matérielle aux populations et orphelinats vulnérables.
                 </p>
               </div>
-              <div className="bg-white/5 backdrop-blur-md rounded-[32px] p-8 border border-white/10 flex flex-col items-center text-center sm:translate-y-12 hover:bg-white/10 transition-colors duration-300 mt-6 sm:mt-0">
-                <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-6">
-                  <Users size={32} className="text-citra-orange" />
+              <div className="bg-white/10 backdrop-blur-xl rounded-[32px] p-8 border border-white/30 flex flex-col items-center text-center sm:translate-y-12 hover:bg-white/20 transition-all duration-300 shadow-2xl shadow-ink/10 mt-6 sm:mt-0 group hover:-translate-y-2">
+                <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-6 border border-white/20 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                  <Users size={32} className="text-white drop-shadow-md" />
                 </div>
-                <h4 className="font-dm-sans font-bold text-white text-xl mb-3">Sororité</h4>
-                <p className="font-dm-sans text-base text-white/60 font-medium">
+                <h4 className="font-dm-sans font-bold text-white text-xl mb-3 drop-shadow-md">Sororité</h4>
+                <p className="font-dm-sans text-base text-white/90 font-medium leading-relaxed drop-shadow-sm">
                   Un espace de confiance et de bienveillance 100% féminin.
                 </p>
               </div>
