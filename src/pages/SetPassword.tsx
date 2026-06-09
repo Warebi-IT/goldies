@@ -33,7 +33,7 @@ const SetPassword = () => {
 
   useEffect(() => {
     if (!success) return;
-    const timer = setTimeout(() => navigate("/admin"), 2000);
+    const timer = setTimeout(() => navigate("/gestion-goldies"), 2000);
     return () => clearTimeout(timer);
   }, [success, navigate]);
 
@@ -82,7 +82,7 @@ const SetPassword = () => {
         {!hasSession ? (
           <div className="text-center space-y-4">
             <p className="text-sm text-destructive">Lien invalide ou expiré.</p>
-            <a href="/admin" className="text-sm text-primary underline">
+            <a href="/gestion-goldies" className="text-sm text-primary underline">
               Retour à l'administration
             </a>
           </div>

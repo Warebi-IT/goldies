@@ -4,11 +4,11 @@ import Destinations from "@/components/Destinations";
 
 const Voyages = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div className="pt-20">
+      <main className="flex-1">
         <Destinations />
-      </div>
+      </main>
       <Footer />
     </div>
   );

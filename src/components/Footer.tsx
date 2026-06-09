@@ -1,82 +1,103 @@
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo.png";
+import AnimatedLogo from "@/components/AnimatedLogo";
 import { Instagram, Facebook, Mail } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-foreground py-16">
-      <div className="container mx-auto px-4">
+    <footer className="py-16 mt-20 bg-ink text-cream-card">
+      <div className="container mx-auto max-w-[1280px] px-6">
         <div className="grid md:grid-cols-3 gap-12 mb-12">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <img src={logo} alt="Goldies Travel" className="h-10 w-10" />
-              <span className="font-serif text-xl font-bold text-background">
-                Goldies Travel
+            <div className="flex items-center gap-2 mb-6">
+              <AnimatedLogo className="h-10 w-10 grayscale invert opacity-90" />
+              <span className="font-pp-neue-corp-compact text-3xl font-black uppercase tracking-tight text-cream-card leading-none">
+                GOLDIES TRAVEL
               </span>
             </div>
-            <p className="text-background/60 text-sm leading-relaxed">
-              Agence de voyage solidaire 100% féminin.
+            <p className="text-cream-card/80 text-sm font-dm-sans font-medium leading-relaxed">
+              Agence de voyage solidaire et d'empouvoirement 100% féminin.
               Découvrez l'Afrique autrement.
             </p>
           </div>
 
           {/* Links */}
           <div>
-            <h4 className="font-serif text-base font-semibold text-background mb-4">
+            <h4 className="font-pp-neue-corp-compact text-2xl font-black text-cream-card uppercase tracking-tight mb-4">
               Navigation
             </h4>
-            <ul className="space-y-2">
-              {[
-                { label: "Accueil", to: "/" },
-                { label: "Voyages", to: "/voyages" },
-                { label: "Concept", to: "/concept" },
-                { label: "Galerie", to: "/galerie" },
-                { label: "Contact", to: "/contact" },
-              ].map((l) => (
-                <li key={l.label}>
-                  <Link to={l.to} className="text-sm text-background/60 hover:text-background transition-colors">
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <div className="flex flex-col sm:flex-row gap-8 sm:gap-16">
+              <ul className="space-y-3">
+                {[
+                  { label: "Accueil", to: "/" },
+                  { label: "Voyages", to: "/voyages" },
+                  { label: "Concept", to: "/concept" },
+                  { label: "Galerie", to: "/galerie" },
+                  { label: "Contact", to: "/contact" },
+                ].map((l) => (
+                  <li key={l.label}>
+                    <Link to={l.to} className="text-sm font-dm-sans font-medium text-cream-card/70 hover:text-citra-orange transition-colors">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <ul className="space-y-3">
+                {[
+                  { label: "Mentions Légales", to: "/mentions-legales" },
+                  { label: "Confidentialité", to: "/politique-confidentialite" },
+                  { label: "CGV", to: "/cgv" },
+                ].map((l) => (
+                  <li key={l.label}>
+                    <Link to={l.to} className="text-sm font-dm-sans font-medium text-cream-card/70 hover:text-citra-orange transition-colors">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* Contact */}
           <div>
-            <h4 className="font-serif text-base font-semibold text-background mb-4">
+            <h4 className="font-pp-neue-corp-compact text-2xl font-black text-cream-card uppercase tracking-tight mb-4">
               Nous suivre
             </h4>
             <div className="flex gap-4">
               <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center text-background/70 hover:bg-background/20 transition-colors"
+                href="https://www.instagram.com/goldies.travel?igsh=MTV6dThwbjlrYzg0MA=="
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                 aria-label="Instagram"
               >
-                <Instagram size={18} />
+                <Instagram size={20} />
               </a>
               <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center text-background/70 hover:bg-background/20 transition-colors"
-                aria-label="Facebook"
+                href="https://www.tiktok.com/@goldies_travel?_r=1&_t=ZN-9716IvKcjKQ"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                aria-label="TikTok"
               >
-                <Facebook size={18} />
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                </svg>
               </a>
               <a
                 href="mailto:contact@goldiestravel.com"
-                className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center text-background/70 hover:bg-background/20 transition-colors"
+                className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                 aria-label="Email"
               >
-                <Mail size={18} />
+                <Mail size={20} />
               </a>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-background/10 pt-8 text-center">
-          <p className="text-sm text-background/40">
-            © {new Date().getFullYear()} Goldies Travel. Tous droits réservés.
+        <div className="pt-8 text-left md:text-center mt-8 border-t border-cream-card/10">
+          <p className="text-xs font-dm-sans font-medium uppercase tracking-widest text-cream-card/60">
+            © {new Date().getFullYear()} GOLDIES TRAVEL. TOUS DROITS RÉSERVÉS.
           </p>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +8,7 @@ import AdminTrips from "@/components/admin/AdminTrips";
 import AdminGallery from "@/components/admin/AdminGallery";
 import AdminUsers from "@/components/admin/AdminUsers";
 import logo from "@/assets/logo.png";
-import { LogOut } from "lucide-react";
+import { LogOut, Shield } from "lucide-react";
 
 const EMAIL_DOMAIN = "goldies.local";
 
@@ -76,6 +77,7 @@ const LoginForm = ({ isBootstrap, onLogin, onBootstrap }: LoginFormProps) => {
 };
 
 const Admin = () => {
+  const navigate = useNavigate();
   const [session, setSession] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
@@ -104,10 +106,18 @@ const Admin = () => {
         .eq("user_id", session.user.id)
         .eq("role", "admin")
         .maybeSingle();
-      setIsAdmin(!!data);
+      const admin = !!data;
+      setIsAdmin(admin);
+
+      if (admin) {
+        const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+        if (aal?.nextLevel === "aal2" && aal?.currentLevel !== "aal2") {
+          navigate("/mfa-verify");
+        }
+      }
     };
     check();
-  }, [session]);
+  }, [session, navigate]);
 
   useEffect(() => {
     const check = async () => {
@@ -124,7 +134,23 @@ const Admin = () => {
     const clean = username.trim().toLowerCase();
     const email = clean.includes("@") ? clean : `${clean}@${EMAIL_DOMAIN}`;
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return error ? "Identifiants invalides" : null;
+    if (error) return "Identifiants invalides";
+
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal?.nextLevel === "aal2") {
+      navigate("/mfa-verify");
+    } else {
+      const { data: factors } = await supabase.auth.mfa.listFactors();
+      if (!factors?.totp?.length) {
+        navigate("/mfa-setup", {
+          state: {
+            message:
+              "Vous devez activer Google Authenticator pour accéder au back-office",
+          },
+        });
+      }
+    }
+    return null;
   };
 
   const handleBootstrap = async (username: string, password: string): Promise<string | null> => {
@@ -137,6 +163,9 @@ const Admin = () => {
     const email = `${clean}@${EMAIL_DOMAIN}`;
     await supabase.auth.signInWithPassword({ email, password });
     setNeedsBootstrap(false);
+    navigate("/mfa-setup", {
+      state: { message: "Bienvenue ! Activez Google Authenticator pour sécuriser votre compte." },
+    });
     return null;
   };
 
@@ -194,6 +223,16 @@ const Admin = () => {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted-foreground hidden sm:inline">{currentUsername}</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/mfa-setup")}
+            className="gap-2"
+            title="Configurer le 2FA"
+          >
+            <Shield size={16} />
+            <span className="hidden sm:inline">2FA</span>
+          </Button>
           <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2">
             <LogOut size={16} />
             Déconnexion

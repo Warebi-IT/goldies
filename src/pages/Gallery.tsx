@@ -40,30 +40,33 @@ const Gallery = () => {
   const activeAlbum = albums?.find((a) => a.id === selectedAlbum);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-concrete-canvas">
       <Navbar />
-      <section className="pt-28 pb-24 bg-background">
-        <div className="container mx-auto px-4">
+      <section className="pt-28 pb-24">
+        <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <p className="text-sm uppercase tracking-[0.2em] text-secondary font-semibold mb-3">
-              Nos souvenirs
+            <p className="font-dm-sans text-sm uppercase tracking-wider text-citra-orange font-bold mb-3">
+              [ GALERIE PHOTOS ]
             </p>
-            <h1 className="font-serif text-3xl md:text-5xl font-bold text-foreground mb-4">
-              Galerie photo
+            <h1 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-ink uppercase tracking-tight mb-4">
+              Nos souvenirs de voyage
             </h1>
-            <p className="max-w-xl mx-auto text-muted-foreground">
-              Revivez les plus beaux moments de nos voyages à travers nos albums photo.
+            <span className="font-pp-neue-corp-compact text-2xl text-ink/80 block mb-6">
+              Des sourires, de l'entraide et des paysages inoubliables
+            </span>
+            <p className="max-w-xl mx-auto text-lg font-dm-sans font-medium text-ink/80 leading-relaxed">
+              Revivez les plus beaux moments de nos aventures à travers les albums partagés par nos voyageuses.
             </p>
           </div>
 
           {isLoading && (
-            <div className="text-center text-muted-foreground py-16">Chargement...</div>
+            <div className="text-center font-dm-sans font-bold uppercase text-ink/60 py-16">Chargement des albums...</div>
           )}
 
           {!isLoading && (!albums || albums.length === 0) && (
-            <div className="text-center py-16">
-              <Camera size={48} className="mx-auto text-muted-foreground/40 mb-4" />
-              <p className="text-muted-foreground">Aucun album pour le moment. Revenez bientôt !</p>
+            <div className="text-center py-16 text-ink">
+              <Camera size={48} className="mx-auto text-ink/40 mb-4" />
+              <p className="font-dm-sans font-medium text-ink/70">Aucun album pour le moment. Revenez bientôt !</p>
             </div>
           )}
 
@@ -73,9 +76,9 @@ const Gallery = () => {
                 <button
                   key={album.id}
                   onClick={() => setSelectedAlbum(album.id)}
-                  className="group text-left rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow bg-card"
+                  className="group text-left rounded-[32px] overflow-hidden bg-white/80 backdrop-blur-sm shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col p-6"
                 >
-                  <div className="aspect-[4/3] overflow-hidden bg-muted">
+                  <div className="aspect-[4/3] overflow-hidden rounded-[20px] bg-gray-100 mb-6">
                     {album.cover_image_url ? (
                       <img
                         src={album.cover_image_url}
@@ -83,23 +86,23 @@ const Gallery = () => {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Camera size={40} className="text-muted-foreground/30" />
+                      <div className="w-full h-full flex items-center justify-center text-ink/30 bg-gray-100">
+                        <Camera size={40} />
                       </div>
                     )}
                   </div>
-                  <div className="p-5">
-                    <h3 className="font-serif text-lg font-semibold text-foreground mb-1">
-                      {album.title}
-                    </h3>
+                  <div className="flex-1 flex flex-col">
                     {album.destination && (
-                      <div className="flex items-center gap-1 text-secondary text-sm mb-2">
+                      <div className="flex items-center gap-1 text-ink/70 mb-3">
                         <MapPin size={14} />
-                        <span>{album.destination}</span>
+                        <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{album.destination}</span>
                       </div>
                     )}
+                    <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight group-hover:text-citra-orange transition-colors mb-3">
+                      {album.title}
+                    </h3>
                     {album.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">{album.description}</p>
+                      <p className="text-base font-dm-sans font-medium text-ink/80 line-clamp-2 leading-relaxed flex-1">{album.description}</p>
                     )}
                   </div>
                 </button>
@@ -108,27 +111,27 @@ const Gallery = () => {
           )}
 
           {selectedAlbum && activeAlbum && (
-            <div>
+            <div className="bg-white/80 backdrop-blur-md shadow-xl p-8 md:p-12 rounded-[32px] text-ink">
               <button
                 onClick={() => setSelectedAlbum(null)}
-                className="text-sm text-secondary hover:text-secondary/80 font-medium mb-6 inline-flex items-center gap-1"
+                className="font-dm-sans text-sm text-citra-orange hover:text-citra-orange/80 font-bold mb-8 inline-flex items-center gap-2 transition-colors uppercase tracking-wider"
               >
                 ← Retour aux albums
               </button>
-              <h2 className="font-serif text-2xl font-bold text-foreground mb-2">
+              <h2 className="font-pp-neue-corp-compact text-4xl md:text-5xl font-black text-ink uppercase tracking-tight mb-4">
                 {activeAlbum.title}
               </h2>
               {activeAlbum.description && (
-                <p className="text-muted-foreground mb-8">{activeAlbum.description}</p>
+                <p className="font-dm-sans font-medium text-lg text-ink/80 mb-10 max-w-3xl leading-relaxed">{activeAlbum.description}</p>
               )}
 
               {photos && photos.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {photos.map((photo) => (
                     <button
                       key={photo.id}
                       onClick={() => setLightboxImg(photo.image_url)}
-                      className="aspect-square rounded-xl overflow-hidden group"
+                      className="aspect-square rounded-[20px] overflow-hidden shadow-md hover:shadow-xl transition-shadow bg-gray-100 group"
                     >
                       <img
                         src={photo.image_url}
@@ -139,7 +142,7 @@ const Gallery = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground text-center py-8">Aucune photo dans cet album.</p>
+                <p className="font-dm-sans font-medium text-lg text-ink/60 text-center py-12">Aucune photo dans cet album.</p>
               )}
             </div>
           )}

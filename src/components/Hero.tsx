@@ -1,55 +1,129 @@
-import heroImg from "@/assets/hero-senegal.jpg";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Compass, Sparkles } from "lucide-react";
+import InteractiveHeart from "./InteractiveHeart";
+import imgChildren from "@/assets/children.jpeg";
+import imgFourImage from "@/assets/fourimagegoldiesChlidrenWomen.jpeg";
+import imgWomenScarf from "@/assets/womenwithscarf.jpeg";
+import onlyWomen from "@/assets/onlywomen.jpeg";
 
 const Hero = () => {
+  const [activeImg, setActiveImg] = useState<number | null>(null);
+
+  const handleImgClick = (index: number) => {
+    setActiveImg(activeImg === index ? null : index);
+  };
+
   return (
-    <section id="accueil" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background image */}
-      <div className="absolute inset-0">
-        <img
-          src={heroImg}
-          alt="Groupe de femmes sur une plage au Sénégal"
-          className="w-full h-full object-cover"
-          width={1920}
-          height={1080}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-foreground/60 via-foreground/40 to-foreground/70" />
+    <section
+      id="accueil"
+      className="relative z-0 w-full h-[100dvh] flex flex-col lg:flex-row items-center justify-between px-6 md:px-16 bg-transparent"
+    >
+      {/* Background Image (Behind Everything) */}
+      <div className="absolute inset-0 w-full h-full z-[-2]">
+        <img src={onlyWomen} alt="Hero Background" className="w-full h-full object-cover" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 text-center">
-        <p className="animate-fade-up text-sm md:text-base uppercase tracking-[0.3em] text-primary-foreground/80 mb-4">
-          100% féminin · 100% solidaire
-        </p>
-        <h1 className="animate-fade-up delay-100 font-serif text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground leading-tight mb-6">
-          Voyagez autrement,{" "}
-          <span className="text-secondary">vivez pleinement</span>
+      <InteractiveHeart />
+      {/* 
+        Left Content (Text)
+      */}
+      <div className="relative z-10 w-full lg:w-[70%] xl:w-[75%] flex flex-col items-start text-left mt-24 lg:mt-[15vh] pointer-events-none pr-0 lg:pr-12">
+
+        {/* Badges */}
+        <div className="flex flex-col gap-3 mb-6 pointer-events-none">
+          <div className="uppercase tracking-[0.2em] text-xs font-dm-sans font-bold text-ink/60 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm w-max">
+            100% Féminin • 100% Solidaire
+          </div>
+          <Link to="/avis" className="flex items-center gap-1.5 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm w-max hover:bg-white/70 hover:-translate-y-0.5 transition-all duration-300 pointer-events-auto cursor-pointer">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-citra-orange">
+              <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+            </svg>
+            <span className="font-dm-sans text-sm font-bold text-ink">4.93 / 5</span>
+            <span className="font-dm-sans text-sm text-ink/70 mx-0.5">•</span>
+            <span className="font-dm-sans text-sm font-medium text-ink/80">200+ avis</span>
+          </Link>
+        </div>
+
+        {/* Headline */}
+        <h1 className="text-ink text-3xl md:text-5xl lg:text-[3.5rem] xl:text-[4.5rem] tracking-tight mb-8 leading-[1.05]">
+          <span className="font-dm-sans font-bold block">Voyagez autrement,</span>
+          <span className="font-serif italic font-semibold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-400 block mt-1">vivez pleinement</span>
         </h1>
-        <p className="animate-fade-up delay-200 max-w-2xl mx-auto text-lg md:text-xl text-primary-foreground/85 mb-10">
-          Des séjours en groupe exclusivement féminins à la découverte de l'Afrique.
-          Logement, transport, activités et repas inclus.
+
+        {/* Subtitle */}
+        <p className="text-black font-dm-sans text-base md:text-lg max-w-lg font-medium leading-relaxed mb-12">
+          Des séjours en groupe exclusivement féminins à la découverte de l'Afrique. Logement, transport, activités et repas inclus.
         </p>
-        <div className="animate-fade-up delay-300 flex flex-col sm:flex-row gap-4 justify-center">
-          <a
-            href="#destinations"
-            className="inline-flex items-center justify-center rounded-full bg-secondary px-8 py-3.5 text-base font-semibold text-secondary-foreground hover:opacity-90 transition-opacity"
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto pointer-events-auto">
+          <Link 
+            to="/voyages"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#e99ba9] text-white px-8 py-4 rounded-full text-base font-dm-sans font-bold transition-transform hover:scale-105 shadow-[0_8px_30px_rgb(233,155,169,0.3)]"
           >
+            <Compass size={20} strokeWidth={2.5} />
             Découvrir nos séjours
-          </a>
-          <a
-            href="#concept"
-            className="inline-flex items-center justify-center rounded-full border-2 border-primary-foreground/50 px-8 py-3.5 text-base font-semibold text-primary-foreground hover:bg-primary-foreground/10 transition-colors"
+          </Link>
+          <Link 
+            to="/concept"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/80 backdrop-blur-md text-ink px-8 py-4 rounded-full text-base font-dm-sans font-bold transition-all hover:bg-white shadow-lg hover:shadow-xl hover:scale-105"
           >
+            <Sparkles size={20} strokeWidth={2.5} />
             Notre concept
-          </a>
+          </Link>
+        </div>
+
+      </div>
+
+      {/* 
+        Right Content (Photos)
+        A beautiful collage of photos perfectly balancing the right edge.
+      */}
+      <div className="relative z-10 w-full lg:w-[30%] xl:w-[25%] mt-[5vh] lg:mt-[15vh] hidden lg:flex justify-center lg:justify-end pointer-events-none">
+        <div className="relative w-full max-w-[320px] md:max-w-[400px] aspect-[3/4]">
+           
+           {/* Backdrop for active image */}
+           {activeImg !== null && (
+             <div 
+               className="fixed inset-0 z-40 bg-white/30 backdrop-blur-md cursor-pointer pointer-events-auto transition-all duration-500" 
+               onClick={() => setActiveImg(null)}
+             />
+           )}
+
+           {/* Third Photo (Top Right, Behind) -> z-0 */}
+           <div 
+             onClick={() => handleImgClick(0)}
+             className={`absolute -top-12 -right-12 w-3/4 aspect-square rounded-[2rem] overflow-hidden shadow-xl border-[6px] border-white transition-all duration-500 pointer-events-auto cursor-pointer
+               ${activeImg === 0 ? 'z-50 scale-125 rotate-0 shadow-2xl' : 'z-0 rotate-12 hover:rotate-6 hover:scale-[1.05] opacity-90 hover:opacity-100'}
+             `}
+           >
+             <img src={imgFourImage} alt="Collage Femmes et Enfants" className="w-full h-full object-cover" />
+           </div>
+
+           {/* Main Photo (Tall) -> z-10 */}
+           <div 
+             onClick={() => handleImgClick(1)}
+             className={`absolute inset-0 rounded-[2rem] overflow-hidden shadow-2xl border-[6px] border-white transition-all duration-500 pointer-events-auto cursor-pointer
+               ${activeImg === 1 ? 'z-50 scale-[1.15] rotate-0' : 'z-10 rotate-3 hover:rotate-1 hover:scale-[1.02]'}
+             `}
+           >
+             <img src={imgWomenScarf} alt="Femmes avec foulard" className="w-full h-full object-cover" />
+           </div>
+           
+           {/* Overlapping Photo (Square/Small) -> z-20 */}
+           <div 
+             onClick={() => handleImgClick(2)}
+             className={`absolute -bottom-8 -left-12 w-2/3 aspect-square rounded-[2rem] overflow-hidden shadow-2xl border-[6px] border-white transition-all duration-500 pointer-events-auto cursor-pointer
+               ${activeImg === 2 ? 'z-50 scale-[1.35] rotate-0 -translate-y-8 translate-x-8' : 'z-20 -rotate-6 hover:-rotate-2 hover:scale-[1.05]'}
+             `}
+           >
+             <img src={imgChildren} alt="Enfants" className="w-full h-full object-cover" />
+           </div>
+
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 rounded-full border-2 border-primary-foreground/50 flex items-start justify-center p-1.5">
-          <div className="w-1.5 h-3 rounded-full bg-primary-foreground/70" />
-        </div>
-      </div>
     </section>
   );
 };

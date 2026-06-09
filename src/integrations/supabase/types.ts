@@ -82,6 +82,38 @@ export type Database = {
           },
         ]
       }
+      trip_photos: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          sort_order: number
+          trip_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          sort_order?: number
+          trip_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          sort_order?: number
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_photos_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trips: {
         Row: {
           created_at: string
@@ -89,6 +121,7 @@ export type Database = {
           description: string | null
           destination: string
           duration: string
+          end_date: string | null
           id: string
           image_url: string | null
           includes: string[]
@@ -97,7 +130,9 @@ export type Database = {
           payment_link: string | null
           price: number
           program: Json
+          qte: number | null
           slug: string | null
+          start_date: string | null
           tag: string
           updated_at: string
         }
@@ -107,6 +142,7 @@ export type Database = {
           description?: string | null
           destination: string
           duration: string
+          end_date?: string | null
           id?: string
           image_url?: string | null
           includes?: string[]
@@ -115,7 +151,9 @@ export type Database = {
           payment_link?: string | null
           price: number
           program?: Json
+          qte?: number | null
           slug?: string | null
+          start_date?: string | null
           tag?: string
           updated_at?: string
         }
@@ -125,6 +163,7 @@ export type Database = {
           description?: string | null
           destination?: string
           duration?: string
+          end_date?: string | null
           id?: string
           image_url?: string | null
           includes?: string[]
@@ -133,7 +172,9 @@ export type Database = {
           payment_link?: string | null
           price?: number
           program?: Json
+          qte?: number | null
           slug?: string | null
+          start_date?: string | null
           tag?: string
           updated_at?: string
         }
