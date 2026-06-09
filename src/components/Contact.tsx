@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Send } from "lucide-react";
+import { Send, Instagram } from "lucide-react";
+import videoSenegal from "@/assets/goldiessenegalversion.mp4";
 
 const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -10,108 +11,147 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-24 bg-muted/50">
-      <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="text-sm uppercase tracking-[0.2em] text-secondary font-semibold mb-3">
-              Contact
+    <section id="contact" className="relative min-h-screen flex items-center pt-24 pb-12 overflow-hidden">
+      {/* Background Video */}
+      <div className="absolute inset-0 w-full h-full z-0">
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          className="w-full h-full object-cover transform-gpu"
+        >
+          <source src={videoSenegal} type="video/mp4" />
+        </video>
+      </div>
+
+      {/* Form & Text Container */}
+      <div className="container mx-auto px-6 lg:px-12 relative z-10 flex flex-col lg:flex-row items-center justify-end w-full max-w-none min-h-[calc(100vh-8rem)] mt-20 lg:mt-0">
+          
+          {/* Text at Left (Top on Mobile) */}
+          <div className="lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:left-12 text-center lg:text-left text-white w-full lg:w-auto mb-12 lg:mb-0 z-20 flex flex-col items-center lg:items-start">
+            <p className="font-dm-sans text-sm uppercase tracking-widest font-bold mb-3 text-white/90 drop-shadow-md pointer-events-none bg-white/10 px-4 py-1.5 rounded-full backdrop-blur-sm border border-white/20 w-max">
+              Nous contacter
             </p>
-            <h2 className="font-serif text-3xl md:text-5xl font-bold text-foreground mb-4">
-              Prête à partir ?
+            <h2 className="font-pp-neue-corp-compact text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight leading-[1.05] drop-shadow-2xl pointer-events-none mb-8 mt-2">
+              Prête à <br className="hidden lg:block"/>partir ?
             </h2>
-            <p className="text-muted-foreground">
-              Remplissez le formulaire et nous vous recontacterons avec tous les
-              détails de votre prochain séjour.
-            </p>
+            
+            {/* Social Links */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 pointer-events-auto bg-white/10 backdrop-blur-md px-6 py-4 rounded-3xl border border-white/20 shadow-xl">
+              <p className="font-dm-sans text-sm font-medium text-white/90 drop-shadow-md">
+                Rejoignez la communauté
+              </p>
+              <div className="flex items-center gap-3">
+                <a
+                  href="https://www.instagram.com/goldies.travel?igsh=MTV6dThwbjlrYzg0MA=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full shadow-lg bg-white/20 border border-white/30 flex items-center justify-center text-white hover:bg-citra-orange hover:text-ink hover:scale-110 transition-all duration-300"
+                  aria-label="Instagram"
+                >
+                  <Instagram size={18} />
+                </a>
+                <a
+                  href="https://www.tiktok.com/@goldies_travel?_r=1&_t=ZN-9716IvKcjKQ"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full shadow-lg bg-white/20 border border-white/30 flex items-center justify-center text-white hover:bg-citra-orange hover:text-ink hover:scale-110 transition-all duration-300"
+                  aria-label="TikTok"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                  </svg>
+                </a>
+              </div>
+            </div>
           </div>
 
-          {submitted ? (
-            <div className="bg-card rounded-2xl p-12 text-center shadow-sm">
-              <div className="w-16 h-16 mx-auto rounded-full bg-primary/15 flex items-center justify-center mb-5">
-                <Send size={28} className="text-primary" />
+          {/* Right Form (Glassmorphism) */}
+          <div className="w-full max-w-[500px] bg-white/40 backdrop-blur-lg rounded-[32px] p-8 md:p-10 shadow-2xl border border-white/30 pointer-events-auto">
+            {submitted ? (
+              <div className="text-center py-12">
+                <div className="w-20 h-20 mx-auto rounded-full bg-citra-orange/20 flex items-center justify-center mb-6">
+                  <Send size={32} className="text-citra-orange" />
+                </div>
+                <h3 className="font-pp-neue-corp-compact text-3xl font-black text-ink uppercase tracking-tight mb-4">
+                  Message envoyé !
+                </h3>
+                <p className="font-dm-sans text-lg font-medium text-ink/70">
+                  Merci pour votre intérêt. Notre équipe vous contactera sous 24h.
+                </p>
               </div>
-              <h3 className="font-serif text-2xl font-semibold text-foreground mb-3">
-                Message envoyé !
-              </h3>
-              <p className="text-muted-foreground">
-                Merci pour votre intérêt. Notre équipe vous contactera sous 24h.
-              </p>
-            </div>
-          ) : (
-            <form
-              onSubmit={handleSubmit}
-              className="bg-card rounded-2xl p-8 md:p-12 shadow-sm space-y-6"
-            >
-              <div className="grid sm:grid-cols-2 gap-6">
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-dm-sans font-bold text-ink mb-2">
+                      Prénom
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all"
+                      placeholder="Votre prénom"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-dm-sans font-bold text-ink mb-2">
+                      Nom
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all"
+                      placeholder="Votre nom"
+                    />
+                  </div>
+                </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Prénom
+                  <label className="block text-sm font-dm-sans font-bold text-ink mb-2">
+                    Email
                   </label>
                   <input
-                    type="text"
+                    type="email"
                     required
-                    className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                    placeholder="Votre prénom"
+                    className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all"
+                    placeholder="votre@email.com"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Nom
+                  <label className="block text-sm font-dm-sans font-bold text-ink mb-2">
+                    Destination souhaitée
                   </label>
-                  <input
-                    type="text"
+                  <select
                     required
-                    className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                    placeholder="Votre nom"
+                    className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="">Choisir une destination</option>
+                    <option value="senegal">Sénégal</option>
+                    <option value="maroc">Maroc</option>
+                    <option value="tanzanie">Tanzanie (bientôt)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-dm-sans font-bold text-ink mb-2">
+                    Message
+                  </label>
+                  <textarea
+                    rows={4}
+                    className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all resize-none"
+                    placeholder="Dites-nous en plus sur votre projet de voyage…"
                   />
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="votre@email.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Destination souhaitée
-                </label>
-                <select
-                  required
-                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                <button
+                  type="submit"
+                  className="w-full rounded-full bg-[#e99ba9] py-4 text-lg font-dm-sans font-bold text-white hover:scale-[1.02] transition-transform shadow-[0_8px_30px_rgb(233,155,169,0.3)] flex items-center justify-center gap-3"
                 >
-                  <option value="">Choisir une destination</option>
-                  <option value="senegal">Sénégal</option>
-                  <option value="maroc">Maroc</option>
-                  <option value="tanzanie">Tanzanie (bientôt)</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Message
-                </label>
-                <textarea
-                  rows={4}
-                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-                  placeholder="Dites-nous en plus sur votre projet de voyage…"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full rounded-full bg-secondary py-3.5 text-base font-semibold text-secondary-foreground hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-              >
-                <Send size={18} />
-                Envoyer
-              </button>
-            </form>
-          )}
-        </div>
+                  <Send size={20} />
+                  Envoyer
+                </button>
+              </form>
+            )}
+          </div>
       </div>
     </section>
   );

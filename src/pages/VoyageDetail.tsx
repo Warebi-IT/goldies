@@ -4,11 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { MapPin, Calendar, Clock, ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
+import { MapPin, Calendar, Clock, ArrowLeft, ArrowRight, CheckCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BookingFormModal from "@/components/BookingFormModal";
 
 const VoyageDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   const { data: trip, isLoading } = useQuery({
     queryKey: ["trip-detail", id],
@@ -96,7 +98,7 @@ const VoyageDetail = () => {
   const hasPhotos = tripPhotos && tripPhotos.length > 0;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-concrete-canvas text-ink">
       <Navbar />
 
       {/* Hero */}
@@ -104,96 +106,45 @@ const VoyageDetail = () => {
         {trip.image_url && (
           <img src={trip.image_url} alt={trip.name} className="absolute inset-0 w-full h-full object-cover" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
-        <div className="relative z-10 h-full container mx-auto px-4 flex flex-col justify-end pb-12">
-          <Link to="/voyages" className="inline-flex items-center gap-2 text-white/90 hover:text-white text-sm mb-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-concrete-canvas via-concrete-canvas/60 to-transparent" />
+        <div className="relative z-10 h-full container mx-auto px-6 flex flex-col justify-end pb-12">
+          <Link to="/voyages" className="inline-flex items-center gap-2 text-ink/80 hover:text-citra-orange text-sm mb-4 transition-all duration-300 font-dm-sans font-medium">
             <ArrowLeft size={16} /> Tous nos voyages
           </Link>
-          <div className="flex items-center gap-2 text-white/90 mb-2">
-            <MapPin size={16} />
-            <span className="text-sm font-medium">{trip.destination}</span>
+          <div className="flex items-center gap-2 text-ink/80 mb-2">
+            <MapPin size={16} className="text-citra-orange" />
+            <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{trip.destination}</span>
           </div>
-          <h1 className="font-serif text-4xl md:text-6xl font-bold text-white">{trip.name}</h1>
+          <h1 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-ink uppercase tracking-tight">{trip.name}</h1>
         </div>
       </section>
 
       {/* Body */}
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4 grid lg:grid-cols-3 gap-12">
+      <section className="py-16 bg-concrete-canvas">
+        <div className="container mx-auto px-6 grid lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-12">
-            {/* Description */}
-            <div>
-              <h2 className="font-serif text-2xl font-bold mb-4">Description</h2>
-              <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+            <div className="bg-white/80 backdrop-blur-sm shadow-xl p-8 rounded-[32px]">
+              <h2 className="font-pp-neue-corp-compact text-2xl font-black uppercase tracking-tight mb-4">Description</h2>
+              <p className="font-dm-sans text-ink/80 leading-relaxed whitespace-pre-line text-sm md:text-base">
                 {trip.description || "Aucune description disponible."}
               </p>
             </div>
 
-            {/* Carousel photos */}
-            {hasPhotos && (
-              <div>
-                <h2 className="font-serif text-2xl font-bold mb-6">Photos</h2>
-                <div
-                  className="relative rounded-2xl overflow-hidden"
-                  onMouseEnter={() => setPhotoPaused(true)}
-                  onMouseLeave={() => setPhotoPaused(false)}
-                >
-                  <img
-                    src={tripPhotos[photoIndex].image_url}
-                    alt=""
-                    className="w-full h-80 object-cover"
-                  />
-
-                  {tripPhotos.length > 1 && (
-                    <>
-                      <button
-                        onClick={() => setPhotoIndex((i) => (i - 1 + tripPhotos.length) % tripPhotos.length)}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-colors"
-                        aria-label="Photo précédente"
-                      >
-                        <ArrowLeft size={16} />
-                      </button>
-                      <button
-                        onClick={() => setPhotoIndex((i) => (i + 1) % tripPhotos.length)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-colors"
-                        aria-label="Photo suivante"
-                      >
-                        <ArrowRight size={16} />
-                      </button>
-                      <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
-                        {tripPhotos.map((_, i) => (
-                          <button
-                            key={i}
-                            onClick={() => setPhotoIndex(i)}
-                            className={`rounded-full transition-all ${
-                              i === photoIndex ? "bg-white w-4 h-2" : "bg-white/50 w-2 h-2"
-                            }`}
-                            aria-label={`Photo ${i + 1}`}
-                          />
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Programme */}
-            <div>
-              <h2 className="font-serif text-2xl font-bold mb-6">Programme jour par jour</h2>
+            <div className="bg-white/80 backdrop-blur-sm shadow-xl p-8 rounded-[32px]">
+              <h2 className="font-pp-neue-corp-compact text-2xl font-black uppercase tracking-tight mb-6">Programme jour par jour</h2>
               {program.length === 0 ? (
-                <p className="text-muted-foreground">Programme à venir.</p>
+                <p className="font-dm-sans text-sm text-ink/60">Programme à venir.</p>
               ) : (
-                <ol className="space-y-5">
+                <ol className="space-y-6">
                   {program.map((day, i) => (
-                    <li key={i} className="bg-card rounded-2xl p-6 shadow-sm">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
+                    <li key={i} className="bg-white/50 backdrop-blur-sm rounded-[24px] p-6 shadow-sm">
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="w-10 h-10 rounded-full shadow-sm bg-hazard-yellow text-ink flex items-center justify-center font-dm-sans font-bold text-sm">
                           J{i + 1}
                         </span>
-                        <h3 className="font-serif text-lg font-semibold">{day.title}</h3>
+                        <h3 className="font-pp-neue-corp-compact text-lg font-black text-ink uppercase tracking-tight">{day.title}</h3>
                       </div>
-                      <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                      <p className="text-sm font-dm-sans text-ink/80 leading-relaxed whitespace-pre-line">
                         {day.description}
                       </p>
                     </li>
@@ -204,27 +155,35 @@ const VoyageDetail = () => {
           </div>
 
           {/* Sidebar */}
-          <aside className="lg:sticky lg:top-24 h-fit bg-card rounded-2xl p-6 shadow-md space-y-5">
+          <aside className="lg:sticky lg:top-32 h-fit bg-white/80 backdrop-blur-sm rounded-[32px] shadow-xl p-8 text-ink space-y-6">
             <div className="flex items-baseline justify-between">
-              <span className="text-sm text-muted-foreground">À partir de</span>
-              <span className="font-serif text-3xl font-bold text-secondary">{trip.price} €</span>
+              <span className="font-dm-sans text-sm text-ink/60">À partir de</span>
+              <span className="font-pp-neue-corp-compact text-4xl font-black text-citra-orange">{trip.price} €</span>
             </div>
-            <div className="space-y-3 text-sm border-t border-border pt-4">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Clock size={16} className="text-primary" /> {trip.duration}
+            <div className="space-y-4 text-sm border-t border-ink/5 pt-6">
+              <div className="flex items-center gap-3 font-dm-sans text-ink/80">
+                <Clock size={18} className="text-citra-orange" />
+                <span className="font-dm-sans text-sm font-bold uppercase tracking-wider">{trip.duration}</span>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Calendar size={16} className="text-primary" /> {displayDates}
+              <div className="flex items-center gap-3 font-dm-sans text-ink/80">
+                <Users size={18} className="text-citra-orange" />
+                <span className="font-dm-sans text-sm font-bold uppercase tracking-wider">
+                  {(trip as any).spots_left ?? 8} places restantes sur {(trip as any).total_spots ?? 12}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 font-dm-sans text-ink/80">
+                <Calendar size={18} className="text-citra-orange" />
+                <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{trip.dates}</span>
               </div>
             </div>
 
             {trip.includes && trip.includes.length > 0 && (
-              <div className="border-t border-border pt-4">
-                <p className="text-sm font-semibold mb-2">Inclus dans le séjour</p>
-                <ul className="space-y-1.5">
+              <div className="border-t border-ink/5 pt-6">
+                <p className="font-pp-neue-corp-compact text-sm font-black uppercase tracking-wider mb-4 text-ink/80">Inclus dans le séjour</p>
+                <ul className="space-y-3">
                   {trip.includes.map((item: string) => (
-                    <li key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CheckCircle size={14} className="text-primary" /> {item}
+                    <li key={item} className="flex items-center gap-3 text-sm font-dm-sans text-ink/80">
+                      <CheckCircle size={16} className="text-citra-orange" /> {item}
                     </li>
                   ))}
                 </ul>
@@ -232,13 +191,14 @@ const VoyageDetail = () => {
             )}
 
             {trip.payment_link ? (
-              <Button asChild className="w-full rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/90 font-semibold h-12">
-                <a href={trip.payment_link} target="_blank" rel="noopener noreferrer">
-                  Réserver maintenant
-                </a>
+              <Button 
+                onClick={() => setIsBookingModalOpen(true)}
+                className="w-full rounded-full shadow-md bg-white/50 backdrop-blur-sm text-ink hover:bg-ink hover:text-cream-card font-dm-sans font-bold h-14 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl mt-4"
+              >
+                Réserver maintenant
               </Button>
             ) : (
-              <Button disabled className="w-full rounded-full h-12">
+              <Button disabled className="w-full rounded-full shadow-sm h-14 bg-white/30 text-ink/40 font-dm-sans cursor-not-allowed mt-4">
                 Réservation bientôt disponible
               </Button>
             )}
@@ -247,6 +207,14 @@ const VoyageDetail = () => {
       </section>
 
       <Footer />
+
+      {trip && (
+        <BookingFormModal 
+          isOpen={isBookingModalOpen} 
+          onClose={() => setIsBookingModalOpen(false)} 
+          trip={trip} 
+        />
+      )}
     </div>
   );
 };
