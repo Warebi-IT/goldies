@@ -70,8 +70,8 @@ const InteractiveHeart: React.FC<InteractiveHeartProps> = ({ variant = 'default'
     // Generate 3D Heart Points parameters
     // We sample v (from 0 to PI) and u (from 0 to 2PI).
     // To maintain a relatively uniform density, the number of u samples is proportional to sin(v).
-    const vLines = 40;
-    const uLinesMax = 70;
+    const vLines = 45;
+    const uLinesMax = 80;
     const heartPoints: { u: number; v: number }[] = [];
 
     for (let j = 0; j < vLines; j++) {
@@ -95,18 +95,11 @@ const InteractiveHeart: React.FC<InteractiveHeartProps> = ({ variant = 'default'
       const centerY = (heroHeight / 2) + 25; // Centered vertically with slight vertical push
       const baseRadius = Math.max(130, Math.min(width * 0.35, heroHeight * 0.45, 230));
 
-      // 1. Draw Heart Silhouette Ring (Glass-like thin contour)
-      // Pulsing heartbeat for the silhouette as well
+      // Pulsing heartbeat scale factor calculations
       const beatCycle = time * 5.0;
       const heartbeat = Math.max(0, Math.sin(beatCycle) * 0.6 + Math.sin(beatCycle * 2) * 0.4);
       const pulse = 0.96 + heartbeat * 0.08;
       const currentRadius = baseRadius * pulse;
-
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, currentRadius, 0, Math.PI * 2);
-      ctx.strokeStyle = variant === 'vivid' ? 'rgba(255, 107, 158, 0.1)' : 'rgba(233, 155, 169, 0.12)';
-      ctx.lineWidth = 1.0;
-      ctx.stroke();
 
       // Rotation angle
       const rotationAngle = time * 0.35; // Rotates around vertical Y-axis
@@ -178,35 +171,35 @@ const InteractiveHeart: React.FC<InteractiveHeartProps> = ({ variant = 'default'
 
         // Particle Styling
         // Vary base size to create a glittering star-like texture
-        const baseSize = 1.3 + (Math.sin(pt.u * 12 + pt.v * 6) * 0.4);
+        const baseSize = 2.0 + (Math.sin(pt.u * 12 + pt.v * 6) * 0.5);
         let radius = baseSize;
-        let alpha = 0.35 + wave * 0.12;
+        let alpha = 0.55 + wave * 0.15;
 
         // Colors: gradient transition based on position for a premium look
         const colorShift = Math.sin(pt.u + pt.v);
-        let rC = 233 + Math.round(colorShift * 15); 
-        let gC = 155 + Math.round(colorShift * 20); 
-        let bC = 169 + Math.round(colorShift * 10);
+        let rC = 240 + Math.round(colorShift * 10); 
+        let gC = 135 + Math.round(colorShift * 15); 
+        let bC = 155 + Math.round(colorShift * 10);
 
         if (variant === 'vivid') {
-          rC = 255; gC = 107; bC = 158; // Vivid pink base
-          alpha = 0.45 + wave * 0.15;
+          rC = 255; gC = 95; bC = 150; // Vivid pink base
+          alpha = 0.65 + wave * 0.15;
         }
 
         // Back-face styling (creates translucent 3D sphere/heart depth)
         if (!isFront) {
-          alpha *= 0.22;
-          radius *= 0.65;
+          alpha *= 0.45;
+          radius *= 0.75;
         }
 
         // Mouse hover effects (front side only)
         if (isFront && hoverRatio > 0) {
-          radius += hoverRatio * 4.0;
-          alpha = Math.min(1.0, alpha + hoverRatio * 0.8);
+          radius += hoverRatio * 4.5;
+          alpha = Math.min(1.0, alpha + hoverRatio * 0.9);
           // Highlight colors - shift towards golden orange/citra-orange
-          rC = Math.min(255, rC + Math.round(hoverRatio * 40));
-          gC = Math.min(255, gC + Math.round(hoverRatio * 60));
-          bC = Math.min(255, bC + Math.round(hoverRatio * 20));
+          rC = Math.min(255, rC + Math.round(hoverRatio * 50));
+          gC = Math.min(255, gC + Math.round(hoverRatio * 75));
+          bC = Math.min(255, bC + Math.round(hoverRatio * 15));
         }
 
         ctx.beginPath();
