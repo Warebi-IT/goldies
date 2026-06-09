@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import InteractiveAfricaMap from "@/components/InteractiveAfricaMap";
+import InteractiveGlobe from "@/components/InteractiveGlobe";
 import { Star } from "lucide-react";
 import { reviews } from "@/data/reviews";
 
@@ -18,7 +18,7 @@ const Avis = () => {
 
       {/* Background Map */}
       <div className="fixed inset-0 z-[-1] pointer-events-none opacity-20">
-        <InteractiveAfricaMap variant="vivid" />
+        <InteractiveGlobe variant="vivid" />
       </div>
       
       {/* Hero Section */}

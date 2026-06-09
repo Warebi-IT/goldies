@@ -2,7 +2,6 @@ import { Package, Users, Heart, Globe, ArrowRight, Sparkles } from "lucide-react
 import { Link } from "react-router-dom";
 import { useRef, useState } from "react";
 import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
-import InteractiveAfricaMap from "./InteractiveAfricaMap";
 import AnimatedStrings from "./AnimatedStrings";
 import AnimatedImpact from "./AnimatedImpact";
 import ExplorerGirl from "./ExplorerGirl";

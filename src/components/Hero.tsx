@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Compass, Sparkles } from "lucide-react";
-import InteractiveAfricaMap from "./InteractiveAfricaMap";
+import InteractiveHeart from "./InteractiveHeart";
 import imgChildren from "@/assets/children.jpeg";
 import imgFourImage from "@/assets/fourimagegoldiesChlidrenWomen.jpeg";
 import imgWomenScarf from "@/assets/womenwithscarf.jpeg";
@@ -24,7 +24,7 @@ const Hero = () => {
         <img src={onlyWomen} alt="Hero Background" className="w-full h-full object-cover" />
       </div>
 
-      <InteractiveAfricaMap />
+      <InteractiveHeart />
       {/* 
         Left Content (Text)
       */}
