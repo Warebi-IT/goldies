@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import AnimatedLogo from "@/components/AnimatedLogo";
-import { Instagram, Facebook, Mail } from "lucide-react";
+import { Instagram, Mail } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -82,6 +82,24 @@ const Footer = () => {
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                </svg>
+              </a>
+              <a
+                href="https://linktr.ee/goldiestraveel?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQPOTM2NjE5NzQzMzkyNDU5AAGnCgMPOU8iPMDmlD4_I8SVyIlxro-W_Ecneah7aSOgXTf5br_kf1C_CUfUHRY_aem_mmKyfr9r-ot3WxjMpwK_Jg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                aria-label="Linktree"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 10V4" />
+                  <path d="M12 10l4.5-4.5" />
+                  <path d="M12 10h6" />
+                  <path d="M12 10l4.5 4.5" />
+                  <path d="M12 10L7.5 14.5" />
+                  <path d="M12 10H6" />
+                  <path d="M12 10L7.5 5.5" />
+                  <path d="M12 15v5" />
                 </svg>
               </a>
               <a
