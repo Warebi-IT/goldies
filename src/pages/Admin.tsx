@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,10 +36,10 @@ const LoginForm = ({ isBootstrap, onLogin, onBootstrap }: LoginFormProps) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <div className="w-full max-w-sm bg-card rounded-2xl shadow-lg p-8">
-        <div className="flex items-center gap-2 justify-center mb-6">
+        <Link to="/" className="flex items-center gap-2 justify-center mb-6 hover:opacity-85 transition-opacity">
           <img src={logo} alt="Goldies Travel" className="h-10 w-10" />
           <span className="font-serif text-xl font-bold text-foreground">Admin</span>
-        </div>
+        </Link>
         {isBootstrap && (
           <p className="text-xs text-center text-muted-foreground mb-4">
             Aucun admin n'existe. Créez le premier compte.
@@ -218,12 +218,12 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-muted/30">
       <header className="bg-card border-b border-border px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 hover:opacity-85 transition-opacity">
           <img src={logo} alt="Goldies Travel" className="h-8 w-8" />
           <span className="font-serif text-lg font-bold text-foreground">
             Goldies <span className="text-primary">Admin</span>
           </span>
-        </div>
+        </Link>
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted-foreground hidden sm:inline">{currentUsername}</span>
           <Button
