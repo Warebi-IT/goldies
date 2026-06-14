@@ -141,7 +141,8 @@ const Admin = () => {
       navigate("/mfa-verify");
     } else {
       const { data: factors } = await supabase.auth.mfa.listFactors();
-      if (!factors?.totp?.length) {
+      const hasVerifiedFactor = factors?.totp?.some(f => f.status === "verified");
+      if (!hasVerifiedFactor) {
         navigate("/mfa-setup", {
           state: {
             message:

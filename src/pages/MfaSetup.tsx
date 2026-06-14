@@ -27,6 +27,13 @@ const MfaSetup = () => {
         return;
       }
 
+      // Nettoyer les facteurs non vérifiés précédents pour éviter les doublons dus au double-render de React 18
+      const { data: factors } = await supabase.auth.mfa.listFactors();
+      const unverifiedFactors = factors?.totp?.filter(f => f.status === "unverified") || [];
+      for (const factor of unverifiedFactors) {
+        await supabase.auth.mfa.unenroll({ factorId: factor.id });
+      }
+
       const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp" });
       if (error || !data) {
         toast({
