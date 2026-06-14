@@ -22,7 +22,7 @@ const MfaVerify = () => {
       }
 
       const { data: factors } = await supabase.auth.mfa.listFactors();
-      const totp = factors?.totp?.[0];
+      const totp = factors?.totp?.find(f => f.status === "verified");
 
       if (!totp) {
         navigate("/mfa-setup", {
