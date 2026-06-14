@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DollarSign, Users, Award, Percent, MessageSquare, AlertCircle } from "lucide-react";
@@ -5,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 const AdminDashboard = () => {
+  const [selectedTrip, setSelectedTrip] = useState("");
+
   // Fetch trips
   const { data: trips } = useQuery({
     queryKey: ["admin-trips-dashboard"],
@@ -35,10 +38,15 @@ const AdminDashboard = () => {
     },
   });
 
+  // Filter bookings based on selected trip
+  const filteredBookings = selectedTrip
+    ? bookings?.filter((b) => b.trip_id === selectedTrip) || []
+    : bookings || [];
+
   // Calculate KPIs
-  const totalBookingsCount = bookings?.length || 0;
-  const paidBookings = bookings?.filter((b) => b.payment_status === "paid") || [];
-  const unpaidBookings = bookings?.filter((b) => b.payment_status === "unpaid") || [];
+  const totalBookingsCount = filteredBookings.length;
+  const paidBookings = filteredBookings.filter((b) => b.payment_status === "paid");
+  const unpaidBookings = filteredBookings.filter((b) => b.payment_status === "unpaid");
   const paidCount = paidBookings.length;
   
   const paymentRate = totalBookingsCount > 0 ? Math.round((paidCount / totalBookingsCount) * 100) : 0;
@@ -47,8 +55,8 @@ const AdminDashboard = () => {
   let totalRevenue = 0;
   let pendingRevenue = 0;
 
-  if (bookings && trips) {
-    bookings.forEach((b) => {
+  if (filteredBookings.length > 0 && trips) {
+    filteredBookings.forEach((b) => {
       const trip = trips.find((t) => t.id === b.trip_id);
       if (trip) {
         if (b.payment_status === "paid") {
@@ -81,9 +89,13 @@ const AdminDashboard = () => {
     };
   }) || [];
 
+  const displayTripStats = selectedTrip
+    ? tripStats.filter((t) => t.id === selectedTrip)
+    : tripStats;
+
   return (
     <div className="space-y-8 animate-in fade-in-50 duration-500">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-[24px] border border-ink/5 shadow-sm">
         <div>
           <h2 className="font-pp-neue-corp-compact text-3xl font-black text-ink uppercase tracking-tight">
             Tableau de Bord
@@ -91,6 +103,26 @@ const AdminDashboard = () => {
           <p className="font-dm-sans text-sm text-ink/60">
             Suivi des ventes, des réservations et de l'intérêt client en temps réel.
           </p>
+        </div>
+
+        {/* Trip filter dropdown */}
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <label htmlFor="trip-filter" className="font-dm-sans text-xs font-bold uppercase tracking-wider text-ink/60 whitespace-nowrap">
+            Filtrer par voyage :
+          </label>
+          <select
+            id="trip-filter"
+            value={selectedTrip}
+            onChange={(e) => setSelectedTrip(e.target.value)}
+            className="bg-gray-50 border border-ink/5 rounded-md px-3 py-2 text-sm font-dm-sans focus:outline-none focus:ring-1 focus:ring-citra-orange text-ink w-full md:w-64 shadow-sm cursor-pointer"
+          >
+            <option value="">Tous les voyages</option>
+            {trips?.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -185,12 +217,12 @@ const AdminDashboard = () => {
             Remplissage et Ventes par Voyage
           </h3>
           <div className="space-y-6">
-            {tripStats.length === 0 ? (
+            {displayTripStats.length === 0 ? (
               <p className="text-sm font-dm-sans text-ink/50 text-center py-6">
                 Aucun voyage configuré.
               </p>
             ) : (
-              tripStats.map((stat) => (
+              displayTripStats.map((stat) => (
                 <div key={stat.id} className="space-y-2 border-b border-ink/5 pb-4 last:border-0 last:pb-0">
                   <div className="flex justify-between items-start">
                     <div>
