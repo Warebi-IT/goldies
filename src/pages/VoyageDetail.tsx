@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { MapPin, Calendar, Clock, ArrowLeft, ArrowRight, CheckCircle, Users } from "lucide-react";
+import { MapPin, Calendar, Clock, ArrowLeft, ArrowRight, CheckCircle, Users, X, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BookingFormModal from "@/components/BookingFormModal";
 
@@ -40,18 +40,44 @@ const VoyageDetail = () => {
 
   const [photoIndex, setPhotoIndex] = useState(0);
   const [photoPaused, setPhotoPaused] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  const allPhotos = trip
+    ? Array.from(
+        new Set([
+          ...(trip.image_url ? [trip.image_url] : []),
+          ...(tripPhotos?.map((p) => p.image_url).filter(Boolean) || []),
+        ])
+      )
+    : [];
 
   useEffect(() => {
     setPhotoIndex(0);
   }, [trip?.id]);
 
   useEffect(() => {
-    if (!tripPhotos?.length || tripPhotos.length <= 1 || photoPaused) return;
+    if (!allPhotos.length || allPhotos.length <= 1 || photoPaused) return;
     const timer = setInterval(() => {
-      setPhotoIndex((i) => (i + 1) % tripPhotos.length);
-    }, 4000);
+      setPhotoIndex((i) => (i + 1) % allPhotos.length);
+    }, 5000);
     return () => clearInterval(timer);
-  }, [tripPhotos, photoPaused]);
+  }, [allPhotos, photoPaused]);
+
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        setLightboxIndex((i) => (i + 1) % allPhotos.length);
+      } else if (e.key === "ArrowLeft") {
+        setLightboxIndex((i) => (i - 1 + allPhotos.length) % allPhotos.length);
+      } else if (e.key === "Escape") {
+        setIsLightboxOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isLightboxOpen, allPhotos.length]);
 
   if (isLoading) {
     return (
@@ -102,20 +128,85 @@ const VoyageDetail = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative h-[60vh] min-h-[400px] mt-16">
-        {trip.image_url && (
+      <section 
+        className="relative h-[65vh] min-h-[450px] mt-16 overflow-hidden group/hero"
+        onMouseEnter={() => setPhotoPaused(true)}
+        onMouseLeave={() => setPhotoPaused(false)}
+      >
+        {/* Slideshow background */}
+        {allPhotos.length > 0 ? (
+          allPhotos.map((photoUrl, index) => (
+            <div
+              key={photoUrl}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === photoIndex ? "opacity-100 z-0" : "opacity-0 z-0"
+              }`}
+            >
+              <img 
+                src={photoUrl} 
+                alt={`${trip.name} - ${index + 1}`} 
+                className="w-full h-full object-cover transform scale-100 transition-transform ease-out"
+                style={{
+                  transform: index === photoIndex ? "scale(1)" : "scale(1.05)",
+                  transitionDuration: "5000ms"
+                }}
+              />
+            </div>
+          ))
+        ) : trip.image_url ? (
           <img src={trip.image_url} alt={trip.name} className="absolute inset-0 w-full h-full object-cover" />
+        ) : null}
+        
+        {/* Dark overlay gradients */}
+        <div className="absolute inset-0 bg-black/20 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-concrete-canvas via-concrete-canvas/40 to-black/10 z-10" />
+
+        {/* Navigation Arrows (visible on hover) */}
+        {allPhotos.length > 1 && (
+          <>
+            <button
+              onClick={() => setPhotoIndex((i) => (i - 1 + allPhotos.length) % allPhotos.length)}
+              className="absolute left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md text-white flex items-center justify-center transition-all duration-300 opacity-0 group-hover/hero:opacity-100 shadow-md"
+              aria-label="Photo précédente"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <button
+              onClick={() => setPhotoIndex((i) => (i + 1) % allPhotos.length)}
+              className="absolute right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md text-white flex items-center justify-center transition-all duration-300 opacity-0 group-hover/hero:opacity-100 shadow-md"
+              aria-label="Photo suivante"
+            >
+              <ArrowRight size={20} />
+            </button>
+          </>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-concrete-canvas via-concrete-canvas/60 to-transparent" />
-        <div className="relative z-10 h-full container mx-auto px-6 flex flex-col justify-end pb-12">
-          <Link to="/voyages" className="inline-flex items-center gap-2 text-ink/80 hover:text-citra-orange text-sm mb-4 transition-all duration-300 font-dm-sans font-medium">
+
+        {/* Indicators/Dots at bottom */}
+        {allPhotos.length > 1 && (
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2 bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm">
+            {allPhotos.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setPhotoIndex(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === photoIndex ? "bg-citra-orange w-6" : "bg-white/50 hover:bg-white"
+                }`}
+                aria-label={`Aller à la photo ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Title Content */}
+        <div className="relative z-10 h-full container mx-auto px-6 flex flex-col justify-end pb-16">
+          <Link to="/voyages" className="inline-flex items-center gap-2 text-white hover:text-citra-orange text-sm mb-4 transition-all duration-300 font-dm-sans font-medium drop-shadow-md">
             <ArrowLeft size={16} /> Tous nos voyages
           </Link>
-          <div className="flex items-center gap-2 text-ink/80 mb-2">
+          <div className="flex items-center gap-2 text-white/95 mb-2 drop-shadow-md">
             <MapPin size={16} className="text-citra-orange" />
             <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{trip.destination}</span>
           </div>
-          <h1 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-ink uppercase tracking-tight">{trip.name}</h1>
+          <h1 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-white uppercase tracking-tight drop-shadow-lg">{trip.name}</h1>
         </div>
       </section>
 
@@ -152,6 +243,45 @@ const VoyageDetail = () => {
                 </ol>
               )}
             </div>
+
+            {/* Gallery Section */}
+            {allPhotos.length > 0 && (
+              <div className="bg-white/80 backdrop-blur-sm shadow-xl p-8 rounded-[32px] space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-pp-neue-corp-compact text-2xl font-black uppercase tracking-tight text-ink">
+                    L'album photo du voyage
+                  </h2>
+                  <span className="font-dm-sans text-xs font-bold text-ink/50 bg-ink/5 px-3 py-1 rounded-full">
+                    {allPhotos.length} photo{allPhotos.length > 1 ? "s" : ""}
+                  </span>
+                </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {allPhotos.map((photoUrl, index) => (
+                    <div 
+                      key={photoUrl} 
+                      onClick={() => {
+                        setLightboxIndex(index);
+                        setIsLightboxOpen(true);
+                      }}
+                      className="group relative aspect-square overflow-hidden rounded-[20px] bg-muted cursor-pointer shadow-sm hover:shadow-md transition-all duration-300"
+                    >
+                      <img 
+                        src={photoUrl} 
+                        alt={`${trip.name} - Galerie ${index + 1}`} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <span className="text-white bg-white/20 p-3 rounded-full backdrop-blur-md transform scale-90 group-hover:scale-100 transition-all duration-300">
+                          <Eye size={20} />
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Sidebar */}
@@ -214,6 +344,95 @@ const VoyageDetail = () => {
           onClose={() => setIsBookingModalOpen(false)} 
           trip={trip} 
         />
+      )}
+
+      {/* Lightbox Modal */}
+      {isLightboxOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md p-4 animate-[fadeIn_0.2s_ease-out]"
+          onClick={() => setIsLightboxOpen(false)}
+        >
+          {/* Close button */}
+          <button 
+            onClick={() => setIsLightboxOpen(false)}
+            className="absolute top-6 right-6 text-white/75 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full backdrop-blur-sm transition-all duration-300 z-[60]"
+            aria-label="Fermer"
+          >
+            <X size={24} />
+          </button>
+
+          {/* Left Arrow */}
+          {allPhotos.length > 1 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightboxIndex((i) => (i - 1 + allPhotos.length) % allPhotos.length);
+              }}
+              className="absolute left-6 top-1/2 -translate-y-1/2 text-white/75 hover:text-white bg-white/10 hover:bg-white/20 p-4 rounded-full backdrop-blur-sm transition-all duration-300 z-[60] hidden md:flex"
+              aria-label="Image précédente"
+            >
+              <ArrowLeft size={24} />
+            </button>
+          )}
+
+          {/* Main Image Container */}
+          <div 
+            className="relative max-w-5xl max-h-[80vh] w-full flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img 
+              src={allPhotos[lightboxIndex]} 
+              alt={`${trip.name} - Zoom ${lightboxIndex + 1}`} 
+              className="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl transition-all duration-500"
+            />
+          </div>
+
+          {/* Right Arrow */}
+          {allPhotos.length > 1 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightboxIndex((i) => (i + 1) % allPhotos.length);
+              }}
+              className="absolute right-6 top-1/2 -translate-y-1/2 text-white/75 hover:text-white bg-white/10 hover:bg-white/20 p-4 rounded-full backdrop-blur-sm transition-all duration-300 z-[60] hidden md:flex"
+              aria-label="Image suivante"
+            >
+              <ArrowRight size={24} />
+            </button>
+          )}
+
+          {/* Footer Info / Counter */}
+          <div className="absolute bottom-6 text-center text-white/80 font-dm-sans space-y-2 select-none">
+            <p className="text-sm font-bold tracking-widest uppercase">
+              {trip.name}
+            </p>
+            <p className="text-xs text-white/50">
+              {lightboxIndex + 1} / {allPhotos.length}
+            </p>
+          </div>
+
+          {/* Mobile Navigation Taps */}
+          <div className="md:hidden absolute bottom-20 flex gap-6 z-[60]">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightboxIndex((i) => (i - 1 + allPhotos.length) % allPhotos.length);
+              }}
+              className="text-white/75 hover:text-white bg-white/10 p-3 rounded-full backdrop-blur-sm"
+            >
+              <ArrowLeft size={18} />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightboxIndex((i) => (i + 1) % allPhotos.length);
+              }}
+              className="text-white/75 hover:text-white bg-white/10 p-3 rounded-full backdrop-blur-sm"
+            >
+              <ArrowRight size={18} />
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
