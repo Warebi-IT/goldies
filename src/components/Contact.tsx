@@ -1,13 +1,36 @@
 import { useState } from "react";
 import { Send, Instagram } from "lucide-react";
 import videoSenegal from "@/assets/goldiessenegalversion.mp4";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
+  const [prenom, setPrenom] = useState("");
+  const [nom, setNom] = useState("");
+  const [email, setEmail] = useState("");
+  const [destination, setDestination] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    try {
+      const { error } = await supabase.from("contacts").insert({
+        prenom,
+        nom,
+        email,
+        destination,
+        message
+      });
+      if (error) throw error;
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error("Error sending contact message:", err);
+      alert("Une erreur est survenue lors de l'envoi de votre message: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -91,6 +114,8 @@ const Contact = () => {
                     <input
                       type="text"
                       required
+                      value={prenom}
+                      onChange={(e) => setPrenom(e.target.value)}
                       className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all"
                       placeholder="Votre prénom"
                     />
@@ -102,6 +127,8 @@ const Contact = () => {
                     <input
                       type="text"
                       required
+                      value={nom}
+                      onChange={(e) => setNom(e.target.value)}
                       className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all"
                       placeholder="Votre nom"
                     />
@@ -114,6 +141,8 @@ const Contact = () => {
                   <input
                     type="email"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all"
                     placeholder="votre@email.com"
                   />
@@ -124,6 +153,8 @@ const Contact = () => {
                   </label>
                   <select
                     required
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
                     className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all appearance-none cursor-pointer"
                   >
                     <option value="">Choisir une destination</option>
@@ -139,16 +170,19 @@ const Contact = () => {
                   </label>
                   <textarea
                     rows={4}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all resize-none"
                     placeholder="Dites-nous en plus sur votre projet de voyage…"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full rounded-full bg-[#e99ba9] py-4 text-lg font-dm-sans font-bold text-white hover:scale-[1.02] transition-transform shadow-[0_8px_30px_rgb(233,155,169,0.3)] flex items-center justify-center gap-3"
+                  disabled={loading}
+                  className="w-full rounded-full bg-[#e99ba9] py-4 text-lg font-dm-sans font-bold text-white hover:scale-[1.02] transition-transform shadow-[0_8px_30px_rgb(233,155,169,0.3)] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send size={20} />
-                  Envoyer
+                  {loading ? "Envoi..." : "Envoyer"}
                 </button>
               </form>
             )}

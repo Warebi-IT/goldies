@@ -201,6 +201,95 @@ export type Database = {
         }
         Relationships: []
       }
+      bookings: {
+        Row: {
+          id: string
+          trip_id: string | null
+          nom: string
+          prenom: string
+          age: number
+          email: string
+          telephone: string
+          disponibilite: boolean
+          allergies: string
+          engagement: string
+          assurance: string
+          autre: string | null
+          payment_status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          trip_id?: string | null
+          nom: string
+          prenom: string
+          age: number
+          email: string
+          telephone: string
+          disponibilite?: boolean
+          allergies: string
+          engagement: string
+          assurance: string
+          autre?: string | null
+          payment_status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          trip_id?: string | null
+          nom?: string
+          prenom?: string
+          age?: number
+          email?: string
+          telephone?: string
+          disponibilite?: boolean
+          allergies?: string
+          engagement?: string
+          assurance?: string
+          autre?: string | null
+          payment_status?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      contacts: {
+        Row: {
+          id: string
+          nom: string
+          prenom: string
+          email: string
+          destination: string
+          message: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          nom: string
+          prenom: string
+          email: string
+          destination: string
+          message: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          nom?: string
+          prenom?: string
+          email?: string
+          destination?: string
+          message?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

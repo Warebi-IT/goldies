@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -17,10 +18,11 @@ interface BookingFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   trip: {
+    id: string;
     name: string;
     dates: string;
     price: string | number;
-    payment_link?: string;
+    payment_link?: string | null;
   };
 }
 
@@ -36,6 +38,8 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
   const [engagement, setEngagement] = useState<"Oui" | "Non" | "">("");
   const [assurance, setAssurance] = useState<"Oui" | "Non" | "Je vais en faire une" | "">("");
   const [autre, setAutre] = useState("");
+  const [loading, setLoading] = useState(false);
+
   
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
@@ -52,17 +56,40 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
     assurance !== "" &&
     acceptedTerms;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid) return;
 
-    // Here we would normally save to database.
-    // For now, redirect to Stripe directly.
-    if (trip.payment_link) {
-      window.open(trip.payment_link, "_blank");
-      onClose(); // Optional: close modal after redirect
-    } else {
-      alert("Ce voyage n'a pas encore de lien de paiement.");
+    setLoading(true);
+    try {
+      const { error } = await supabase.from("bookings").insert({
+        trip_id: trip.id,
+        nom,
+        prenom,
+        age: parseInt(age, 10) || 0,
+        email,
+        telephone,
+        disponibilite,
+        allergies,
+        engagement,
+        assurance,
+        autre: autre.trim() !== "" ? autre : null,
+        payment_status: "unpaid"
+      });
+
+      if (error) throw error;
+
+      if (trip.payment_link) {
+        window.location.href = trip.payment_link;
+      } else {
+        alert("Inscription enregistrée ! (Ce voyage n'a pas encore de lien de paiement configuré)");
+        onClose();
+      }
+    } catch (error: any) {
+      console.error("Error creating booking:", error);
+      alert("Une erreur est survenue lors de l'enregistrement de votre inscription : " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -344,10 +371,10 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
               <Button 
                 type="submit" 
                 form="booking-form"
-                disabled={!isValid} 
+                disabled={!isValid || loading} 
                 className="w-full sm:w-auto rounded-full bg-citra-orange text-white hover:bg-citra-orange/90 font-dm-sans font-bold shadow-md transition-all h-12 px-8 disabled:opacity-50"
               >
-                {isValid ? "Procéder au paiement" : "Remplissez tous les champs"}
+                {loading ? "Enregistrement..." : (isValid ? "Procéder au paiement" : "Remplissez tous les champs")}
               </Button>
            </div>
         </div>

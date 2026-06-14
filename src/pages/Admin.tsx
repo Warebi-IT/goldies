@@ -7,6 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminTrips from "@/components/admin/AdminTrips";
 import AdminGallery from "@/components/admin/AdminGallery";
 import AdminUsers from "@/components/admin/AdminUsers";
+import AdminDashboard from "@/components/admin/AdminDashboard";
+import AdminBookings from "@/components/admin/AdminBookings";
 import logo from "@/assets/logo.png";
 import { LogOut, Shield } from "lucide-react";
 
@@ -242,13 +244,17 @@ const Admin = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <Tabs defaultValue="trips">
-          <TabsList className="mb-8">
+        <Tabs defaultValue="dashboard">
+          <TabsList className="mb-8 flex flex-wrap gap-2">
+            <TabsTrigger value="dashboard">Tableau de Bord</TabsTrigger>
+            <TabsTrigger value="bookings">Inscriptions & Contacts</TabsTrigger>
             <TabsTrigger value="trips">Voyages</TabsTrigger>
             <TabsTrigger value="gallery">Galerie</TabsTrigger>
             <TabsTrigger value="admins">Admins</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="dashboard"><AdminDashboard /></TabsContent>
+          <TabsContent value="bookings"><AdminBookings /></TabsContent>
           <TabsContent value="trips"><AdminTrips /></TabsContent>
           <TabsContent value="gallery"><AdminGallery /></TabsContent>
           <TabsContent value="admins"><AdminUsers /></TabsContent>
