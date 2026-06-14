@@ -95,7 +95,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in-50 duration-500">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-[24px] border border-ink/5 shadow-sm">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-ink/10">
         <div>
           <h2 className="font-pp-neue-corp-compact text-3xl font-black text-ink uppercase tracking-tight">
             Tableau de Bord

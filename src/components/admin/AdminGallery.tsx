@@ -181,17 +181,25 @@ const AdminGallery = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="font-serif text-2xl font-bold text-foreground">
-          {selectedAlbum && activeAlbum ? activeAlbum.title : "Gestion de la galerie"}
-        </h2>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-ink/10 mb-6">
+        <div>
+          <h2 className="font-pp-neue-corp-compact text-3xl font-black text-ink uppercase tracking-tight">
+            {selectedAlbum && activeAlbum ? activeAlbum.title : "Gestion de la Galerie"}
+          </h2>
+          <p className="font-dm-sans text-sm text-ink/60 mt-1">
+            {selectedAlbum && activeAlbum 
+              ? `Gérez les photos de l'album "${activeAlbum.title}"`
+              : "Créez des albums et ajoutez des photos pour la galerie publique du site."
+            }
+          </p>
+        </div>
         {!selectedAlbum ? (
-          <Button onClick={openNewAlbum} className="gap-2 rounded-full bg-primary text-primary-foreground">
+          <Button onClick={openNewAlbum} className="gap-2 rounded-full bg-primary text-primary-foreground self-start sm:self-auto">
             <Plus size={16} /> Nouvel album
           </Button>
         ) : (
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setSelectedAlbum(null)}>
+          <div className="flex gap-2 self-start sm:self-auto">
+            <Button variant="outline" onClick={() => setSelectedAlbum(null)} className="rounded-full">
               ← Retour
             </Button>
             <label className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm font-medium cursor-pointer hover:bg-primary/90">
@@ -216,7 +224,7 @@ const AdminGallery = () => {
       {!selectedAlbum && (
         <div className="space-y-4">
           {albums?.map((album) => (
-            <div key={album.id} className="bg-card rounded-xl p-5 flex items-center gap-4 shadow-sm">
+            <div key={album.id} className="bg-white border border-ink/5 rounded-xl p-5 flex items-center gap-4 shadow-sm">
               {album.cover_image_url ? (
                 <img src={album.cover_image_url} alt="" className="w-20 h-16 rounded-lg object-cover shrink-0" />
               ) : (

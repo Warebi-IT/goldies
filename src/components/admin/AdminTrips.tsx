@@ -340,9 +340,16 @@ const AdminTrips = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="font-serif text-2xl font-bold text-foreground">Gestion des voyages</h2>
-        <Button onClick={openNew} className="gap-2 rounded-full bg-primary text-primary-foreground">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-ink/10 mb-6">
+        <div>
+          <h2 className="font-pp-neue-corp-compact text-3xl font-black text-ink uppercase tracking-tight">
+            Gestion des Voyages
+          </h2>
+          <p className="font-dm-sans text-sm text-ink/60 mt-1">
+            Configurez les destinations, les tarifs, les dates et les programmes des séjours.
+          </p>
+        </div>
+        <Button onClick={openNew} className="gap-2 rounded-full bg-primary text-primary-foreground self-start sm:self-auto">
           <Plus size={16} /> Ajouter un voyage
         </Button>
       </div>
@@ -351,7 +358,7 @@ const AdminTrips = () => {
 
       <div className="space-y-4">
         {trips?.map((trip) => (
-          <div key={trip.id} className="bg-card rounded-xl p-5 flex items-center gap-4 shadow-sm">
+          <div key={trip.id} className="bg-white border border-ink/5 rounded-xl p-5 flex items-center gap-4 shadow-sm">
             {trip.image_url && (
               <img src={trip.image_url} alt={trip.name} className="w-20 h-16 rounded-lg object-cover shrink-0" />
             )}

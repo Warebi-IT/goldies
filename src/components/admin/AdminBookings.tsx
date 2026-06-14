@@ -132,6 +132,15 @@ const AdminBookings = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in-50 duration-500">
+      <div className="pb-6 border-b border-ink/10">
+        <h2 className="font-pp-neue-corp-compact text-3xl font-black text-ink uppercase tracking-tight">
+          Inscriptions & Contacts
+        </h2>
+        <p className="font-dm-sans text-sm text-ink/60 mt-1">
+          Gérez les réservations des participantes et répondez aux messages de contact reçus.
+        </p>
+      </div>
+
       {/* Sub tabs switcher */}
       <div className="flex gap-4 border-b border-ink/5 pb-4">
         <button

@@ -244,8 +244,8 @@ const Admin = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <Tabs defaultValue="dashboard">
-          <TabsList className="mb-8 flex flex-wrap gap-2">
+        <Tabs defaultValue="dashboard" className="w-full">
+          <TabsList className="flex flex-wrap gap-1 border-b-0 bg-transparent p-0 justify-start w-full relative z-10 rounded-none mb-0">
             <TabsTrigger value="dashboard">Tableau de Bord</TabsTrigger>
             <TabsTrigger value="bookings">Inscriptions & Contacts</TabsTrigger>
             <TabsTrigger value="trips">Voyages</TabsTrigger>
@@ -253,11 +253,23 @@ const Admin = () => {
             <TabsTrigger value="admins">Admins</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard"><AdminDashboard /></TabsContent>
-          <TabsContent value="bookings"><AdminBookings /></TabsContent>
-          <TabsContent value="trips"><AdminTrips /></TabsContent>
-          <TabsContent value="gallery"><AdminGallery /></TabsContent>
-          <TabsContent value="admins"><AdminUsers /></TabsContent>
+          <div className="bg-cream-card rounded-b-[24px] rounded-tr-[24px] border border-border shadow-sm relative z-0 mt-[-1px] p-6 sm:p-8">
+            <TabsContent value="dashboard" className="mt-0 focus-visible:outline-none">
+              <AdminDashboard />
+            </TabsContent>
+            <TabsContent value="bookings" className="mt-0 focus-visible:outline-none">
+              <AdminBookings />
+            </TabsContent>
+            <TabsContent value="trips" className="mt-0 focus-visible:outline-none">
+              <AdminTrips />
+            </TabsContent>
+            <TabsContent value="gallery" className="mt-0 focus-visible:outline-none">
+              <AdminGallery />
+            </TabsContent>
+            <TabsContent value="admins" className="mt-0 focus-visible:outline-none">
+              <AdminUsers />
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
     </div>
