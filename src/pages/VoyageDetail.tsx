@@ -320,18 +320,25 @@ const VoyageDetail = () => {
               </div>
             )}
 
-            {trip.payment_link ? (
-              <Button 
-                onClick={() => setIsBookingModalOpen(true)}
-                className="w-full rounded-full shadow-md bg-white/50 backdrop-blur-sm text-ink hover:bg-ink hover:text-cream-card font-dm-sans font-bold h-14 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl mt-4"
-              >
-                Réserver maintenant
-              </Button>
-            ) : (
-              <Button disabled className="w-full rounded-full shadow-sm h-14 bg-white/30 text-ink/40 font-dm-sans cursor-not-allowed mt-4">
-                Réservation bientôt disponible
-              </Button>
-            )}
+            <div className="mt-6 flex flex-col items-center gap-3">
+              <div className="px-4 py-2 bg-[#FFE1E8]/60 text-ink/80 text-xs font-dm-sans font-bold rounded-lg w-full flex justify-center items-center gap-2">
+                <span className="font-black">Klarna.</span>
+                Paiement en 3x ou 4x sans frais disponible
+              </div>
+              
+              {trip.payment_link ? (
+                <Button 
+                  onClick={() => setIsBookingModalOpen(true)}
+                  className="w-full rounded-full shadow-md bg-white/50 backdrop-blur-sm text-ink hover:bg-ink hover:text-cream-card font-dm-sans font-bold h-14 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                >
+                  Réserver maintenant
+                </Button>
+              ) : (
+                <Button disabled className="w-full rounded-full shadow-sm h-14 bg-white/30 text-ink/40 font-dm-sans cursor-not-allowed">
+                  Réservation bientôt disponible
+                </Button>
+              )}
+            </div>
           </aside>
         </div>
       </section>

@@ -6,13 +6,13 @@
 
 :root {
   /* Colors - Pastel DA */
-  --color-concrete-canvas: #FAF7F2; /* Very Pale Warm Off-White (Lighter) */
-  --color-cream-card: #FDFBF7;      /* Extremely Light Cream */
+  --color-concrete-canvas: #FDFCFA; /* Very Pale Warm Off-White (Lighter) */
+  --color-cream-card: #FDFCFA;      /* Extremely Light Cream */
   --color-ink: #422F24;             /* Deep Espresso Brown */
   --color-pure-black: #000000;
   --color-paper-white: #ffffff;
-  --color-citra-orange: #DD6B4D;    /* Soft Terracotta/Peach */
-  --color-ion-violet: #A96F70;      /* Dusty Rose/Burgundy */
+  --color-citra-orange: #F7A9C3;    /* Soft Terracotta/Peach -> Pink */
+  --color-ion-violet: #A4D4DE;      /* Dusty Rose/Burgundy -> Light Blue */
   --color-hazard-yellow: #E7F2BE;   /* Soft Pastel Lime/Yellow */
 
   /* Pastel Palette Variables */
