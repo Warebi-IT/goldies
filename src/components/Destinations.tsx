@@ -129,6 +129,12 @@ const Destinations = () => {
                     </div>
                   </div>
                   
+                  {/* Klarna Fractional Payment */}
+                  <div className="mb-3 px-3 py-1.5 bg-[#FFE1E8]/60 text-ink/80 text-[11px] font-dm-sans font-bold rounded-md w-fit flex items-center gap-1.5">
+                    <span className="font-black">Klarna.</span>
+                    Paiement en 3x sans frais
+                  </div>
+                  
                   <p className="text-sm font-dm-sans font-medium text-ink/80 leading-relaxed line-clamp-2 mb-6 flex-1">
                     {d.description}
                   </p>
