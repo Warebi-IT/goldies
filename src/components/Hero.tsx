@@ -6,6 +6,7 @@ import imgChildren from "@/assets/children.jpeg";
 import imgFourImage from "@/assets/fourimagegoldiesChlidrenWomen.jpeg";
 import imgWomenScarf from "@/assets/womenwithscarf.jpeg";
 import onlyWomen from "@/assets/onlywomen.jpeg";
+import videoSenegal from "@/assets/goldiessenegalversion.mp4";
 
 const Hero = () => {
   const [activeImg, setActiveImg] = useState<number | null>(null);
@@ -19,9 +20,16 @@ const Hero = () => {
       id="accueil"
       className="relative z-0 w-full h-[100dvh] flex flex-col lg:flex-row items-center justify-between px-6 md:px-16 bg-transparent"
     >
-      {/* Background Image (Behind Everything) */}
-      <div className="absolute inset-0 w-full h-full z-[-2]">
-        <img src={onlyWomen} alt="Hero Background" className="w-full h-full object-cover" />
+      {/* Background Video (Behind Everything) */}
+      <div className="absolute inset-0 w-full h-full z-[-2] overflow-hidden bg-black">
+        <video 
+          src={videoSenegal} 
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          className="w-full h-full object-cover opacity-80"
+        />
       </div>
 
       <InteractiveHeart />
