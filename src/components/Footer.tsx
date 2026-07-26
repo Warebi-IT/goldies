@@ -9,18 +9,23 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="py-16 mt-20 bg-ink text-cream-card">
-      <div className="container mx-auto max-w-[1280px] px-6">
+    <footer className="py-16 mt-20 bg-ion-violet text-ink relative overflow-hidden">
+      {/* Subtle decorative atmosphere matching the pastel blue waves */}
+      <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-white/30 rounded-full blur-[120px] pointer-events-none animate-float-slow"></div>
+      <div className="absolute bottom-[-30%] left-[-10%] w-[600px] h-[600px] rounded-full border border-white/30 pointer-events-none mix-blend-overlay"></div>
+      <div className="absolute bottom-[-35%] left-[-5%] w-[700px] h-[700px] rounded-full border border-white/20 pointer-events-none mix-blend-overlay"></div>
+
+      <div className="container mx-auto max-w-[1280px] px-6 relative z-10">
         <div className="grid md:grid-cols-3 gap-12 mb-12">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-6">
-              <AnimatedLogo className="h-10 w-10 grayscale invert opacity-90" />
-              <span className="font-pp-neue-corp-compact text-3xl font-black uppercase tracking-tight text-cream-card leading-none">
+              <AnimatedLogo className="h-10 w-10" />
+              <span className="font-pp-neue-corp-compact text-3xl font-black uppercase tracking-tight text-ink leading-none">
                 GOLDIES TRAVEL
               </span>
             </div>
-            <p className="text-cream-card/80 text-sm font-dm-sans font-medium leading-relaxed">
+            <p className="text-ink/80 text-sm font-dm-sans font-medium leading-relaxed">
               Voyager autrement. Rencontrer, partager, grandir.
               Agence spécialisée dans l'organisation de voyages immersifs et expérientiels en Afrique.
             </p>
@@ -28,7 +33,7 @@ const Footer = () => {
 
           {/* Links */}
           <div>
-            <h4 className="font-pp-neue-corp-compact text-2xl font-black text-cream-card uppercase tracking-tight mb-4">
+            <h4 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-4">
               Navigation
             </h4>
             <div className="flex flex-col sm:flex-row gap-8 sm:gap-16">
@@ -41,7 +46,7 @@ const Footer = () => {
                   { label: "Contact", to: "/contact" },
                 ].map((l) => (
                   <li key={l.label}>
-                    <Link to={l.to} className="text-sm font-dm-sans font-medium text-cream-card/70 hover:text-citra-orange transition-colors">
+                    <Link to={l.to} className="text-sm font-dm-sans font-medium text-ink/80 hover:text-ink hover:font-bold transition-all">
                       {l.label}
                     </Link>
                   </li>
@@ -54,7 +59,7 @@ const Footer = () => {
                   { label: "CGV", to: "/cgv" },
                 ].map((l) => (
                   <li key={l.label}>
-                    <Link to={l.to} className="text-sm font-dm-sans font-medium text-cream-card/70 hover:text-citra-orange transition-colors">
+                    <Link to={l.to} className="text-sm font-dm-sans font-medium text-ink/80 hover:text-ink hover:font-bold transition-all">
                       {l.label}
                     </Link>
                   </li>
@@ -65,7 +70,7 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h4 className="font-pp-neue-corp-compact text-2xl font-black text-cream-card uppercase tracking-tight mb-4">
+            <h4 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-4">
               Nous suivre
             </h4>
             <div className="flex gap-4">
@@ -75,7 +80,7 @@ const Footer = () => {
                     href="https://www.instagram.com/goldies.travel?igsh=MTV6dThwbjlrYzg0MA=="
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                    className="w-12 h-12 rounded-full shadow-md bg-white/85 backdrop-blur-md flex items-center justify-center text-ink hover:bg-ink hover:text-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                     aria-label="Instagram"
                   >
                     <Instagram size={20} />
@@ -92,7 +97,7 @@ const Footer = () => {
                     href="https://www.tiktok.com/@goldies_travel?_r=1&_t=ZN-9716IvKcjKQ"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                    className="w-12 h-12 rounded-full shadow-md bg-white/85 backdrop-blur-md flex items-center justify-center text-ink hover:bg-ink hover:text-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                     aria-label="TikTok"
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -111,7 +116,7 @@ const Footer = () => {
                     href="https://chat.whatsapp.com/JwP9zvmow5UJyfeiVkiSbE?mode=gi_t"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                    className="w-12 h-12 rounded-full shadow-md bg-white/85 backdrop-blur-md flex items-center justify-center text-ink hover:bg-ink hover:text-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                     aria-label="WhatsApp"
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -130,7 +135,7 @@ const Footer = () => {
                     href="https://linktr.ee/goldiestraveel?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQPOTM2NjE5NzQzMzkyNDU5AAGnCgMPOU8iPMDmlD4_I8SVyIlxro-W_Ecneah7aSOgXTf5br_kf1C_CUfUHRY_aem_mmKyfr9r-ot3WxjMpwK_Jg"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                    className="w-12 h-12 rounded-full shadow-md bg-white/85 backdrop-blur-md flex items-center justify-center text-ink hover:bg-ink hover:text-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                     aria-label="Linktree"
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -154,7 +159,7 @@ const Footer = () => {
                 <TooltipTrigger asChild>
                   <a
                     href="mailto:contact@goldiestravel.com"
-                    className="w-12 h-12 rounded-full shadow-sm bg-white/10 flex items-center justify-center text-cream-card hover:bg-citra-orange hover:text-ink hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                    className="w-12 h-12 rounded-full shadow-md bg-white/85 backdrop-blur-md flex items-center justify-center text-ink hover:bg-ink hover:text-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                     aria-label="Email"
                   >
                     <Mail size={20} />
@@ -168,8 +173,8 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="pt-8 text-left md:text-center mt-8 border-t border-cream-card/10">
-          <p className="text-xs font-dm-sans font-medium uppercase tracking-widest text-cream-card/60">
+        <div className="pt-8 text-left md:text-center mt-8 border-t border-ink/10">
+          <p className="text-xs font-dm-sans font-medium uppercase tracking-widest text-ink/70">
             © {new Date().getFullYear()} GOLDIES TRAVEL. TOUS DROITS RÉSERVÉS.
           </p>
         </div>

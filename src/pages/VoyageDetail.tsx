@@ -278,27 +278,26 @@ const VoyageDetail = () => {
           </div>
 
           {/* Sidebar */}
-          <aside className="lg:sticky lg:top-32 h-fit bg-white/80 backdrop-blur-sm rounded-[32px] shadow-xl p-8 text-ink space-y-6">
-            <div className="flex items-baseline justify-between">
-              <span className="font-dm-sans text-sm text-ink/60">À partir de</span>
-              <span className="font-pp-neue-corp-compact text-4xl font-black text-citra-orange">
-                {trip.price} {trip.price === "À partir de" ? "" : "€"}
-              </span>
+          <aside className="lg:sticky lg:top-32 h-fit bg-white/90 backdrop-blur-md rounded-[32px] shadow-xl p-8 text-ink space-y-6 border border-white/50">
+            <div className="border-b border-ink/10 pb-6">
+              <p className="font-dm-sans text-xs font-bold uppercase tracking-widest text-ink/60 mb-2">Dates du séjour</p>
+              <div className="flex items-center gap-2.5 text-ink">
+                <Calendar size={26} className="text-citra-orange shrink-0" />
+                <span className="font-pp-neue-corp-compact text-2xl sm:text-3xl font-black uppercase tracking-tight text-ink">
+                  {trip.dates}
+                </span>
+              </div>
             </div>
-            <div className="space-y-4 text-sm border-t border-ink/5 pt-6">
+            <div className="space-y-4 text-sm pt-2">
               <div className="flex items-center gap-3 font-dm-sans text-ink/80">
                 <Clock size={18} className="text-citra-orange" />
-                <span className="font-dm-sans text-sm font-bold uppercase tracking-wider">{trip.duration}</span>
+                <span className="font-dm-sans text-sm font-bold uppercase tracking-wider">Durée : {trip.duration}</span>
               </div>
               <div className="flex items-center gap-3 font-dm-sans text-ink/80">
                 <Users size={18} className="text-citra-orange" />
                 <span className="font-dm-sans text-sm font-bold uppercase tracking-wider">
-                  {(trip as any).spots_left ?? 8} places restantes sur {(trip as any).total_spots ?? 12}
+                  {(trip as any).spots_left ?? 12} places restantes sur {(trip as any).total_spots ?? 12}
                 </span>
-              </div>
-              <div className="flex items-center gap-3 font-dm-sans text-ink/80">
-                <Calendar size={18} className="text-citra-orange" />
-                <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{trip.dates}</span>
               </div>
             </div>
 

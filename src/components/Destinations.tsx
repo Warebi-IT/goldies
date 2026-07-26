@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { MapPin, Clock, Users, ArrowRight } from "lucide-react";
+import { MapPin, Clock, Users, ArrowRight, Calendar } from "lucide-react";
 import destSenegal from "@/assets/dest-senegal.jpg";
 import destMaroc from "@/assets/dest-maroc.jpg";
 import destTanzanie from "@/assets/dest-tanzanie.jpg";
@@ -96,19 +96,20 @@ const Destinations = () => {
                 )}
 
                 <div className="flex-1 flex flex-col">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-1 text-ink/70">
-                      <MapPin size={14} />
-                      <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{d.destination}</span>
-                    </div>
-                    <span className="font-pp-neue-corp-compact font-black text-2xl text-ink">
-                      {d.price} {d.price === "À partir de" ? "" : "€"}
-                    </span>
+                  <div className="flex items-center gap-1 text-ink/70 mb-2">
+                    <MapPin size={14} />
+                    <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{d.destination}</span>
                   </div>
                   
-                  <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-2">
+                  <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-3.5 group-hover:text-citra-orange transition-colors">
                     {d.name}
                   </h3>
+
+                  {/* Dates du voyage */}
+                  <div className="inline-flex items-center gap-2 text-ink font-dm-sans text-xs font-extrabold bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-full mb-3 border border-ink/10 shadow-2xs w-fit">
+                    <Calendar size={14} className="text-citra-orange shrink-0" />
+                    <span>{d.dates}</span>
+                  </div>
 
                   <div className="flex items-center gap-3 text-ink/70 mb-3 text-xs font-dm-sans font-bold">
                     <div className="flex items-center gap-1">

@@ -208,15 +208,13 @@ const AboutConcept = () => {
 
       </div>
 
-      {/* 4. SECTION IMPACT SOLIDAIRE (VIBRANT SUNSET MESH) */}
-      <div className="relative w-full py-32 overflow-hidden">
-        {/* Animated Mesh Gradient Background representing warmth, humanity and African sunset */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#D95F3B] to-[#C04A2A] z-0"></div>
-        <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-hazard-yellow rounded-full mix-blend-overlay filter blur-[120px] opacity-80 animate-float-slow"></div>
-        <div className="absolute bottom-[-20%] right-[-10%] w-[80%] h-[80%] bg-[#FF6B9E] rounded-full mix-blend-overlay filter blur-[150px] opacity-70 animate-float-slow" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-[30%] left-[40%] w-[50%] h-[50%] bg-[#BCE3F1] rounded-full mix-blend-overlay filter blur-[100px] opacity-40 animate-float-slow" style={{ animationDelay: '4s' }}></div>
+      {/* 4. SECTION IMPACT SOLIDAIRE (CITRA ORANGE / SOFT PINK) */}
+      <div className="relative w-full py-32 bg-citra-orange overflow-hidden">
+        {/* Subtle decorative animations */}
+        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-white/20 rounded-full blur-[120px] pointer-events-none animate-float-slow"></div>
+        <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-white/30 rounded-full blur-[100px] pointer-events-none animate-float-slow" style={{ animationDelay: '2s' }}></div>
         
-        {/* Abstract animated impact over the gradient */}
+        {/* Abstract animated impact over the background */}
         <div className="absolute inset-0 opacity-100 pointer-events-none z-0">
            <AnimatedImpact />
         </div>
@@ -224,40 +222,37 @@ const AboutConcept = () => {
         <div className="container mx-auto max-w-[1280px] px-6 relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
-              {/* Subtle dark gradient behind text for guaranteed readability */}
-              <div className="absolute -inset-10 bg-gradient-to-r from-ink/30 to-transparent blur-2xl -z-10 rounded-full"></div>
-              
-              <p className="font-dm-sans text-sm uppercase tracking-widest text-[#F7CA44] font-black mb-4 flex items-center gap-2 drop-shadow-md">
+              <p className="font-dm-sans text-sm uppercase tracking-widest text-ink font-black mb-4 flex items-center gap-2">
                 <Users size={16} fill="currentColor" />
                 UNE COMMUNAUTÉ EN PLEINE CROISSANCE
               </p>
-              <h2 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-white uppercase tracking-tight mb-8 leading-[0.9] drop-shadow-xl">
+              <h2 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-white uppercase tracking-tight mb-8 leading-[0.9] drop-shadow-sm">
                 Bien plus<br/>qu'une agence
               </h2>
-              <p className="font-dm-sans text-xl md:text-2xl text-white leading-relaxed mb-10 font-medium drop-shadow-lg">
+              <p className="font-dm-sans text-xl md:text-2xl text-white/95 leading-relaxed mb-10 font-medium">
                 C'est une communauté qui rassemble des milliers de personnes passionnées par la découverte de l'Afrique. Notre présence digitale nous permet d'inspirer quotidiennement notre audience.
               </p>
-              <a href="https://www.instagram.com/goldies.travel" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 bg-white text-citra-orange px-8 py-4 rounded-full font-dm-sans font-black hover:bg-ink hover:text-white transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-xl hover:-translate-y-1">
+              <a href="https://www.instagram.com/goldies.travel" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 bg-white text-ink px-8 py-4 rounded-full font-dm-sans font-black hover:bg-ink hover:text-white transition-all duration-300 shadow-xl hover:-translate-y-1">
                 Suivez l'aventure <ArrowRight size={20} />
               </a>
             </div>
             
             <div className="grid sm:grid-cols-2 gap-6 lg:ml-10">
-              <div className="bg-white/10 backdrop-blur-xl rounded-[32px] p-8 border border-white/30 flex flex-col items-center justify-center text-center hover:bg-white/20 transition-all duration-300 shadow-2xl shadow-ink/10 group hover:-translate-y-2">
-                <h4 className="font-pp-neue-corp-compact font-black text-white text-4xl mb-3 drop-shadow-md">+ 45 000</h4>
-                <p className="font-dm-sans text-base text-white/90 font-medium leading-relaxed drop-shadow-sm">
+              <div className="bg-white/95 backdrop-blur-md rounded-[32px] p-8 border border-white flex flex-col items-center justify-center text-center transition-all duration-300 shadow-xl hover:shadow-2xl group hover:-translate-y-2">
+                <h4 className="font-pp-neue-corp-compact font-black text-ink group-hover:text-citra-orange transition-colors text-4xl mb-3">+ 45 000</h4>
+                <p className="font-dm-sans text-base text-ink/80 font-medium leading-relaxed">
                   Abonnés sur TikTok
                 </p>
               </div>
-              <div className="bg-white/10 backdrop-blur-xl rounded-[32px] p-8 border border-white/30 flex flex-col items-center justify-center text-center sm:translate-y-12 hover:bg-white/20 transition-all duration-300 shadow-2xl shadow-ink/10 mt-6 sm:mt-0 group hover:-translate-y-2">
-                <h4 className="font-pp-neue-corp-compact font-black text-white text-4xl mb-3 drop-shadow-md">+ 3 400</h4>
-                <p className="font-dm-sans text-base text-white/90 font-medium leading-relaxed drop-shadow-sm">
+              <div className="bg-white/95 backdrop-blur-md rounded-[32px] p-8 border border-white flex flex-col items-center justify-center text-center sm:translate-y-12 transition-all duration-300 shadow-xl hover:shadow-2xl mt-6 sm:mt-0 group hover:-translate-y-2">
+                <h4 className="font-pp-neue-corp-compact font-black text-ink group-hover:text-citra-orange transition-colors text-4xl mb-3">+ 3 400</h4>
+                <p className="font-dm-sans text-base text-ink/80 font-medium leading-relaxed">
                   Abonnés sur Instagram
                 </p>
               </div>
-              <div className="bg-white/10 backdrop-blur-xl rounded-[32px] p-8 border border-white/30 flex flex-col items-center justify-center text-center hover:bg-white/20 transition-all duration-300 shadow-2xl shadow-ink/10 mt-6 sm:mt-16 group hover:-translate-y-2 sm:col-span-2">
-                <h4 className="font-pp-neue-corp-compact font-black text-white text-4xl mb-3 drop-shadow-md">+ 300 000</h4>
-                <p className="font-dm-sans text-base text-white/90 font-medium leading-relaxed drop-shadow-sm">
+              <div className="bg-white/95 backdrop-blur-md rounded-[32px] p-8 border border-white flex flex-col items-center justify-center text-center transition-all duration-300 shadow-xl hover:shadow-2xl mt-6 sm:mt-16 group hover:-translate-y-2 sm:col-span-2">
+                <h4 className="font-pp-neue-corp-compact font-black text-ink group-hover:text-citra-orange transition-colors text-4xl mb-3">+ 300 000</h4>
+                <p className="font-dm-sans text-base text-ink/80 font-medium leading-relaxed">
                   Personnes touchées grâce aux réseaux sociaux de nos fondatrices et marques.
                 </p>
               </div>

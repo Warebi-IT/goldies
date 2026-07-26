@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { MapPin, ArrowRight, Users, Clock } from "lucide-react";
+import { MapPin, ArrowRight, Users, Clock, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import destSenegal from "@/assets/dest-senegal.jpg";
 import destMaroc from "@/assets/dest-maroc.jpg";
@@ -81,19 +81,20 @@ const HomeDestinations = () => {
 
                 {/* Card content */}
                 <div className="flex-1 flex flex-col">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-1 text-ink/70">
-                      <MapPin size={14} />
-                      <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{d.destination}</span>
-                    </div>
-                    <span className="font-pp-neue-corp-compact font-black text-2xl text-ink">
-                      {d.price} {d.price === "À partir de" ? "" : "€"}
-                    </span>
+                  <div className="flex items-center gap-1 text-ink/70 mb-2">
+                    <MapPin size={14} />
+                    <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{d.destination}</span>
                   </div>
 
-                  <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-2 group-hover:text-citra-orange transition-colors">
+                  <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-3 group-hover:text-citra-orange transition-colors">
                     {d.name}
                   </h3>
+
+                  {/* Dates du voyage */}
+                  <div className="inline-flex items-center gap-2 text-ink font-dm-sans text-xs font-extrabold bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-full mb-3 border border-ink/10 shadow-2xs w-fit">
+                    <Calendar size={14} className="text-citra-orange shrink-0" />
+                    <span>{d.dates}</span>
+                  </div>
 
                   <div className="flex items-center gap-3 text-ink/70 mb-3 text-xs font-dm-sans font-bold">
                     <div className="flex items-center gap-1">
@@ -105,6 +106,12 @@ const HomeDestinations = () => {
                       <Users size={14} />
                       <span>{(d as any).spots_left ?? 8} Places restantes</span>
                     </div>
+                  </div>
+
+                  {/* Klarna Fractional Payment */}
+                  <div className="mb-3 px-3 py-1.5 bg-[#FFE1E8]/60 text-ink/80 text-[11px] font-dm-sans font-bold rounded-md w-fit flex items-center gap-1.5">
+                    <span className="font-black">Klarna.</span>
+                    Paiement en 3x sans frais
                   </div>
 
                   <p className="text-sm font-dm-sans font-medium text-ink/80 leading-relaxed line-clamp-2 mb-6 flex-1">

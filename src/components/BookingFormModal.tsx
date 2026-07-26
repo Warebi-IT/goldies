@@ -361,8 +361,8 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
 
         {/* Footer actions */}
         <div className="p-6 bg-white/80 backdrop-blur-md border-t border-ink/10 shrink-0 flex flex-col sm:flex-row justify-between items-center gap-4">
-           <div className="text-ink/70 font-dm-sans text-sm">
-             Total du voyage : <strong className="text-ink text-lg">{trip.price} €</strong>
+           <div className="text-ink/80 font-dm-sans text-sm">
+             Séjour sélectionné : <strong className="text-ink font-extrabold text-base">{trip.name}</strong> <span className="text-ink/70 text-xs font-bold font-dm-sans block sm:inline sm:ml-2">({trip.dates})</span>
            </div>
            <div className="flex gap-4 w-full sm:w-auto">
               <Button type="button" variant="ghost" onClick={onClose} className="w-full sm:w-auto rounded-full font-dm-sans font-bold">
