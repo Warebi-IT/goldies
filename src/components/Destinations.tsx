@@ -13,19 +13,10 @@ const fallbackImages: Record<string, string> = {
   "Tanzanie": destTanzanie,
 };
 
+import { staticTrips } from "@/data/trips";
+
 const Destinations = () => {
-  const { data: trips } = useQuery({
-    queryKey: ["public-trips"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("trips")
-        .select("*")
-        .eq("is_active", true)
-        .order("created_at");
-      if (error) throw error;
-      return data;
-    },
-  });
+  const trips = staticTrips;
 
   return (
     <>
@@ -110,7 +101,9 @@ const Destinations = () => {
                       <MapPin size={14} />
                       <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{d.destination}</span>
                     </div>
-                    <span className="font-pp-neue-corp-compact font-black text-2xl text-ink">{d.price} €</span>
+                    <span className="font-pp-neue-corp-compact font-black text-2xl text-ink">
+                      {d.price} {d.price === "À partir de" ? "" : "€"}
+                    </span>
                   </div>
                   
                   <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-2">

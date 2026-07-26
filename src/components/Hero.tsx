@@ -1,19 +1,9 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Compass, Sparkles } from "lucide-react";
 import InteractiveHeart from "./InteractiveHeart";
-import imgChildren from "@/assets/children.jpeg";
-import imgFourImage from "@/assets/fourimagegoldiesChlidrenWomen.jpeg";
-import imgWomenScarf from "@/assets/womenwithscarf.jpeg";
-import onlyWomen from "@/assets/onlywomen.jpeg";
 import videoSenegal from "@/assets/goldiessenegalversion.mp4";
 
 const Hero = () => {
-  const [activeImg, setActiveImg] = useState<number | null>(null);
-
-  const handleImgClick = (index: number) => {
-    setActiveImg(activeImg === index ? null : index);
-  };
 
   return (
     <section
@@ -55,13 +45,13 @@ const Hero = () => {
 
         {/* Headline */}
         <h1 className="text-ink text-3xl md:text-5xl lg:text-[3.5rem] xl:text-[4.5rem] tracking-tight mb-8 leading-[1.05]">
-          <span className="font-dm-sans font-bold block">Voyagez autrement,</span>
-          <span className="font-serif italic font-semibold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-400 block mt-1">vivez pleinement</span>
+          <span className="font-dm-sans font-bold block">Voyager autrement.</span>
+          <span className="font-serif italic font-semibold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-400 block mt-1">Rencontrer, partager, grandir.</span>
         </h1>
 
         {/* Subtitle */}
         <p className="text-black font-dm-sans text-base md:text-lg max-w-lg font-medium leading-relaxed mb-12">
-          Des séjours en groupe exclusivement féminins à la découverte de l'Afrique. Logement, transport, activités et repas inclus.
+          Goldies Travel est une agence spécialisée dans l'organisation de voyages immersifs et expérientiels en Afrique. Depuis plus de trois ans, nous imaginons des séjours qui vont bien au-delà du tourisme traditionnel.
         </p>
 
         {/* Buttons */}
@@ -84,54 +74,7 @@ const Hero = () => {
 
       </div>
 
-      {/* 
-        Right Content (Photos)
-        A beautiful collage of photos perfectly balancing the right edge.
-      */}
-      <div className="relative z-10 w-full lg:w-[30%] xl:w-[25%] mt-[5vh] lg:mt-[15vh] hidden lg:flex justify-center lg:justify-end pointer-events-none">
-        <div className="relative w-full max-w-[320px] md:max-w-[400px] aspect-[3/4]">
-           
-           {/* Backdrop for active image */}
-           {activeImg !== null && (
-             <div 
-               className="fixed inset-0 z-40 bg-white/30 backdrop-blur-md cursor-pointer pointer-events-auto transition-all duration-500" 
-               onClick={() => setActiveImg(null)}
-             />
-           )}
-
-           {/* Third Photo (Top Right, Behind) -> z-0 */}
-           <div 
-             onClick={() => handleImgClick(0)}
-             className={`absolute -top-12 -right-12 w-3/4 aspect-square rounded-[2rem] overflow-hidden shadow-xl border-[6px] border-white transition-all duration-500 pointer-events-auto cursor-pointer
-               ${activeImg === 0 ? 'z-50 scale-125 rotate-0 shadow-2xl' : 'z-0 rotate-12 hover:rotate-6 hover:scale-[1.05] opacity-90 hover:opacity-100'}
-             `}
-           >
-             <img src={imgFourImage} alt="Collage Femmes et Enfants" className="w-full h-full object-cover" />
-           </div>
-
-           {/* Main Photo (Tall) -> z-10 */}
-           <div 
-             onClick={() => handleImgClick(1)}
-             className={`absolute inset-0 rounded-[2rem] overflow-hidden shadow-2xl border-[6px] border-white transition-all duration-500 pointer-events-auto cursor-pointer
-               ${activeImg === 1 ? 'z-50 scale-[1.15] rotate-0' : 'z-10 rotate-3 hover:rotate-1 hover:scale-[1.02]'}
-             `}
-           >
-             <img src={imgWomenScarf} alt="Femmes avec foulard" className="w-full h-full object-cover" />
-           </div>
-           
-           {/* Overlapping Photo (Square/Small) -> z-20 */}
-           <div 
-             onClick={() => handleImgClick(2)}
-             className={`absolute -bottom-8 -left-12 w-2/3 aspect-square rounded-[2rem] overflow-hidden shadow-2xl border-[6px] border-white transition-all duration-500 pointer-events-auto cursor-pointer
-               ${activeImg === 2 ? 'z-50 scale-[1.35] rotate-0 -translate-y-8 translate-x-8' : 'z-20 -rotate-6 hover:-rotate-2 hover:scale-[1.05]'}
-             `}
-           >
-             <img src={imgChildren} alt="Enfants" className="w-full h-full object-cover" />
-           </div>
-
-        </div>
-      </div>
-
+      {/* Photo collage removed per user request */}
     </section>
   );
 };

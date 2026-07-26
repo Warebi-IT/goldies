@@ -21,8 +21,8 @@ const Footer = () => {
               </span>
             </div>
             <p className="text-cream-card/80 text-sm font-dm-sans font-medium leading-relaxed">
-              Agence de voyage solidaire et d'empouvoirement 100% féminin.
-              Découvrez l'Afrique autrement.
+              Voyager autrement. Rencontrer, partager, grandir.
+              Agence spécialisée dans l'organisation de voyages immersifs et expérientiels en Afrique.
             </p>
           </div>
 

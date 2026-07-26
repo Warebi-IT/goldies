@@ -8,21 +8,14 @@ import { MapPin, Calendar, Clock, ArrowLeft, ArrowRight, CheckCircle, Users, X, 
 import { Button } from "@/components/ui/button";
 import BookingFormModal from "@/components/BookingFormModal";
 
+import { staticTrips } from "@/data/trips";
+
 const VoyageDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
-  const { data: trip, isLoading } = useQuery({
-    queryKey: ["trip-detail", id],
-    queryFn: async () => {
-      let q = await supabase.from("trips").select("*").eq("slug", id!).maybeSingle();
-      if (!q.data) {
-        q = await supabase.from("trips").select("*").eq("id", id!).maybeSingle();
-      }
-      if (q.error) throw q.error;
-      return q.data;
-    },
-  });
+  const trip = staticTrips.find(t => t.slug === id || t.id === id);
+  const isLoading = false;
 
   const { data: tripPhotos } = useQuery({
     queryKey: ["trip-photos", trip?.id],
@@ -288,7 +281,9 @@ const VoyageDetail = () => {
           <aside className="lg:sticky lg:top-32 h-fit bg-white/80 backdrop-blur-sm rounded-[32px] shadow-xl p-8 text-ink space-y-6">
             <div className="flex items-baseline justify-between">
               <span className="font-dm-sans text-sm text-ink/60">À partir de</span>
-              <span className="font-pp-neue-corp-compact text-4xl font-black text-citra-orange">{trip.price} €</span>
+              <span className="font-pp-neue-corp-compact text-4xl font-black text-citra-orange">
+                {trip.price} {trip.price === "À partir de" ? "" : "€"}
+              </span>
             </div>
             <div className="space-y-4 text-sm border-t border-ink/5 pt-6">
               <div className="flex items-center gap-3 font-dm-sans text-ink/80">

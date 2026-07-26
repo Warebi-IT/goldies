@@ -160,8 +160,10 @@ const Contact = () => {
                     <option value="">Choisir une destination</option>
                     <option value="senegal">Sénégal</option>
                     <option value="maroc">Maroc</option>
-                    <option value="benin">Bénin</option>
-                    <option value="tanzanie">Tanzanie (bientôt)</option>
+                    <option value="tanzanie">Tanzanie (prochainement)</option>
+                    <option value="kenya">Kenya (prochainement)</option>
+                    <option value="afrique-du-sud">Afrique du Sud (prochainement)</option>
+                    <option value="namibie">Namibie (prochainement)</option>
                   </select>
                 </div>
                 <div>
