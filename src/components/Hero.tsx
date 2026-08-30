@@ -3,7 +3,8 @@ import { Compass, Sparkles, MapPin, Calendar, ArrowUpRight, Star, CreditCard } f
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { staticTrips } from "@/data/trips";
-import videoSenegal from "@/assets/goldiessenegalversion.mp4";
+import heroBg from "/femmes-mixtes-en-blanc-dans-le-desert.jpeg";
+import InteractiveHeart from "@/components/InteractiveHeart";
 import destSenegal from "@/assets/dest-senegal.jpg";
 import avatarWomen1 from "@/assets/womenwithscarf.jpeg";
 import avatarWomen2 from "@/assets/onlywomen.jpeg";
@@ -51,22 +52,23 @@ const Hero = () => {
       id="accueil"
       className="relative z-0 w-full min-h-[100dvh] flex flex-col justify-between px-6 md:px-12 lg:px-16 pt-28 pb-12 overflow-hidden"
     >
-      {/* 1. Background Video */}
-      <div className="absolute inset-0 w-full h-full z-[-3] overflow-hidden bg-white">
-        <video 
-          src={videoSenegal} 
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
-          className="w-full h-full object-cover opacity-90 scale-105 animate-pan-slow"
+      {/* 1. Background Image — static, no zoom */}
+      <div className="absolute inset-0 w-full h-full z-[-3] overflow-hidden">
+        <img
+          src={heroBg}
+          alt="Femmes Goldies dans le désert"
+          className="w-full h-full object-cover object-center"
         />
       </div>
 
-      {/* 2. Pure Crisp White Luminous Scrims */}
-      <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/85 md:via-white/60 to-transparent pointer-events-none z-[-2]" />
-      <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-white/30 to-transparent pointer-events-none z-[-2]" />
-      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white/60 to-transparent pointer-events-none z-[-2]" />
+      {/* 2. Minimal warm overlay — just enough for text contrast */}
+      <div className="absolute inset-0 bg-gradient-to-r from-white/75 via-white/40 md:via-white/20 to-transparent pointer-events-none z-[-2]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent pointer-events-none z-[-2]" />
+
+      {/* 3D Interactive Heart — brand signature restored from git */}
+      <div className="absolute inset-0 z-0 pointer-events-none" aria-hidden="true">
+        <InteractiveHeart />
+      </div>
 
       {/* 3. Main Content Grid (Editorial Left + Floating Card Right) */}
       <div className="relative z-10 w-full max-w-7xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -172,14 +174,13 @@ const Hero = () => {
 
         </div>
 
-        {/* Right Column: Floating "Prochain Départ" Card — Subtle version */}
-        {trip && (
+        {/* Right Column: Floating "Prochain Départ" Card — COMMENTÉ TEMPORAIREMENT */}
+        {/* {trip && (
           <div className="lg:col-span-5 xl:col-span-4 flex justify-center lg:justify-end mt-4 lg:mt-0">
             <Link 
               to={`/voyages/${trip.slug || trip.id}`}
               className="group relative w-full max-w-[260px] bg-white/80 backdrop-blur-xl border border-white/50 rounded-2xl p-4 shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_35px_rgba(182,101,110,0.2)] hover:bg-white/90"
             >
-              {/* Header Badge — compact */}
               <div className="flex items-center justify-between gap-2 mb-2.5">
                 <span className="inline-flex items-center gap-1 text-[10px] font-dm-sans font-extrabold uppercase tracking-wider text-citra-orange">
                   <span className="w-1.5 h-1.5 rounded-full bg-citra-orange animate-pulse" />
@@ -189,14 +190,8 @@ const Hero = () => {
                   🔥 {trip.spots_left || 12} places
                 </span>
               </div>
-
-              {/* Destination Image — smaller */}
               <div className="relative h-32 rounded-xl overflow-hidden mb-3">
-                <img 
-                  src={trip.image_url || destSenegal} 
-                  alt={trip.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
-                />
+                <img src={trip.image_url || destSenegal} alt={trip.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
                 <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-white text-[10px] font-dm-sans font-bold">
                   <span className="flex items-center gap-1 bg-black/40 backdrop-blur-md px-2 py-0.5 rounded-full">
@@ -208,19 +203,13 @@ const Hero = () => {
                   </span>
                 </div>
               </div>
-
-              {/* Trip Title — compact */}
               <h3 className="font-pp-neue-corp-compact font-black uppercase text-base text-ink tracking-tight mb-1 group-hover:text-citra-orange transition-colors leading-tight">
                 {trip.name}
               </h3>
-
-              {/* Dates — compact */}
               <p className="text-[10px] font-dm-sans font-medium text-ink/60 mb-2.5 flex items-center gap-1.5">
                 <Calendar size={11} className="text-citra-orange shrink-0" />
                 <span>{trip.dates}</span>
               </p>
-
-              {/* Bottom row */}
               <div className="flex items-center justify-between pt-2.5 border-t border-ink/8">
                 <div>
                   <span className="text-[9px] font-dm-sans text-ink/40 block">À partir de</span>
@@ -235,7 +224,8 @@ const Hero = () => {
               </div>
             </Link>
           </div>
-        )}
+        )} */}
+
 
       </div>
     </section>

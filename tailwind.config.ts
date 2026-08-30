@@ -145,6 +145,11 @@ export default {
           "45%": { transform: "scale(1.15)" },
           "60%": { transform: "scale(1)" },
         },
+        "float-heart": {
+          "0%": { transform: "translateY(0px) rotate(-4deg)" },
+          "50%": { transform: "translateY(-14px) rotate(4deg)" },
+          "100%": { transform: "translateY(0px) rotate(-4deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -153,6 +158,7 @@ export default {
         "noise-jitter": "noise-jitter 0.8s infinite",
         "float-slow": "float-slow 20s ease-in-out infinite",
         "pan-slow": "pan-slow 30s ease-in-out infinite alternate",
+        "float-heart": "float-heart 4s ease-in-out infinite",
       },
     },
   },
