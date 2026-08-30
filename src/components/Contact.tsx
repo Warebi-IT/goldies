@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Send, Instagram } from "lucide-react";
 import videoSenegal from "@/assets/goldiessenegalversion.mp4";
 import { supabase } from "@/integrations/supabase/client";
+import { isValidEmail, sanitizeTextInput } from "@/lib/security";
 
 const Contact = () => {
   const [prenom, setPrenom] = useState("");
@@ -9,25 +10,46 @@ const Contact = () => {
   const [email, setEmail] = useState("");
   const [destination, setDestination] = useState("");
   const [message, setMessage] = useState("");
+  const [honeypot, setHoneypot] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError("");
+
+    // Bot detection via honeypot
+    if (honeypot.trim() !== "") {
+      setSubmitted(true);
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setFormError("Veuillez saisir une adresse email valide.");
+      return;
+    }
+
+    const cleanPrenom = sanitizeTextInput(prenom, 100);
+    const cleanNom = sanitizeTextInput(nom, 100);
+    const cleanEmail = sanitizeTextInput(email, 254).toLowerCase();
+    const cleanDest = sanitizeTextInput(destination, 100);
+    const cleanMessage = sanitizeTextInput(message, 3000);
+
     setLoading(true);
     try {
       const { error } = await supabase.from("contacts").insert({
-        prenom,
-        nom,
-        email,
-        destination,
-        message
+        prenom: cleanPrenom,
+        nom: cleanNom,
+        email: cleanEmail,
+        destination: cleanDest,
+        message: cleanMessage,
       });
       if (error) throw error;
       setSubmitted(true);
     } catch (err: any) {
       console.error("Error sending contact message:", err);
-      alert("Une erreur est survenue lors de l'envoi de votre message: " + err.message);
+      setFormError("Une erreur est survenue lors de l'envoi de votre message. Veuillez réessayer.");
     } finally {
       setLoading(false);
     }
@@ -106,6 +128,24 @@ const Contact = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Honeypot field for bot mitigation */}
+                <div className="hidden" aria-hidden="true" style={{ display: "none" }}>
+                  <input
+                    type="text"
+                    name="website_url"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
+                </div>
+
+                {formError && (
+                  <div className="p-3 bg-red-100/90 border border-red-300 rounded-xl text-red-800 text-sm font-dm-sans">
+                    {formError}
+                  </div>
+                )}
+
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-dm-sans font-bold text-ink mb-2">

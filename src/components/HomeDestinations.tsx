@@ -12,10 +12,68 @@ const fallbackImages: Record<string, string> = {
   "Tanzanie": destTanzanie,
 };
 
-import { staticTrips } from "@/data/trips";
-
 const HomeDestinations = () => {
-  const trips = staticTrips.slice(0, 3);
+  const { data: trips, isLoading } = useQuery({
+    queryKey: ["home-trips"],
+    queryFn: async () => {
+      let result = [];
+      const today = new Date().toISOString();
+
+      // 1. Try to fetch featured trips, gracefully handle error if column doesn't exist
+      const { data: featured, error: fError } = await supabase
+        .from("trips")
+        .select("*")
+        .eq("is_active", true)
+        .eq("is_featured", true)
+        .order("created_at", { ascending: false })
+        .limit(3);
+        
+      if (!fError && featured) {
+        result = [...featured];
+      }
+
+      // 2. If we need more trips (or if featured failed), fetch closest upcoming
+      if (result.length < 3) {
+        const { data: upcoming } = await supabase
+          .from("trips")
+          .select("*")
+          .eq("is_active", true)
+          .gte("start_date", today)
+          .order("start_date", { ascending: true })
+          .limit(10);
+          
+        const existingIds = new Set(result.map((t) => t.id));
+        for (const trip of upcoming || []) {
+          if (result.length >= 3) break;
+          if (!existingIds.has(trip.id)) {
+            result.push(trip);
+            existingIds.add(trip.id);
+          }
+        }
+      }
+
+      // 3. If still < 3, fetch latest as a last resort
+      if (result.length < 3) {
+        const { data: latest } = await supabase
+          .from("trips")
+          .select("*")
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .limit(10);
+          
+        const existingIds = new Set(result.map((t) => t.id));
+        for (const trip of latest || []) {
+          if (result.length >= 3) break;
+          if (!existingIds.has(trip.id)) {
+            result.push(trip);
+            existingIds.add(trip.id);
+          }
+        }
+      }
+
+      return result;
+    },
+  });
 
   return (
     <section id="destinations" className="relative z-10 py-20">
@@ -36,12 +94,15 @@ const HomeDestinations = () => {
         </div>
 
         {/* Trip cards */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {trips?.map((d, idx) => {
-            const img = d.image_url || fallbackImages[d.destination] || destSenegal;
-            
-            const bgColors = ["bg-pastel-sand", "bg-pastel-sage", "bg-pastel-rose", "bg-pastel-peach", "bg-pastel-lime"];
-            const cardBg = bgColors[idx % bgColors.length];
+        {isLoading ? (
+          <div className="py-12 flex flex-col items-center justify-center space-y-4">
+            <div className="w-12 h-12 border-4 border-citra-orange border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-ink/60 font-dm-sans font-medium">Chargement des voyages...</p>
+          </div>
+        ) : trips && trips.length > 0 ? (
+          <div className="grid md:grid-cols-3 gap-6">
+            {trips.map((d, idx) => {
+              const img = d.image_url || fallbackImages[d.destination] || destSenegal;
             
             // Dynamic color logic for trip status
             let tagColors = "bg-amber-400 text-ink shadow-sm"; // Default
@@ -60,7 +121,7 @@ const HomeDestinations = () => {
               <Link
                 key={d.id}
                 to={`/voyages/${d.slug || d.id}`}
-                className={`group relative flex flex-col overflow-hidden ${cardBg} shadow-md hover:shadow-xl rounded-cards p-6 transition-all duration-300 hover:-translate-y-1`}
+                className={`group relative flex flex-col overflow-hidden bg-cream-card shadow-md hover:shadow-xl rounded-cards p-6 transition-all duration-300 hover:-translate-y-1 border border-ink/5`}
               >
                 {/* Thumbnail */}
                 <div className="aspect-[4/3] overflow-hidden rounded-[20px] mb-6 relative">
@@ -90,6 +151,18 @@ const HomeDestinations = () => {
                     {d.name}
                   </h3>
 
+                  {/* Price */}
+                  <div className="mb-3">
+                    {typeof d.price === "number" ? (
+                      <div className="flex items-baseline gap-1">
+                        <span className="font-pp-neue-corp-compact text-3xl font-black text-citra-orange">{d.price} €</span>
+                        <span className="text-xs font-dm-sans font-bold text-ink/50">/pers.</span>
+                      </div>
+                    ) : (
+                      <span className="font-pp-neue-corp-compact text-lg font-black text-citra-orange">{d.price}</span>
+                    )}
+                  </div>
+
                   {/* Dates du voyage */}
                   <div className="inline-flex items-center gap-2 text-ink font-dm-sans text-xs font-extrabold bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-full mb-3 border border-ink/10 shadow-2xs w-fit">
                     <Calendar size={14} className="text-citra-orange shrink-0" />
@@ -108,10 +181,9 @@ const HomeDestinations = () => {
                     </div>
                   </div>
 
-                  {/* Klarna Fractional Payment */}
+                  {/* Payment options */}
                   <div className="mb-3 px-3 py-1.5 bg-[#FFE1E8]/60 text-ink/80 text-[11px] font-dm-sans font-bold rounded-md w-fit flex items-center gap-1.5">
-                    <span className="font-black">Klarna.</span>
-                    Paiement en 3x sans frais
+                    Acompte {(d as any).deposit_amount ? `${(d as any).deposit_amount} €` : typeof d.price === "number" ? `${Math.round(d.price * 0.3)} €` : "30%"} ou 3x sans frais
                   </div>
 
                   <p className="text-sm font-dm-sans font-medium text-ink/80 leading-relaxed line-clamp-2 mb-6 flex-1">
@@ -126,7 +198,12 @@ const HomeDestinations = () => {
               </Link>
             );
           })}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center py-12 bg-white rounded-3xl border border-ink/5 shadow-sm">
+            <p className="text-ink/60 font-dm-sans">Aucun voyage mis à la une pour le moment.</p>
+          </div>
+        )}
 
         {/* Global CTA */}
         <div className="text-center mt-12">

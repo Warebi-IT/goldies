@@ -53,6 +53,33 @@ export default {
         "charcoal-text": "var(--color-ink)",
         "haze-grey": "var(--color-concrete-canvas)",
         
+        /* Night Blue overrides for grays */
+        gray: {
+          50: '#f0f2f7',
+          100: '#e1e5ee',
+          200: '#c5cddf',
+          300: '#a8b4cf',
+          400: '#8c9cbf',
+          500: '#6f84af',
+          600: '#566a94',
+          700: '#435374',
+          800: '#2f3b53',
+          900: '#1E2A4A',
+          950: '#111728',
+        },
+        slate: {
+          50: '#f0f2f7', 100: '#e1e5ee', 200: '#c5cddf', 300: '#a8b4cf', 400: '#8c9cbf', 500: '#6f84af', 600: '#566a94', 700: '#435374', 800: '#2f3b53', 900: '#1E2A4A', 950: '#111728',
+        },
+        zinc: {
+          50: '#f0f2f7', 100: '#e1e5ee', 200: '#c5cddf', 300: '#a8b4cf', 400: '#8c9cbf', 500: '#6f84af', 600: '#566a94', 700: '#435374', 800: '#2f3b53', 900: '#1E2A4A', 950: '#111728',
+        },
+        neutral: {
+          50: '#f0f2f7', 100: '#e1e5ee', 200: '#c5cddf', 300: '#a8b4cf', 400: '#8c9cbf', 500: '#6f84af', 600: '#566a94', 700: '#435374', 800: '#2f3b53', 900: '#1E2A4A', 950: '#111728',
+        },
+        stone: {
+          50: '#f0f2f7', 100: '#e1e5ee', 200: '#c5cddf', 300: '#a8b4cf', 400: '#8c9cbf', 500: '#6f84af', 600: '#566a94', 700: '#435374', 800: '#2f3b53', 900: '#1E2A4A', 950: '#111728',
+        },
+        
         primary: {
           DEFAULT: "var(--color-citra-orange)",
           foreground: "var(--color-paper-white)",

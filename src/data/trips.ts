@@ -33,7 +33,10 @@ export const staticTrips = [
       "Activités touristiques",
       "Repas",
       "Accompagnement local"
-    ]
+    ],
+    payment_link: null,
+    deposit_payment_link: null,
+    deposit_amount: null
   },
   {
     id: "senegal-sept-2026",
@@ -66,6 +69,9 @@ export const staticTrips = [
       "Activités touristiques",
       "Repas",
       "Accompagnement local"
-    ]
+    ],
+    payment_link: null,
+    deposit_payment_link: null,
+    deposit_amount: null
   }
 ];

@@ -7,15 +7,31 @@ import Footer from "@/components/Footer";
 import { MapPin, Calendar, Clock, ArrowLeft, ArrowRight, CheckCircle, Users, X, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BookingFormModal from "@/components/BookingFormModal";
-
-import { staticTrips } from "@/data/trips";
+import { calculateDepositAmount } from "@/lib/business-rules";
 
 const VoyageDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
-  const trip = staticTrips.find(t => t.slug === id || t.id === id);
-  const isLoading = false;
+  const { data: trip, isLoading } = useQuery({
+    queryKey: ["trip", id],
+    queryFn: async () => {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id || "");
+      
+      let query = supabase.from("trips").select("*");
+      
+      if (isUuid) {
+        query = query.eq("id", id);
+      } else {
+        query = query.eq("slug", id);
+      }
+      
+      const { data, error } = await query.single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
 
   const { data: tripPhotos } = useQuery({
     queryKey: ["trip-photos", trip?.id],
@@ -74,9 +90,11 @@ const VoyageDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen">
-        <Navbar />
-        <div className="pt-32 container mx-auto px-4 text-muted-foreground">Chargement...</div>
+      <div className="min-h-screen flex items-center justify-center bg-cream-card">
+        <div className="animate-pulse flex flex-col items-center justify-center space-y-4">
+          <div className="w-12 h-12 border-4 border-citra-orange border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-ink/60 font-dm-sans font-medium">Chargement du voyage...</p>
+        </div>
       </div>
     );
   }
@@ -279,6 +297,23 @@ const VoyageDetail = () => {
 
           {/* Sidebar */}
           <aside className="lg:sticky lg:top-32 h-fit bg-white/90 backdrop-blur-md rounded-[32px] shadow-xl p-8 text-ink space-y-6 border border-white/50">
+            {/* Price */}
+            <div className="border-b border-ink/10 pb-6 text-center">
+              {typeof trip.price === "number" ? (
+                <>
+                  <p className="font-dm-sans text-xs font-bold uppercase tracking-widest text-ink/60 mb-1">Prix par personne</p>
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="font-pp-neue-corp-compact text-5xl font-black text-citra-orange">{trip.price}</span>
+                    <span className="font-pp-neue-corp-compact text-2xl font-black text-citra-orange">€</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="font-dm-sans text-xs font-bold uppercase tracking-widest text-ink/60 mb-1">Tarif</p>
+                  <span className="font-pp-neue-corp-compact text-2xl font-black text-citra-orange">{trip.price}</span>
+                </>
+              )}
+            </div>
             <div className="border-b border-ink/10 pb-6">
               <p className="font-dm-sans text-xs font-bold uppercase tracking-widest text-ink/60 mb-2">Dates du séjour</p>
               <div className="flex items-center gap-2.5 text-ink">
@@ -315,15 +350,33 @@ const VoyageDetail = () => {
             )}
 
             <div className="mt-6 flex flex-col items-center gap-3">
-              <div className="px-4 py-2 bg-[#FFE1E8]/60 text-ink/80 text-xs font-dm-sans font-bold rounded-lg w-full flex justify-center items-center gap-2">
+              {/* Payment info badges */}
+              {(trip as any).deposit_payment_link && (
+                <div className="px-4 py-2.5 bg-blue-50 text-blue-900 text-xs font-dm-sans font-bold rounded-xl w-full flex justify-center items-center gap-2 border border-blue-100 shadow-sm">
+                  💰 Acompte de {calculateDepositAmount(trip.price, (trip as any).deposit_amount)} € disponible pour réserver
+                </div>
+              )}
+              <div className="px-4 py-2.5 bg-[#FFE1E8]/60 text-ink/90 text-xs font-dm-sans font-bold rounded-xl w-full flex justify-center items-center gap-2 border border-[#FFE1E8]">
                 <span className="font-black">Klarna.</span>
                 Paiement en 3x ou 4x sans frais disponible
               </div>
               
-              {trip.payment_link ? (
+              {trip.tag === "Complet" || (trip as any).spots_left === 0 ? (
+                <div className="w-full space-y-2">
+                  <div className="bg-amber-100 border border-amber-300 text-amber-900 text-xs font-bold p-3 rounded-xl text-center">
+                    ⚠️ Ce voyage est complet. Inscrivez-vous pour être alertée en priorité en cas de désistement.
+                  </div>
+                  <Button 
+                    onClick={() => setIsBookingModalOpen(true)}
+                    className="w-full rounded-full shadow-lg bg-ink text-white hover:bg-citra-orange font-dm-sans font-bold h-14 transition-all duration-300"
+                  >
+                    Rejoindre la liste d'attente
+                  </Button>
+                </div>
+              ) : (trip.payment_link || (trip as any).deposit_payment_link) ? (
                 <Button 
                   onClick={() => setIsBookingModalOpen(true)}
-                  className="w-full rounded-full shadow-md bg-white/50 backdrop-blur-sm text-ink hover:bg-ink hover:text-cream-card font-dm-sans font-bold h-14 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  className="w-full rounded-full shadow-lg bg-ink text-cream-card hover:bg-citra-orange hover:text-white font-dm-sans font-bold h-14 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
                   Réserver maintenant
                 </Button>
