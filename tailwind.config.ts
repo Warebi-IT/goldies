@@ -150,6 +150,10 @@ export default {
           "50%": { transform: "translateY(-14px) rotate(4deg)" },
           "100%": { transform: "translateY(0px) rotate(-4deg)" },
         },
+        "ticker": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-33.333%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -159,6 +163,7 @@ export default {
         "float-slow": "float-slow 20s ease-in-out infinite",
         "pan-slow": "pan-slow 30s ease-in-out infinite alternate",
         "float-heart": "float-heart 4s ease-in-out infinite",
+        "ticker": "ticker 28s linear infinite",
       },
     },
   },
