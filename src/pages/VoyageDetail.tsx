@@ -4,14 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { MapPin, Calendar, Clock, ArrowLeft, ArrowRight, CheckCircle, Users, X, Eye } from "lucide-react";
+import { MapPin, Calendar, Clock, ArrowLeft, ArrowRight, CheckCircle, Users, X, Eye, CreditCard, Sparkles, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BookingFormModal from "@/components/BookingFormModal";
-import { calculateDepositAmount } from "@/lib/business-rules";
+import { calculateDepositAmount, calculateRemainingBalance } from "@/lib/business-rules";
 
 const VoyageDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [bookingPaymentType, setBookingPaymentType] = useState<"deposit" | "installment" | "full">("deposit");
 
   const { data: trip, isLoading } = useQuery({
     queryKey: ["trip", id],
@@ -60,6 +61,12 @@ const VoyageDetail = () => {
         ])
       )
     : [];
+
+  const numericPrice = typeof trip?.price === "number" ? trip.price : parseInt(String(trip?.price || 0), 10) || 0;
+  const depositAmount = trip ? calculateDepositAmount(numericPrice, trip.deposit_amount) : 0;
+  const remainingBalance = trip ? calculateRemainingBalance(numericPrice, depositAmount) : 0;
+  const installment3x = numericPrice > 0 ? Math.round(numericPrice / 3) : 0;
+  const installment4x = numericPrice > 0 ? Math.round(numericPrice / 4) : 0;
 
   useEffect(() => {
     setPhotoIndex(0);
@@ -225,11 +232,103 @@ const VoyageDetail = () => {
       <section className="py-16 bg-concrete-canvas">
         <div className="container mx-auto px-6 grid lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-12">
-            <div className="bg-white/80 backdrop-blur-sm shadow-xl p-8 rounded-[32px]">
-              <h2 className="font-pp-neue-corp-compact text-2xl font-black uppercase tracking-tight mb-4">Description</h2>
-              <p className="font-dm-sans text-ink/80 leading-relaxed whitespace-pre-line text-sm md:text-base">
+            <div className="bg-white/80 backdrop-blur-sm shadow-xl p-8 rounded-[32px] border border-white/60 space-y-6">
+              {/* En-tête de la description avec badges de facilité de paiement */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-ink/10 pb-4">
+                <div>
+                  <h2 className="font-pp-neue-corp-compact text-2xl font-black uppercase tracking-tight text-ink">Description</h2>
+                  <p className="font-dm-sans text-xs text-ink/60 font-medium">Découvrez l'esprit et les détails de cette aventure solidaire</p>
+                </div>
+
+                {/* Badges réactifs de facilitation financière */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-800 text-xs font-bold px-3 py-1.5 rounded-full border border-blue-200/60 shadow-xs">
+                    <CreditCard size={13} className="text-blue-600" />
+                    <span>Acompte : dès {depositAmount} €</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 bg-[#FDF2F4] text-[#111111] text-xs font-bold px-3 py-1.5 rounded-full border border-pink-200/60 shadow-xs">
+                    <span className="bg-black text-white text-[9px] font-black px-1.5 py-0.5 rounded tracking-tighter">Klarna.</span>
+                    <span>3x / 4x sans frais</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Texte de description */}
+              <p className="font-dm-sans text-ink/85 leading-relaxed whitespace-pre-line text-sm md:text-base">
                 {trip.description || "Aucune description disponible."}
               </p>
+
+              {/* Cartes interactives des facilités de paiement intégrées à la description */}
+              <div className="bg-gradient-to-br from-amber-50/70 via-white to-pink-50/50 rounded-2xl p-5 border border-amber-200/60 shadow-sm space-y-3.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles size={16} className="text-citra-orange" />
+                    <h3 className="font-pp-neue-corp-compact text-sm font-black uppercase tracking-wider text-ink">
+                      Facilités de paiement au choix
+                    </h3>
+                  </div>
+                  <span className="font-dm-sans text-[11px] font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                    Paiement 100% sécurisé
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                  {/* Option 1 : Acompte */}
+                  <div 
+                    onClick={() => {
+                      setBookingPaymentType("deposit");
+                      setIsBookingModalOpen(true);
+                    }}
+                    className="group relative bg-white/95 rounded-xl p-4 border border-blue-100/80 shadow-xs hover:shadow-md hover:border-blue-300 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-dm-sans text-xs font-bold text-blue-900 bg-blue-50 px-2 py-0.5 rounded-md">
+                          Option 1 · Acompte
+                        </span>
+                        <span className="font-pp-neue-corp-compact text-lg font-black text-blue-950">
+                          {depositAmount} € <span className="text-[11px] font-dm-sans font-normal text-ink/60">maintenant</span>
+                        </span>
+                      </div>
+                      <p className="font-dm-sans text-xs text-ink/75 leading-relaxed">
+                        Bloquez votre place immédiatement. Solde restant ({remainingBalance} €) payable avant le départ.
+                      </p>
+                    </div>
+                    <div className="mt-3 pt-2.5 border-t border-ink/5 flex items-center justify-between text-blue-700 font-dm-sans text-xs font-bold group-hover:text-blue-900 transition-colors">
+                      <span>Réserver avec acompte</span>
+                      <ArrowRight size={13} className="transform group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+
+                  {/* Option 2 : 3x / 4x Klarna */}
+                  <div 
+                    onClick={() => {
+                      setBookingPaymentType("installment");
+                      setIsBookingModalOpen(true);
+                    }}
+                    className="group relative bg-white/95 rounded-xl p-4 border border-pink-100/80 shadow-xs hover:shadow-md hover:border-pink-300 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-dm-sans text-xs font-bold text-[#491217] bg-[#FDF2F4] px-2 py-0.5 rounded-md flex items-center gap-1">
+                          <span className="bg-black text-white text-[8px] font-black px-1 py-0.2 rounded">Klarna.</span>
+                          Option 2 · Échelonné
+                        </span>
+                        <span className="font-pp-neue-corp-compact text-lg font-black text-ink">
+                          {installment3x > 0 ? `3x ${installment3x} €` : "3x ou 4x"} <span className="text-[11px] font-dm-sans font-normal text-ink/60">sans frais</span>
+                        </span>
+                      </div>
+                      <p className="font-dm-sans text-xs text-ink/75 leading-relaxed">
+                        Paiement en 3x ou 4x sans frais par carte bancaire. 1ère mensualité prélevée aujourd'hui.
+                      </p>
+                    </div>
+                    <div className="mt-3 pt-2.5 border-t border-ink/5 flex items-center justify-between text-[#d64c7f] font-dm-sans text-xs font-bold group-hover:text-[#9e2754] transition-colors">
+                      <span>Payer en plusieurs fois</span>
+                      <ArrowRight size={13} className="transform group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="bg-white/80 backdrop-blur-sm shadow-xl p-8 rounded-[32px]">
@@ -397,6 +496,7 @@ const VoyageDetail = () => {
           isOpen={isBookingModalOpen} 
           onClose={() => setIsBookingModalOpen(false)} 
           trip={trip} 
+          initialPaymentType={bookingPaymentType}
         />
       )}
 

@@ -20,6 +20,7 @@ import { formatUserErrorMessage } from "@/lib/error-handler";
 interface BookingFormModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialPaymentType?: "deposit" | "installment" | "full";
   trip: {
     id: string;
     name: string;
@@ -31,7 +32,7 @@ interface BookingFormModalProps {
   };
 }
 
-const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, trip }) => {
+const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, trip, initialPaymentType }) => {
   // Form State
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
@@ -44,8 +45,14 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
   const [assurance, setAssurance] = useState<"Oui" | "Non" | "Je vais en faire une" | "">("" );
   const [autre, setAutre] = useState("");
   const [paymentType, setPaymentType] = useState<"deposit" | "installment" | "full">(
-    trip.deposit_payment_link ? "deposit" : "full"
+    initialPaymentType || (trip.deposit_payment_link ? "deposit" : "full")
   );
+
+  React.useEffect(() => {
+    if (isOpen && initialPaymentType) {
+      setPaymentType(initialPaymentType);
+    }
+  }, [isOpen, initialPaymentType]);
   const [loading, setLoading] = useState(false);
   const [honeypot, setHoneypot] = useState("");
 
