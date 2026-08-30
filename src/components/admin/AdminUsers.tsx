@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { Trash2, Plus, UserCog } from "lucide-react";
+import { formatUserErrorMessage } from "@/lib/error-handler";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,8 +48,12 @@ const AdminUsers = () => {
   const load = async () => {
     setLoading(true);
     const { data, errorMessage } = await invokeAdmin("list", { method: "GET" });
-    if (errorMessage) toast({ title: "Erreur", description: errorMessage, variant: "destructive" });
-    else setUsers(data?.users ?? []);
+    if (errorMessage) {
+      const errDiag = formatUserErrorMessage(errorMessage);
+      toast({ title: errDiag.title, description: `${errDiag.description} ${errDiag.action || ""}`, variant: "destructive" });
+    } else {
+      setUsers(data?.users ?? []);
+    }
     setLoading(false);
   };
 
@@ -66,7 +71,8 @@ const AdminUsers = () => {
     });
     setSubmitting(false);
     if (errorMessage) {
-      toast({ title: "Erreur", description: errorMessage, variant: "destructive" });
+      const errDiag = formatUserErrorMessage(errorMessage);
+      toast({ title: errDiag.title, description: `${errDiag.description} ${errDiag.action || ""}`, variant: "destructive" });
       return;
     }
     toast({ title: "Invitation envoyée", description: `Invitation envoyée à ${normalizedEmail}` });
@@ -81,9 +87,10 @@ const AdminUsers = () => {
       body: { user_id: toDelete.user_id },
     });
     if (errorMessage) {
-      toast({ title: "Erreur", description: errorMessage, variant: "destructive" });
+      const errDiag = formatUserErrorMessage(errorMessage);
+      toast({ title: errDiag.title, description: `${errDiag.description} ${errDiag.action || ""}`, variant: "destructive" });
     } else {
-      toast({ title: "Admin supprimé" });
+      toast({ title: "Admin supprimé avec succès" });
       load();
     }
     setToDelete(null);
@@ -91,10 +98,19 @@ const AdminUsers = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-card rounded-2xl border border-border p-6">
+      <div className="pb-6 border-b border-ink/10">
+        <h2 className="font-pp-neue-corp-compact text-3xl font-black text-ink uppercase tracking-tight">
+          Gestion des Administrateurs
+        </h2>
+        <p className="font-dm-sans text-sm text-ink/60 mt-1">
+          Invitez de nouveaux administrateurs ou gérez les comptes d'accès existants.
+        </p>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-ink/5 p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-4">
           <Plus size={18} className="text-primary" />
-          <h3 className="font-serif text-lg font-bold text-foreground">Ajouter un admin</h3>
+          <h3 className="font-pp-neue-corp-compact text-lg font-black text-ink uppercase tracking-tight">Ajouter un admin</h3>
         </div>
         <form onSubmit={handleInvite} className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3">
           <Input
@@ -110,10 +126,10 @@ const AdminUsers = () => {
         </form>
       </div>
 
-      <div className="bg-card rounded-2xl border border-border p-6">
+      <div className="bg-white rounded-2xl border border-ink/5 p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-4">
           <UserCog size={18} className="text-primary" />
-          <h3 className="font-serif text-lg font-bold text-foreground">Admins existants</h3>
+          <h3 className="font-pp-neue-corp-compact text-lg font-black text-ink uppercase tracking-tight">Admins existants</h3>
         </div>
         {loading ? (
           <p className="text-sm text-muted-foreground">Chargement...</p>

@@ -18,57 +18,70 @@ const PolitiqueConfidentialite = () => {
             <p><strong>Dernière mise à jour : {new Date().toLocaleDateString('fr-FR')}</strong></p>
 
             <p>
-              Chez Goldies Travel, nous accordons une importance primordiale à la protection de vos données personnelles. Cette politique vise à vous informer en toute transparence sur la manière dont nous collectons, utilisons et protégeons vos informations conformément au Règlement Général sur la Protection des Données (RGPD).
+              Chez Goldies Travel, nous accordons une importance primordiale à la protection de votre vie privée et de vos données personnelles. Cette politique détaille de manière claire et transparente la manière dont nous collectons, traitons, archivons et protégeons vos données conformément au <strong>Règlement Général sur la Protection des Données (RGPD - Règlement UE 2016/679)</strong> et à la <strong>Loi Informatique et Libertés</strong>.
             </p>
 
-            <h2>1. Données collectées</h2>
+            <h2>1. Responsable de Traitement</h2>
             <p>
-              Nous collectons les données suivantes lorsque vous utilisez notre site ou nos services :
+              Le responsable du traitement des données personnelles est <strong>Goldies Travel</strong>.<br/>
+              Pour toute question ou demande relative à vos données : <a href="mailto:contact@goldiestravel.com">contact@goldiestravel.com</a>.
             </p>
+
+            <h2>2. Données collectées et Finalités</h2>
+            <p>Nous collectons et traitons les données strictement nécessaires aux finalités suivantes :</p>
             <ul>
-              <li><strong>Données d'identification :</strong> Nom, prénom, email, numéro de téléphone (via les formulaires de contact ou de réservation).</li>
-              <li><strong>Données de navigation :</strong> Adresse IP, type de navigateur, pages visitées (si vous acceptez les cookies analytiques).</li>
+              <li><strong>Gestion des demandes de contact (Prospects) :</strong> Nom, prénom, email, destination souhaitée, message. <em>(Base légale : Intérêt légitime et consentement)</em>.</li>
+              <li><strong>Gestion des inscriptions et séjours (Clientes) :</strong> Nom, prénom, âge, email, numéro de téléphone, choix de formule et d'acompte. <em>(Base légale : Exécution du contrat de vente de voyage)</em>.</li>
+              <li><strong>Données de santé et sécurité alimentaire :</strong> Allergies et régimes alimentaires déclarés. Ces données sensibles (Art. 9.2.a RGPD) sont collectées exclusivement avec votre accord exprès pour assurer votre sécurité physique durant les repas et activités du séjour.</li>
+              <li><strong>Données de navigation et cookies :</strong> Adresse IP anonymisée et traceurs de mesure d'audience (uniquement si vous y consentez expressément).</li>
             </ul>
 
-            <h2>2. Utilisation des données</h2>
-            <p>Vos données sont utilisées exclusivement pour :</p>
-            <ul>
-              <li>Traiter vos demandes de contact et réservations.</li>
-              <li>Vous informer sur l'organisation des séjours.</li>
-              <li>Améliorer votre expérience sur notre site via des analyses statistiques anonymisées.</li>
-            </ul>
-
-            <h2>3. Conservation des données</h2>
+            <h2>3. Cycle de Vie et Durées de Conservation (Cycle RGPD)</h2>
             <p>
-              Vos données sont conservées pendant la durée nécessaire à la finalité pour laquelle elles ont été collectées, et conformément aux obligations légales :
+              Conformément au principe de limitation de la conservation (Art. 5.1.e RGPD) et aux obligations légales du Code de commerce et du Code de la consommation, vos données suivent un cycle de vie strict :
             </p>
             <ul>
-              <li>Données clients : 3 ans après la fin de la relation commerciale.</li>
-              <li>Données prospects : 3 ans à compter du dernier contact.</li>
+              <li><strong>Données prospects (Formulaire de contact) :</strong> Conservées en base active pendant <strong>3 ans</strong> à compter du dernier contact émanant de votre part, puis supprimées définitivement.</li>
+              <li><strong>Réservations non finalisées ou impayées :</strong> Supprimées automatiquement après <strong>90 jours</strong>.</li>
+              <li><strong>Données de santé / allergies :</strong> Purgées définitivement de nos bases actives à l'issue du voyage (ou au maximum <strong>1 an</strong> après l'inscription).</li>
+              <li><strong>Données de facturation et contrats de vente :</strong> Conservées en archivage sécurisé à accès restreint pendant <strong>10 ans</strong> conformément à l'article L. 123-22 du Code de commerce et L. 213-1 du Code de la consommation (obligations comptables et fiscales).</li>
+              <li><strong>Au-delà de 10 ans :</strong> Les données personnelles restantes sont <strong>irréversiblement anonymisées</strong> pour ne conserver que des données statistiques non identifiantes.</li>
             </ul>
 
-            <h2>4. Partage des données</h2>
+            <h2>4. Destinataires des Données</h2>
             <p>
-              Nous ne vendons, ne louons, ni ne partageons vos données personnelles à des tiers à des fins commerciales. Elles peuvent être transmises uniquement à nos partenaires logistiques (hébergements, transports sur place) dans le strict cadre de l'organisation de votre séjour.
-            </p>
-
-            <h2>5. Vos droits (RGPD)</h2>
-            <p>
-              Vous disposez des droits suivants concernant vos données :
+              Vos données personnelles ne sont <strong>jamais vendues, louées ou cédées</strong> à des tiers à des fins publicitaires.<br/>
+              Elles sont exclusivement transmises :
             </p>
             <ul>
-              <li>Droit d'accès et de rectification.</li>
-              <li>Droit à l'effacement (droit à l'oubli).</li>
-              <li>Droit à la limitation du traitement.</li>
-              <li>Droit à la portabilité de vos données.</li>
+              <li>À l'équipe interne de coordination de Goldies Travel.</li>
+              <li>À nos prestataires logistiques locaux (hébergements, guides partenaires) strictement dans la mesure nécessaire à la bonne organisation de votre séjour.</li>
+              <li>À notre prestataire de paiement sécurisé certifié PCI-DSS (Stripe) pour le traitement des règlements.</li>
+              <li>À notre hébergeur d'infrastructure et de base de données certifié (Supabase, Vercel).</li>
+            </ul>
+
+            <h2>5. Vos Droits Informatique & Libertés</h2>
+            <p>
+              Conformément à la réglementation européenne, vous disposez des droits suivants :
+            </p>
+            <ul>
+              <li><strong>Droit d'accès et de communication</strong> de vos données.</li>
+              <li><strong>Droit de rectification</strong> des informations inexactes ou incomplètes.</li>
+              <li><strong>Droit à l'effacement</strong> (« droit à l'oubli »), sous réserve des obligations légales de conservation comptable.</li>
+              <li><strong>Droit à la limitation du traitement</strong> et droit d'opposition.</li>
+              <li><strong>Droit à la portabilité</strong> de vos données dans un format structuré.</li>
+              <li><strong>Droit de définir des directives</strong> relatives au sort de vos données après votre décès (Loi pour une République Numérique).</li>
             </ul>
             <p>
-              Pour exercer ces droits, contactez-nous à : <a href="mailto:contact@goldiestravel.com">contact@goldiestravel.com</a>.
+              Pour exercer l'un de ces droits, adressez votre demande par email à : <a href="mailto:contact@goldiestravel.com">contact@goldiestravel.com</a>.
+            </p>
+            <p>
+              Si vous estimez, après nous avoir contactés, que vos droits ne sont pas respectés, vous disposez du droit d'introduire une réclamation auprès de l'autorité de contrôle française : la <strong>CNIL (Commission Nationale de l'Informatique et des Libertés)</strong> sur son site officiel <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">www.cnil.fr</a> ou par courrier postal au 3 Place de Fontenoy - TSA 80715 - 75334 PARIS CEDEX 07.
             </p>
 
-            <h2>6. Cookies</h2>
+            <h2>6. Cookies & Traceurs</h2>
             <p>
-              Un cookie est un petit fichier texte déposé sur votre terminal. Vous pouvez à tout moment modifier vos préférences via notre bandeau de cookies. Les cookies strictement nécessaires au fonctionnement du site ne requièrent pas votre consentement.
+              Un cookie est un petit fichier texte déposé sur votre terminal lors de la consultation d'un site. Vous pouvez à tout moment accepter, refuser ou modifier vos préférences en matière de cookies via notre bandeau dédié ou le lien en bas de page. Les cookies techniques indispensables au fonctionnement du site ne nécessitent pas de consentement préalable.
             </p>
 
           </div>

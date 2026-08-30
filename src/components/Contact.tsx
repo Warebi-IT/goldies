@@ -1,13 +1,58 @@
 import { useState } from "react";
 import { Send, Instagram } from "lucide-react";
 import videoSenegal from "@/assets/goldiessenegalversion.mp4";
+import { supabase } from "@/integrations/supabase/client";
+import { isValidEmail, sanitizeTextInput } from "@/lib/security";
 
 const Contact = () => {
+  const [prenom, setPrenom] = useState("");
+  const [nom, setNom] = useState("");
+  const [email, setEmail] = useState("");
+  const [destination, setDestination] = useState("");
+  const [message, setMessage] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [formError, setFormError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setFormError("");
+
+    // Bot detection via honeypot
+    if (honeypot.trim() !== "") {
+      setSubmitted(true);
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setFormError("Veuillez saisir une adresse email valide.");
+      return;
+    }
+
+    const cleanPrenom = sanitizeTextInput(prenom, 100);
+    const cleanNom = sanitizeTextInput(nom, 100);
+    const cleanEmail = sanitizeTextInput(email, 254).toLowerCase();
+    const cleanDest = sanitizeTextInput(destination, 100);
+    const cleanMessage = sanitizeTextInput(message, 3000);
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.from("contacts").insert({
+        prenom: cleanPrenom,
+        nom: cleanNom,
+        email: cleanEmail,
+        destination: cleanDest,
+        message: cleanMessage,
+      });
+      if (error) throw error;
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error("Error sending contact message:", err);
+      setFormError("Une erreur est survenue lors de l'envoi de votre message. Veuillez réessayer.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -83,6 +128,24 @@ const Contact = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Honeypot field for bot mitigation */}
+                <div className="hidden" aria-hidden="true" style={{ display: "none" }}>
+                  <input
+                    type="text"
+                    name="website_url"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
+                </div>
+
+                {formError && (
+                  <div className="p-3 bg-red-100/90 border border-red-300 rounded-xl text-red-800 text-sm font-dm-sans">
+                    {formError}
+                  </div>
+                )}
+
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-dm-sans font-bold text-ink mb-2">
@@ -91,6 +154,8 @@ const Contact = () => {
                     <input
                       type="text"
                       required
+                      value={prenom}
+                      onChange={(e) => setPrenom(e.target.value)}
                       className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all"
                       placeholder="Votre prénom"
                     />
@@ -102,6 +167,8 @@ const Contact = () => {
                     <input
                       type="text"
                       required
+                      value={nom}
+                      onChange={(e) => setNom(e.target.value)}
                       className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all"
                       placeholder="Votre nom"
                     />
@@ -114,6 +181,8 @@ const Contact = () => {
                   <input
                     type="email"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all"
                     placeholder="votre@email.com"
                   />
@@ -124,12 +193,17 @@ const Contact = () => {
                   </label>
                   <select
                     required
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
                     className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all appearance-none cursor-pointer"
                   >
                     <option value="">Choisir une destination</option>
                     <option value="senegal">Sénégal</option>
                     <option value="maroc">Maroc</option>
-                    <option value="tanzanie">Tanzanie (bientôt)</option>
+                    <option value="tanzanie">Tanzanie (prochainement)</option>
+                    <option value="kenya">Kenya (prochainement)</option>
+                    <option value="afrique-du-sud">Afrique du Sud (prochainement)</option>
+                    <option value="namibie">Namibie (prochainement)</option>
                   </select>
                 </div>
                 <div>
@@ -138,16 +212,19 @@ const Contact = () => {
                   </label>
                   <textarea
                     rows={4}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all resize-none"
                     placeholder="Dites-nous en plus sur votre projet de voyage…"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full rounded-full bg-[#e99ba9] py-4 text-lg font-dm-sans font-bold text-white hover:scale-[1.02] transition-transform shadow-[0_8px_30px_rgb(233,155,169,0.3)] flex items-center justify-center gap-3"
+                  disabled={loading}
+                  className="w-full rounded-full bg-[#e99ba9] py-4 text-lg font-dm-sans font-bold text-white hover:scale-[1.02] transition-transform shadow-[0_8px_30px_rgb(233,155,169,0.3)] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send size={20} />
-                  Envoyer
+                  {loading ? "Envoi..." : "Envoyer"}
                 </button>
               </form>
             )}

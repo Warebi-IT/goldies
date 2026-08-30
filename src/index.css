@@ -5,22 +5,22 @@
 @tailwind utilities;
 
 :root {
-  /* Colors - Pastel DA */
-  --color-concrete-canvas: #FAF7F2; /* Very Pale Warm Off-White (Lighter) */
-  --color-cream-card: #FDFBF7;      /* Extremely Light Cream */
-  --color-ink: #422F24;             /* Deep Espresso Brown */
-  --color-pure-black: #000000;
+  /* Colors - Sahel Express New Palette */
+  --color-concrete-canvas: #FAFAFA; /* Off-White / Blanc cassé */
+  --color-cream-card: #FFF8ED;      /* Cream card color */
+  --color-ink: #0D0D0D;             /* Deep Black */
+  --color-pure-black: #0D0D0D;      
   --color-paper-white: #ffffff;
-  --color-citra-orange: #DD6B4D;    /* Soft Terracotta/Peach */
-  --color-ion-violet: #A96F70;      /* Dusty Rose/Burgundy */
-  --color-hazard-yellow: #E7F2BE;   /* Soft Pastel Lime/Yellow */
+  --color-citra-orange: #B6656E;    /* Sahel Rose */
+  --color-ion-violet: #1E2A4A;      /* Night Blue */
+  --color-hazard-yellow: #B6656E;   
 
   /* Pastel Palette Variables */
-  --color-pastel-sand: #FAEDDB;
-  --color-pastel-sage: #DCE5D1;
-  --color-pastel-rose: #DFB4B5;
-  --color-pastel-peach: #F9BA7B;
-  --color-pastel-lime: #E7F2BE;
+  --color-pastel-sand: #FFF8ED;
+  --color-pastel-sage: #F0F2F6;
+  --color-pastel-rose: #E1E5ED;
+  --color-pastel-peach: #B6656E;
+  --color-pastel-lime: #1E2A4A;
 
   /* Typography — Font Families */
   --font-sans-serif: 'sans-serif', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -97,31 +97,31 @@
   --radius-buttons: 40px;
 
   /* Surfaces */
-  --surface-concrete-canvas: #e2e2df;
-  --surface-cream-card: #f7f6f2;
-  --surface-citra-surface: #fc5000;
-  --surface-ion-surface: #524ae9;
+  --surface-concrete-canvas: #FAFAFA;
+  --surface-cream-card: #FFF8ED;
+  --surface-citra-surface: #B6656E;
+  --surface-ion-surface: #1E2A4A;
 
-  /* Shadcn compatibility mappings (mapped to Caldera logic where applicable) */
-  --background: 0 0% 89%; /* #e2e2df approx */
-  --foreground: 0 0% 3%; /* #070607 */
-  --card: 45 20% 96%; /* #f7f6f2 approx */
-  --card-foreground: 0 0% 3%;
-  --popover: 45 20% 96%;
-  --popover-foreground: 0 0% 3%;
-  --primary: 20 100% 49%; /* #fc5000 approx */
+  /* Shadcn compatibility mappings (mapped to New Sahel Express Palette) */
+  --background: 38 100% 96%; /* #FFF8ED */
+  --foreground: 0 0% 5%;     /* #0D0D0D */
+  --card: 38 100% 96%;
+  --card-foreground: 0 0% 5%;
+  --popover: 38 100% 96%;
+  --popover-foreground: 0 0% 5%;
+  --primary: 353.3 35.7% 55.5%;     /* #B6656E */
   --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 100%;
-  --secondary-foreground: 0 0% 3%;
-  --muted: 0 0% 89%;
-  --muted-foreground: 0 0% 30%;
-  --accent: 20 100% 49%;
+  --secondary: 224 42% 20%;  /* #1E2A4A (Night Blue) */
+  --secondary-foreground: 0 0% 100%;
+  --muted: 224 30% 94%;      /* Soft shade of Night Blue */
+  --muted-foreground: 224 42% 30%; 
+  --accent: 353.3 35.7% 55.5%;      /* #B6656E */
   --accent-foreground: 0 0% 100%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
-  --border: 0 0% 3%;
-  --input: 0 0% 3%;
-  --ring: 20 100% 49%;
+  --border: 224 30% 85%;     /* Border using soft Night Blue */
+  --input: 224 30% 85%;
+  --ring: 353.3 35.7% 55.5%;
   --radius: 40px;
 }
 

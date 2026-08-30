@@ -1,128 +1,218 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Compass, Sparkles } from "lucide-react";
-import InteractiveHeart from "./InteractiveHeart";
-import imgChildren from "@/assets/children.jpeg";
-import imgFourImage from "@/assets/fourimagegoldiesChlidrenWomen.jpeg";
-import imgWomenScarf from "@/assets/womenwithscarf.jpeg";
-import onlyWomen from "@/assets/onlywomen.jpeg";
+import { Compass, Sparkles, MapPin, Calendar, ArrowUpRight, Star, CreditCard } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { staticTrips } from "@/data/trips";
+import videoSenegal from "@/assets/goldiessenegalversion.mp4";
+import InteractiveHeart from "@/components/InteractiveHeart";
+import TripsTicker from "@/components/TripsTicker";
+import destSenegal from "@/assets/dest-senegal.jpg";
+import avatarWomen1 from "@/assets/womenwithscarf.jpeg";
+import avatarWomen2 from "@/assets/onlywomen.jpeg";
+import avatarWomen3 from "@/assets/children.jpeg";
 
 const Hero = () => {
-  const [activeImg, setActiveImg] = useState<number | null>(null);
+  const { data: nextTrip } = useQuery({
+    queryKey: ["hero-next-trip"],
+    queryFn: async () => {
+      const today = new Date().toISOString();
+      const { data, error } = await supabase
+        .from("trips")
+        .select("*")
+        .eq("is_active", true)
+        .gte("start_date", today)
+        .order("start_date", { ascending: true })
+        .limit(1);
 
-  const handleImgClick = (index: number) => {
-    setActiveImg(activeImg === index ? null : index);
-  };
+      if (!error && data && data.length > 0) return data[0];
+
+      const { data: latest } = await supabase
+        .from("trips")
+        .select("*")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      if (latest && latest.length > 0) return latest[0];
+
+      return staticTrips[1] || staticTrips[0];
+    },
+    initialData: staticTrips[1] || staticTrips[0],
+  });
+
+  const trip = nextTrip || staticTrips[1];
 
   return (
     <section
       id="accueil"
-      className="relative z-0 w-full h-[100dvh] flex flex-col lg:flex-row items-center justify-between px-6 md:px-16 bg-transparent"
+      className="relative z-0 w-full min-h-[100dvh] flex flex-col justify-between px-6 md:px-12 lg:px-16 pt-28 pb-0 overflow-hidden"
     >
-      {/* Background Image (Behind Everything) */}
-      <div className="absolute inset-0 w-full h-full z-[-2]">
-        <img src={onlyWomen} alt="Hero Background" className="w-full h-full object-cover" />
+      {/* 1. Background Video */}
+      <div className="absolute inset-0 w-full h-full z-[-3] overflow-hidden">
+        <video
+          src={videoSenegal}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover object-center"
+        />
       </div>
 
-      <InteractiveHeart />
-      {/* 
-        Left Content (Text)
-      */}
-      <div className="relative z-10 w-full lg:w-[70%] xl:w-[75%] flex flex-col items-start text-left mt-24 lg:mt-[15vh] pointer-events-none pr-0 lg:pr-12">
+      {/* 2. Minimal warm overlay — just enough for text contrast */}
+      <div className="absolute inset-0 bg-gradient-to-r from-white/75 via-white/40 md:via-white/20 to-transparent pointer-events-none z-[-2]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent pointer-events-none z-[-2]" />
 
-        {/* Badges */}
-        <div className="flex flex-col gap-3 mb-6 pointer-events-none">
-          <div className="uppercase tracking-[0.2em] text-xs font-dm-sans font-bold text-ink/60 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm w-max">
-            100% Féminin • 100% Solidaire
+      {/* 3D Interactive Heart — brand signature */}
+      <div className="absolute inset-0 z-0 pointer-events-none" aria-hidden="true">
+        <InteractiveHeart />
+      </div>
+
+      {/* 3. Main Content Grid */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center pb-20 lg:pb-0">
+
+        {/* Left Editorial Content */}
+        <div className="lg:col-span-7 xl:col-span-8 flex flex-col items-start text-left pt-6 lg:pt-0">
+
+          {/* Social Proof & Identity Badges */}
+          <div className="flex flex-wrap items-center gap-3 mb-6">
+
+            {/* Pill 1: Brand Identity */}
+            <div className="inline-flex items-center gap-2 bg-white/40 backdrop-blur-md border border-white/30 px-4 py-2 rounded-full">
+              <span className="text-sm">🌸</span>
+              <span className="font-dm-sans text-xs font-bold uppercase tracking-wider text-ink">
+                L'agence de voyages solidaires entre femmes
+              </span>
+            </div>
+
+            {/* Pill 2: Social Proof */}
+            <Link
+              to="/avis"
+              className="inline-flex items-center gap-2.5 bg-white/40 hover:bg-white/60 backdrop-blur-md border border-white/30 px-4 py-1.5 rounded-full text-ink transition-all duration-300 hover:scale-105 group"
+            >
+              <div className="flex -space-x-2 overflow-hidden py-0.5">
+                <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white object-cover" src={avatarWomen1} alt="Voyageuse Goldies" />
+                <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white object-cover" src={avatarWomen2} alt="Voyageuse Goldies" />
+                <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white object-cover" src={avatarWomen3} alt="Voyageuse Goldies" />
+              </div>
+              <div className="flex items-center gap-1.5 text-xs font-dm-sans font-bold">
+                <div className="flex items-center text-amber-500">
+                  <Star size={13} fill="currentColor" />
+                </div>
+                <span className="text-ink font-bold">4.93 / 5</span>
+                
+              
+              </div>
+            </Link>
           </div>
-          <Link to="/avis" className="flex items-center gap-1.5 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm w-max hover:bg-white/70 hover:-translate-y-0.5 transition-all duration-300 pointer-events-auto cursor-pointer">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-citra-orange">
-              <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-            </svg>
-            <span className="font-dm-sans text-sm font-bold text-ink">4.93 / 5</span>
-            <span className="font-dm-sans text-sm text-ink/70 mx-0.5">•</span>
-            <span className="font-dm-sans text-sm font-medium text-ink/80">200+ avis</span>
-          </Link>
+
+          {/* Headline */}
+          <h1 className="text-ink tracking-tight mb-6 leading-[0.95]">
+            <span className="font-pp-neue-corp-compact font-black uppercase text-4xl sm:text-6xl lg:text-[4.2rem] xl:text-[5rem] block text-ink">
+              Voyages entre femmes
+            </span>
+            <span className="font-serif italic font-semibold text-[#B6656E] text-2xl sm:text-4xl lg:text-[3.2rem] block mt-1">
+              Organisation d'expériences uniques
+            </span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-ink/80 font-dm-sans text-base sm:text-lg max-w-xl font-medium leading-relaxed mb-6">
+            Depuis plus de 3 ans et +100 voyages organisés, nous créons des séjours immersifs et solidaires en petits groupes. Partez seule en toute sécurité et revenez avec des souvenirs et liens indélébiles.
+          </p>
+
+          {/* Brand Pillars */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-dm-sans font-bold text-ink/75 mb-8">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-citra-orange" />
+              +100 voyages organisés
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-citra-orange" />
+              3 ans d'expérience
+            </span>
+            <span className="inline-flex items-center gap-1.5 bg-citra-orange/10 px-2.5 py-1 rounded-full text-ink border border-citra-orange/20">
+              <CreditCard size={13} className="text-citra-orange" />
+              Paiement en plusieurs fois
+            </span>
+          </div>
+
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+            <Link
+              to="/voyages"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-citra-orange hover:bg-citra-orange/90 text-white px-8 py-4 rounded-full text-base font-dm-sans font-bold transition-all duration-300 hover:scale-105 shadow-[0_10px_25px_-5px_rgba(182,101,110,0.4)] active:scale-95"
+            >
+              <Compass size={20} strokeWidth={2.5} />
+              Découvrir nos séjours
+            </Link>
+            <Link
+              to="/concept"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-white/90 hover:bg-white backdrop-blur-md text-ink border border-ink/10 px-8 py-4 rounded-full text-base font-dm-sans font-bold transition-all duration-300 hover:scale-105 active:scale-95 shadow-sm"
+            >
+              <Sparkles size={18} strokeWidth={2.2} />
+              Notre concept
+            </Link>
+          </div>
+
         </div>
 
-        {/* Headline */}
-        <h1 className="text-ink text-3xl md:text-5xl lg:text-[3.5rem] xl:text-[4.5rem] tracking-tight mb-8 leading-[1.05]">
-          <span className="font-dm-sans font-bold block">Voyagez autrement,</span>
-          <span className="font-serif italic font-semibold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-400 block mt-1">vivez pleinement</span>
-        </h1>
-
-        {/* Subtitle */}
-        <p className="text-black font-dm-sans text-base md:text-lg max-w-lg font-medium leading-relaxed mb-12">
-          Des séjours en groupe exclusivement féminins à la découverte de l'Afrique. Logement, transport, activités et repas inclus.
-        </p>
-
-        {/* Buttons */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto pointer-events-auto">
-          <Link 
-            to="/voyages"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#e99ba9] text-white px-8 py-4 rounded-full text-base font-dm-sans font-bold transition-transform hover:scale-105 shadow-[0_8px_30px_rgb(233,155,169,0.3)]"
-          >
-            <Compass size={20} strokeWidth={2.5} />
-            Découvrir nos séjours
-          </Link>
-          <Link 
-            to="/concept"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/80 backdrop-blur-md text-ink px-8 py-4 rounded-full text-base font-dm-sans font-bold transition-all hover:bg-white shadow-lg hover:shadow-xl hover:scale-105"
-          >
-            <Sparkles size={20} strokeWidth={2.5} />
-            Notre concept
-          </Link>
-        </div>
+        {/* Right Column: Prochain Départ Card — COMMENTÉ TEMPORAIREMENT */}
+        {/* {trip && (
+          <div className="lg:col-span-5 xl:col-span-4 flex justify-center lg:justify-end mt-4 lg:mt-0">
+            <Link
+              to={`/voyages/${trip.slug || trip.id}`}
+              className="group relative w-full max-w-[260px] bg-white/80 backdrop-blur-xl border border-white/50 rounded-2xl p-4 shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_35px_rgba(182,101,110,0.2)] hover:bg-white/90"
+            >
+              <div className="flex items-center justify-between gap-2 mb-2.5">
+                <span className="inline-flex items-center gap-1 text-[10px] font-dm-sans font-extrabold uppercase tracking-wider text-citra-orange">
+                  <span className="w-1.5 h-1.5 rounded-full bg-citra-orange animate-pulse" />
+                  Prochain départ
+                </span>
+                <span className="text-[10px] font-dm-sans font-bold text-ink/60">
+                  🔥 {trip.spots_left || 12} places
+                </span>
+              </div>
+              <div className="relative h-32 rounded-xl overflow-hidden mb-3">
+                <img src={trip.image_url || destSenegal} alt={trip.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
+                <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-white text-[10px] font-dm-sans font-bold">
+                  <span className="flex items-center gap-1 bg-black/40 backdrop-blur-md px-2 py-0.5 rounded-full">
+                    <MapPin size={10} className="text-citra-orange" />
+                    {trip.destination}
+                  </span>
+                  <span className="bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full">
+                    {trip.duration || "8-9 jours"}
+                  </span>
+                </div>
+              </div>
+              <h3 className="font-pp-neue-corp-compact font-black uppercase text-base text-ink tracking-tight mb-1 group-hover:text-citra-orange transition-colors leading-tight">
+                {trip.name}
+              </h3>
+              <p className="text-[10px] font-dm-sans font-medium text-ink/60 mb-2.5 flex items-center gap-1.5">
+                <Calendar size={11} className="text-citra-orange shrink-0" />
+                <span>{trip.dates}</span>
+              </p>
+              <div className="flex items-center justify-between pt-2.5 border-t border-ink/8">
+                <div>
+                  <span className="text-[9px] font-dm-sans text-ink/40 block">À partir de</span>
+                  <span className="font-pp-neue-corp-compact text-lg font-black text-citra-orange leading-none">
+                    {trip.price}{typeof trip.price === "number" ? " €" : ""}
+                  </span>
+                </div>
+                <div className="inline-flex items-center gap-1 bg-ink group-hover:bg-citra-orange text-white px-3 py-1.5 rounded-full text-[10px] font-dm-sans font-bold transition-colors">
+                  Explorer
+                  <ArrowUpRight size={11} />
+                </div>
+              </div>
+            </Link>
+          </div>
+        )} */}
 
       </div>
 
-      {/* 
-        Right Content (Photos)
-        A beautiful collage of photos perfectly balancing the right edge.
-      */}
-      <div className="relative z-10 w-full lg:w-[30%] xl:w-[25%] mt-[5vh] lg:mt-[15vh] hidden lg:flex justify-center lg:justify-end pointer-events-none">
-        <div className="relative w-full max-w-[320px] md:max-w-[400px] aspect-[3/4]">
-           
-           {/* Backdrop for active image */}
-           {activeImg !== null && (
-             <div 
-               className="fixed inset-0 z-40 bg-white/30 backdrop-blur-md cursor-pointer pointer-events-auto transition-all duration-500" 
-               onClick={() => setActiveImg(null)}
-             />
-           )}
-
-           {/* Third Photo (Top Right, Behind) -> z-0 */}
-           <div 
-             onClick={() => handleImgClick(0)}
-             className={`absolute -top-12 -right-12 w-3/4 aspect-square rounded-[2rem] overflow-hidden shadow-xl border-[6px] border-white transition-all duration-500 pointer-events-auto cursor-pointer
-               ${activeImg === 0 ? 'z-50 scale-125 rotate-0 shadow-2xl' : 'z-0 rotate-12 hover:rotate-6 hover:scale-[1.05] opacity-90 hover:opacity-100'}
-             `}
-           >
-             <img src={imgFourImage} alt="Collage Femmes et Enfants" className="w-full h-full object-cover" />
-           </div>
-
-           {/* Main Photo (Tall) -> z-10 */}
-           <div 
-             onClick={() => handleImgClick(1)}
-             className={`absolute inset-0 rounded-[2rem] overflow-hidden shadow-2xl border-[6px] border-white transition-all duration-500 pointer-events-auto cursor-pointer
-               ${activeImg === 1 ? 'z-50 scale-[1.15] rotate-0' : 'z-10 rotate-3 hover:rotate-1 hover:scale-[1.02]'}
-             `}
-           >
-             <img src={imgWomenScarf} alt="Femmes avec foulard" className="w-full h-full object-cover" />
-           </div>
-           
-           {/* Overlapping Photo (Square/Small) -> z-20 */}
-           <div 
-             onClick={() => handleImgClick(2)}
-             className={`absolute -bottom-8 -left-12 w-2/3 aspect-square rounded-[2rem] overflow-hidden shadow-2xl border-[6px] border-white transition-all duration-500 pointer-events-auto cursor-pointer
-               ${activeImg === 2 ? 'z-50 scale-[1.35] rotate-0 -translate-y-8 translate-x-8' : 'z-20 -rotate-6 hover:-rotate-2 hover:scale-[1.05]'}
-             `}
-           >
-             <img src={imgChildren} alt="Enfants" className="w-full h-full object-cover" />
-           </div>
-
-        </div>
-      </div>
+      {/* Bottom Trips Ticker — covers video watermark */}
+      <TripsTicker />
 
     </section>
   );

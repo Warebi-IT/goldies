@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,8 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminTrips from "@/components/admin/AdminTrips";
 import AdminGallery from "@/components/admin/AdminGallery";
 import AdminUsers from "@/components/admin/AdminUsers";
+import AdminDashboard from "@/components/admin/AdminDashboard";
+import AdminBookings from "@/components/admin/AdminBookings";
 import logo from "@/assets/logo.png";
 import { LogOut, Shield } from "lucide-react";
+import { evaluateMfaState } from "@/lib/security";
 
 const EMAIL_DOMAIN = "goldies.local";
 
@@ -34,10 +37,10 @@ const LoginForm = ({ isBootstrap, onLogin, onBootstrap }: LoginFormProps) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <div className="w-full max-w-sm bg-card rounded-2xl shadow-lg p-8">
-        <div className="flex items-center gap-2 justify-center mb-6">
+        <Link to="/" className="flex items-center gap-2 justify-center mb-6 hover:opacity-85 transition-opacity">
           <img src={logo} alt="Goldies Travel" className="h-10 w-10" />
           <span className="font-serif text-xl font-bold text-foreground">Admin</span>
-        </div>
+        </Link>
         {isBootstrap && (
           <p className="text-xs text-center text-muted-foreground mb-4">
             Aucun admin n'existe. Créez le premier compte.
@@ -80,6 +83,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const [session, setSession] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [isMfaVerified, setIsMfaVerified] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const [needsBootstrap, setNeedsBootstrap] = useState(false);
 
@@ -98,6 +102,7 @@ const Admin = () => {
     const check = async () => {
       if (!session) {
         setIsAdmin(null);
+        setIsMfaVerified(false);
         return;
       }
       const { data } = await supabase
@@ -110,10 +115,30 @@ const Admin = () => {
       setIsAdmin(admin);
 
       if (admin) {
+        const { data: factors } = await supabase.auth.mfa.listFactors();
         const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-        if (aal?.nextLevel === "aal2" && aal?.currentLevel !== "aal2") {
-          navigate("/mfa-verify");
+        const mfaState = evaluateMfaState(factors, aal);
+
+        if (mfaState === "needs_setup") {
+          setIsMfaVerified(false);
+          navigate("/mfa-setup", {
+            replace: true,
+            state: {
+              message: "Vous devez activer Google Authenticator (2FA) pour accéder au back-office",
+            },
+          });
+          return;
         }
+
+        if (mfaState === "needs_verify") {
+          setIsMfaVerified(false);
+          navigate("/mfa-verify", { replace: true });
+          return;
+        }
+
+        setIsMfaVerified(true);
+      } else {
+        setIsMfaVerified(false);
       }
     };
     check();
@@ -136,20 +161,18 @@ const Admin = () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return "Identifiants invalides";
 
+    const { data: factors } = await supabase.auth.mfa.listFactors();
     const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-    if (aal?.nextLevel === "aal2") {
+    const mfaState = evaluateMfaState(factors, aal);
+
+    if (mfaState === "needs_verify") {
       navigate("/mfa-verify");
-    } else {
-      const { data: factors } = await supabase.auth.mfa.listFactors();
-      const hasVerifiedFactor = factors?.totp?.some(f => f.status === "verified");
-      if (!hasVerifiedFactor) {
-        navigate("/mfa-setup", {
-          state: {
-            message:
-              "Vous devez activer Google Authenticator pour accéder au back-office",
-          },
-        });
-      }
+    } else if (mfaState === "needs_setup") {
+      navigate("/mfa-setup", {
+        state: {
+          message: "Vous devez activer Google Authenticator pour accéder au back-office",
+        },
+      });
     }
     return null;
   };
@@ -172,6 +195,8 @@ const Admin = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setIsAdmin(null);
+    setIsMfaVerified(false);
   };
 
   if (loading) {
@@ -203,10 +228,10 @@ const Admin = () => {
     );
   }
 
-  if (isAdmin === null) {
+  if (isAdmin === null || !isMfaVerified) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-muted-foreground">Vérification...</p>
+        <p className="text-muted-foreground">Vérification de sécurité 2FA...</p>
       </div>
     );
   }
@@ -216,12 +241,12 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-muted/30">
       <header className="bg-card border-b border-border px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" title="Retour au site public">
           <img src={logo} alt="Goldies Travel" className="h-8 w-8" />
           <span className="font-serif text-lg font-bold text-foreground">
             Goldies <span className="text-primary">Admin</span>
           </span>
-        </div>
+        </Link>
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted-foreground hidden sm:inline">{currentUsername}</span>
           <Button
@@ -242,16 +267,32 @@ const Admin = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <Tabs defaultValue="trips">
-          <TabsList className="mb-8">
+        <Tabs defaultValue="dashboard" className="w-full">
+          <TabsList className="flex flex-wrap gap-1 border-b-0 bg-transparent p-0 justify-start w-full relative z-10 rounded-none mb-0">
+            <TabsTrigger value="dashboard">Tableau de Bord</TabsTrigger>
+            <TabsTrigger value="bookings">Inscriptions & Contacts</TabsTrigger>
             <TabsTrigger value="trips">Voyages</TabsTrigger>
             <TabsTrigger value="gallery">Galerie</TabsTrigger>
             <TabsTrigger value="admins">Admins</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="trips"><AdminTrips /></TabsContent>
-          <TabsContent value="gallery"><AdminGallery /></TabsContent>
-          <TabsContent value="admins"><AdminUsers /></TabsContent>
+          <div className="bg-cream-card rounded-b-[24px] rounded-tr-[24px] border border-border shadow-sm relative z-0 mt-[-1px] p-6 sm:p-8">
+            <TabsContent value="dashboard" className="mt-0 focus-visible:outline-none">
+              <AdminDashboard />
+            </TabsContent>
+            <TabsContent value="bookings" className="mt-0 focus-visible:outline-none">
+              <AdminBookings />
+            </TabsContent>
+            <TabsContent value="trips" className="mt-0 focus-visible:outline-none">
+              <AdminTrips />
+            </TabsContent>
+            <TabsContent value="gallery" className="mt-0 focus-visible:outline-none">
+              <AdminGallery />
+            </TabsContent>
+            <TabsContent value="admins" className="mt-0 focus-visible:outline-none">
+              <AdminUsers />
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
     </div>
