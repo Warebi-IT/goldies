@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { MapPin, ArrowRight, Users, Clock } from "lucide-react";
+import { MapPin, ArrowRight, Users, Clock, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import destSenegal from "@/assets/dest-senegal.jpg";
 import destMaroc from "@/assets/dest-maroc.jpg";
@@ -13,17 +13,65 @@ const fallbackImages: Record<string, string> = {
 };
 
 const HomeDestinations = () => {
-  const { data: trips } = useQuery({
-    queryKey: ["public-trips-home"],
+  const { data: trips, isLoading } = useQuery({
+    queryKey: ["home-trips"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let result = [];
+      const today = new Date().toISOString();
+
+      // 1. Try to fetch featured trips, gracefully handle error if column doesn't exist
+      const { data: featured, error: fError } = await supabase
         .from("trips")
         .select("*")
         .eq("is_active", true)
-        .order("created_at")
+        .eq("is_featured", true)
+        .order("created_at", { ascending: false })
         .limit(3);
-      if (error) throw error;
-      return data;
+        
+      if (!fError && featured) {
+        result = [...featured];
+      }
+
+      // 2. If we need more trips (or if featured failed), fetch closest upcoming
+      if (result.length < 3) {
+        const { data: upcoming } = await supabase
+          .from("trips")
+          .select("*")
+          .eq("is_active", true)
+          .gte("start_date", today)
+          .order("start_date", { ascending: true })
+          .limit(10);
+          
+        const existingIds = new Set(result.map((t) => t.id));
+        for (const trip of upcoming || []) {
+          if (result.length >= 3) break;
+          if (!existingIds.has(trip.id)) {
+            result.push(trip);
+            existingIds.add(trip.id);
+          }
+        }
+      }
+
+      // 3. If still < 3, fetch latest as a last resort
+      if (result.length < 3) {
+        const { data: latest } = await supabase
+          .from("trips")
+          .select("*")
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .limit(10);
+          
+        const existingIds = new Set(result.map((t) => t.id));
+        for (const trip of latest || []) {
+          if (result.length >= 3) break;
+          if (!existingIds.has(trip.id)) {
+            result.push(trip);
+            existingIds.add(trip.id);
+          }
+        }
+      }
+
+      return result;
     },
   });
 
@@ -46,12 +94,15 @@ const HomeDestinations = () => {
         </div>
 
         {/* Trip cards */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {trips?.map((d, idx) => {
-            const img = d.image_url || fallbackImages[d.destination] || destSenegal;
-            
-            const bgColors = ["bg-pastel-sand", "bg-pastel-sage", "bg-pastel-rose", "bg-pastel-peach", "bg-pastel-lime"];
-            const cardBg = bgColors[idx % bgColors.length];
+        {isLoading ? (
+          <div className="py-12 flex flex-col items-center justify-center space-y-4">
+            <div className="w-12 h-12 border-4 border-citra-orange border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-ink/60 font-dm-sans font-medium">Chargement des voyages...</p>
+          </div>
+        ) : trips && trips.length > 0 ? (
+          <div className="grid md:grid-cols-3 gap-6">
+            {trips.map((d, idx) => {
+              const img = d.image_url || fallbackImages[d.destination] || destSenegal;
             
             // Dynamic color logic for trip status
             let tagColors = "bg-amber-400 text-ink shadow-sm"; // Default
@@ -70,7 +121,7 @@ const HomeDestinations = () => {
               <Link
                 key={d.id}
                 to={`/voyages/${d.slug || d.id}`}
-                className={`group relative flex flex-col overflow-hidden ${cardBg} shadow-md hover:shadow-xl rounded-cards p-6 transition-all duration-300 hover:-translate-y-1`}
+                className={`group relative flex flex-col overflow-hidden bg-cream-card shadow-md hover:shadow-xl rounded-cards p-6 transition-all duration-300 hover:-translate-y-1 border border-ink/5`}
               >
                 {/* Thumbnail */}
                 <div className="aspect-[4/3] overflow-hidden rounded-[20px] mb-6 relative">
@@ -91,17 +142,32 @@ const HomeDestinations = () => {
 
                 {/* Card content */}
                 <div className="flex-1 flex flex-col">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-1 text-ink/70">
-                      <MapPin size={14} />
-                      <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{d.destination}</span>
-                    </div>
-                    <span className="font-pp-neue-corp-compact font-black text-2xl text-ink">{d.price} €</span>
+                  <div className="flex items-center gap-1 text-ink/70 mb-2">
+                    <MapPin size={14} />
+                    <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{d.destination}</span>
                   </div>
 
-                  <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-2 group-hover:text-citra-orange transition-colors">
+                  <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-3 group-hover:text-citra-orange transition-colors">
                     {d.name}
                   </h3>
+
+                  {/* Price */}
+                  <div className="mb-3">
+                    {typeof d.price === "number" ? (
+                      <div className="flex items-baseline gap-1">
+                        <span className="font-pp-neue-corp-compact text-3xl font-black text-citra-orange">{d.price} €</span>
+                        <span className="text-xs font-dm-sans font-bold text-ink/50">/pers.</span>
+                      </div>
+                    ) : (
+                      <span className="font-pp-neue-corp-compact text-lg font-black text-citra-orange">{d.price}</span>
+                    )}
+                  </div>
+
+                  {/* Dates du voyage */}
+                  <div className="inline-flex items-center gap-2 text-ink font-dm-sans text-xs font-extrabold bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-full mb-3 border border-ink/10 shadow-2xs w-fit">
+                    <Calendar size={14} className="text-citra-orange shrink-0" />
+                    <span>{d.dates}</span>
+                  </div>
 
                   <div className="flex items-center gap-3 text-ink/70 mb-3 text-xs font-dm-sans font-bold">
                     <div className="flex items-center gap-1">
@@ -113,6 +179,11 @@ const HomeDestinations = () => {
                       <Users size={14} />
                       <span>{(d as any).spots_left ?? 8} Places restantes</span>
                     </div>
+                  </div>
+
+                  {/* Payment options */}
+                  <div className="mb-3 px-3 py-1.5 bg-[#FFE1E8]/60 text-ink/80 text-[11px] font-dm-sans font-bold rounded-md w-fit flex items-center gap-1.5">
+                    Acompte {(d as any).deposit_amount ? `${(d as any).deposit_amount} €` : typeof d.price === "number" ? `${Math.round(d.price * 0.3)} €` : "30%"} ou 3x sans frais
                   </div>
 
                   <p className="text-sm font-dm-sans font-medium text-ink/80 leading-relaxed line-clamp-2 mb-6 flex-1">
@@ -127,7 +198,12 @@ const HomeDestinations = () => {
               </Link>
             );
           })}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center py-12 bg-white rounded-3xl border border-ink/5 shadow-sm">
+            <p className="text-ink/60 font-dm-sans">Aucun voyage mis à la une pour le moment.</p>
+          </div>
+        )}
 
         {/* Global CTA */}
         <div className="text-center mt-12">

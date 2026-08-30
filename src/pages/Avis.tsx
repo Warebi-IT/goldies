@@ -38,8 +38,7 @@ const Avis = () => {
         {/* Reviews Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {reviews.slice(0, visibleCount).map((review, idx) => {
-            const bgColors = ["bg-pastel-sand", "bg-pastel-sage", "bg-pastel-rose", "bg-pastel-peach", "bg-pastel-lime"];
-            const cardBg = bgColors[idx % bgColors.length];
+            const cardBg = "bg-[#F5EFE6]";
 
             return (
               <div key={review.id} className={`${cardBg} rounded-[32px] p-8 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col`}>

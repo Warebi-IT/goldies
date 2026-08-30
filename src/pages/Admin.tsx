@@ -11,6 +11,7 @@ import AdminDashboard from "@/components/admin/AdminDashboard";
 import AdminBookings from "@/components/admin/AdminBookings";
 import logo from "@/assets/logo.png";
 import { LogOut, Shield } from "lucide-react";
+import { evaluateMfaState } from "@/lib/security";
 
 const EMAIL_DOMAIN = "goldies.local";
 
@@ -82,6 +83,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const [session, setSession] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [isMfaVerified, setIsMfaVerified] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const [needsBootstrap, setNeedsBootstrap] = useState(false);
 
@@ -100,6 +102,7 @@ const Admin = () => {
     const check = async () => {
       if (!session) {
         setIsAdmin(null);
+        setIsMfaVerified(false);
         return;
       }
       const { data } = await supabase
@@ -112,10 +115,30 @@ const Admin = () => {
       setIsAdmin(admin);
 
       if (admin) {
+        const { data: factors } = await supabase.auth.mfa.listFactors();
         const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-        if (aal?.nextLevel === "aal2" && aal?.currentLevel !== "aal2") {
-          navigate("/mfa-verify");
+        const mfaState = evaluateMfaState(factors, aal);
+
+        if (mfaState === "needs_setup") {
+          setIsMfaVerified(false);
+          navigate("/mfa-setup", {
+            replace: true,
+            state: {
+              message: "Vous devez activer Google Authenticator (2FA) pour accéder au back-office",
+            },
+          });
+          return;
         }
+
+        if (mfaState === "needs_verify") {
+          setIsMfaVerified(false);
+          navigate("/mfa-verify", { replace: true });
+          return;
+        }
+
+        setIsMfaVerified(true);
+      } else {
+        setIsMfaVerified(false);
       }
     };
     check();
@@ -138,20 +161,18 @@ const Admin = () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return "Identifiants invalides";
 
+    const { data: factors } = await supabase.auth.mfa.listFactors();
     const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-    if (aal?.nextLevel === "aal2") {
+    const mfaState = evaluateMfaState(factors, aal);
+
+    if (mfaState === "needs_verify") {
       navigate("/mfa-verify");
-    } else {
-      const { data: factors } = await supabase.auth.mfa.listFactors();
-      const hasVerifiedFactor = factors?.totp?.some(f => f.status === "verified");
-      if (!hasVerifiedFactor) {
-        navigate("/mfa-setup", {
-          state: {
-            message:
-              "Vous devez activer Google Authenticator pour accéder au back-office",
-          },
-        });
-      }
+    } else if (mfaState === "needs_setup") {
+      navigate("/mfa-setup", {
+        state: {
+          message: "Vous devez activer Google Authenticator pour accéder au back-office",
+        },
+      });
     }
     return null;
   };
@@ -174,6 +195,8 @@ const Admin = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setIsAdmin(null);
+    setIsMfaVerified(false);
   };
 
   if (loading) {
@@ -205,10 +228,10 @@ const Admin = () => {
     );
   }
 
-  if (isAdmin === null) {
+  if (isAdmin === null || !isMfaVerified) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-muted-foreground">Vérification...</p>
+        <p className="text-muted-foreground">Vérification de sécurité 2FA...</p>
       </div>
     );
   }
@@ -218,7 +241,7 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-muted/30">
       <header className="bg-card border-b border-border px-6 py-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 hover:opacity-85 transition-opacity">
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" title="Retour au site public">
           <img src={logo} alt="Goldies Travel" className="h-8 w-8" />
           <span className="font-serif text-lg font-bold text-foreground">
             Goldies <span className="text-primary">Admin</span>

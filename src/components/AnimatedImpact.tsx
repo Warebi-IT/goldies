@@ -8,7 +8,7 @@ const AnimatedImpact = () => {
       const left = Math.random() * 100; // 0% to 100%
       const animationDuration = Math.random() * 15 + 15; // 15s to 30s
       const animationDelay = Math.random() * -30; // Random start time
-      const opacity = Math.random() * 0.6 + 0.2; // 0.2 to 0.8
+      const opacity = Math.random() * 0.5 + 0.5; // 0.5 to 1.0
       
       return { id: i, size, left, animationDuration, animationDelay, opacity };
     });
@@ -37,7 +37,7 @@ const AnimatedImpact = () => {
           @keyframes ripple-expand {
             0% { 
               transform: translate(-50%, -50%) scale(0.1); 
-              opacity: 0.6; 
+              opacity: 0.8; 
               border-width: 4px;
             }
             100% { 
@@ -56,12 +56,12 @@ const AnimatedImpact = () => {
       </style>
       
       {/* Background ripples symbolizing "Impact" */}
-      <div className="absolute top-1/2 left-[25%] w-[600px] h-[600px] rounded-full border-white/30 ripple-circle mix-blend-overlay"></div>
-      <div className="absolute top-1/2 left-[25%] w-[600px] h-[600px] rounded-full border-white/30 ripple-circle mix-blend-overlay" style={{ animationDelay: '4.6s' }}></div>
-      <div className="absolute top-1/2 left-[25%] w-[600px] h-[600px] rounded-full border-white/30 ripple-circle mix-blend-overlay" style={{ animationDelay: '9.2s' }}></div>
+      <div className="absolute top-1/2 left-[25%] w-[600px] h-[600px] rounded-full border-white/70 ripple-circle"></div>
+      <div className="absolute top-1/2 left-[25%] w-[600px] h-[600px] rounded-full border-white/70 ripple-circle" style={{ animationDelay: '4.6s' }}></div>
+      <div className="absolute top-1/2 left-[25%] w-[600px] h-[600px] rounded-full border-white/70 ripple-circle" style={{ animationDelay: '9.2s' }}></div>
 
       {/* Floating particles (Embers / Fireflies) */}
-      <div className="mix-blend-screen opacity-70">
+      <div className="opacity-100">
         {particles.map((p) => (
           <div
             key={p.id}
@@ -73,7 +73,7 @@ const AnimatedImpact = () => {
               top: '-20%', // Starting position handled by animation
               animationDuration: `${p.animationDuration}s`,
               animationDelay: `${p.animationDelay}s`,
-              boxShadow: `0 0 ${p.size * 2}px rgba(255, 255, 255, 0.8)`,
+              boxShadow: `0 0 ${p.size * 2}px rgba(255, 255, 255, 0.9)`,
               '--max-opacity': p.opacity,
             } as React.CSSProperties}
           />

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { MapPin, Clock, Users, ArrowRight } from "lucide-react";
+import { MapPin, Clock, Users, ArrowRight, Calendar } from "lucide-react";
 import destSenegal from "@/assets/dest-senegal.jpg";
 import destMaroc from "@/assets/dest-maroc.jpg";
 import destTanzanie from "@/assets/dest-tanzanie.jpg";
@@ -14,14 +14,14 @@ const fallbackImages: Record<string, string> = {
 };
 
 const Destinations = () => {
-  const { data: trips } = useQuery({
-    queryKey: ["public-trips"],
+  const { data: trips, isLoading } = useQuery({
+    queryKey: ["destinations-trips"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("trips")
         .select("*")
         .eq("is_active", true)
-        .order("created_at");
+        .order("start_date", { ascending: true });
       if (error) throw error;
       return data;
     },
@@ -61,13 +61,15 @@ const Destinations = () => {
       {/* Grid Section */}
       <section id="destinations" className="py-20 bg-cream-card">
         <div className="container mx-auto max-w-[1280px] px-6">
-          <div className="grid md:grid-cols-3 gap-6">
-          {trips?.map((d, idx) => {
-            // Using halftone placeholder if no photography allowed, but keeping images with halftone overlay for effect.
-            const img = d.image_url || fallbackImages[d.destination] || destSenegal;
-            
-            const bgColors = ["bg-pastel-sand", "bg-pastel-sage", "bg-pastel-rose", "bg-pastel-peach", "bg-pastel-lime"];
-            const cardBg = bgColors[idx % bgColors.length];
+          {isLoading ? (
+            <div className="py-20 flex flex-col items-center justify-center space-y-4">
+              <div className="w-12 h-12 border-4 border-citra-orange border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-ink/60 font-dm-sans font-medium">Chargement des voyages...</p>
+            </div>
+          ) : trips && trips.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {trips.map((d, idx) => {
+                const img = d.image_url || fallbackImages[d.destination] || destSenegal;
             
             // Dynamic color logic for trip status
             let tagColors = "bg-amber-400 text-ink shadow-sm"; // Default
@@ -86,7 +88,7 @@ const Destinations = () => {
               <Link
                 to={`/voyages/${d.slug || d.id}`}
                 key={d.id}
-                className={`group relative rounded-cards overflow-hidden ${cardBg} shadow-md hover:shadow-xl flex flex-col p-6 transition-all duration-300 hover:-translate-y-1`}
+                className={`group relative rounded-cards overflow-hidden bg-cream-card border border-ink/5 shadow-md hover:shadow-xl flex flex-col p-6 transition-all duration-300 hover:-translate-y-1`}
               >
                 {/* Thumbnail - 16:9 or similar with halftone feel */}
                 <div className="aspect-[4/3] overflow-hidden rounded-[20px] mb-6 relative">
@@ -105,17 +107,32 @@ const Destinations = () => {
                 )}
 
                 <div className="flex-1 flex flex-col">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-1 text-ink/70">
-                      <MapPin size={14} />
-                      <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{d.destination}</span>
-                    </div>
-                    <span className="font-pp-neue-corp-compact font-black text-2xl text-ink">{d.price} €</span>
+                  <div className="flex items-center gap-1 text-ink/70 mb-2">
+                    <MapPin size={14} />
+                    <span className="font-dm-sans text-xs font-bold uppercase tracking-wider">{d.destination}</span>
                   </div>
                   
-                  <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-2">
+                  <h3 className="font-pp-neue-corp-compact text-2xl font-black text-ink uppercase tracking-tight mb-3.5 group-hover:text-citra-orange transition-colors">
                     {d.name}
                   </h3>
+
+                  {/* Price */}
+                  <div className="mb-3">
+                    {typeof d.price === "number" ? (
+                      <div className="flex items-baseline gap-1">
+                        <span className="font-pp-neue-corp-compact text-3xl font-black text-citra-orange">{d.price} €</span>
+                        <span className="text-xs font-dm-sans font-bold text-ink/50">/pers.</span>
+                      </div>
+                    ) : (
+                      <span className="font-pp-neue-corp-compact text-lg font-black text-citra-orange">{d.price}</span>
+                    )}
+                  </div>
+
+                  {/* Dates du voyage */}
+                  <div className="inline-flex items-center gap-2 text-ink font-dm-sans text-xs font-extrabold bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-full mb-3 border border-ink/10 shadow-2xs w-fit">
+                    <Calendar size={14} className="text-citra-orange shrink-0" />
+                    <span>{d.dates}</span>
+                  </div>
 
                   <div className="flex items-center gap-3 text-ink/70 mb-3 text-xs font-dm-sans font-bold">
                     <div className="flex items-center gap-1">
@@ -129,10 +146,9 @@ const Destinations = () => {
                     </div>
                   </div>
                   
-                  {/* Klarna Fractional Payment */}
+                  {/* Payment options */}
                   <div className="mb-3 px-3 py-1.5 bg-[#FFE1E8]/60 text-ink/80 text-[11px] font-dm-sans font-bold rounded-md w-fit flex items-center gap-1.5">
-                    <span className="font-black">Klarna.</span>
-                    Paiement en 3x sans frais
+                    Acompte {(d as any).deposit_amount ? `${(d as any).deposit_amount} €` : typeof d.price === "number" ? `${Math.round(d.price * 0.3)} €` : "30%"} ou 3x sans frais
                   </div>
                   
                   <p className="text-sm font-dm-sans font-medium text-ink/80 leading-relaxed line-clamp-2 mb-6 flex-1">
@@ -148,7 +164,12 @@ const Destinations = () => {
               </Link>
             );
           })}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-white rounded-3xl border border-ink/5 shadow-sm">
+            <p className="text-ink/60 font-dm-sans">Aucun voyage disponible pour le moment.</p>
+          </div>
+        )}
       </div>
     </section>
   </>

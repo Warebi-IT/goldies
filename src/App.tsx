@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -59,6 +59,7 @@ const App = () => (
               <Route path="/avis" element={<Avis />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/gestion-goldies" element={<Admin />} />
+              <Route path="/admin" element={<Navigate to="/gestion-goldies" replace />} />
               <Route path="/mfa-setup" element={<MfaSetup />} />
               <Route path="/mfa-verify" element={<MfaVerify />} />
               <Route path="/set-password" element={<SetPassword />} />

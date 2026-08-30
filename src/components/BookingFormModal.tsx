@@ -13,20 +13,26 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { safeRedirect, isValidEmail, sanitizeTextInput } from "@/lib/security";
+import { detectMedicalAlert, calculateDepositAmount, calculateRemainingBalance } from "@/lib/business-rules";
+import { formatUserErrorMessage } from "@/lib/error-handler";
 
 interface BookingFormModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialPaymentType?: "deposit" | "installment" | "full";
   trip: {
     id: string;
     name: string;
     dates: string;
     price: string | number;
+    deposit_amount?: number | null;
     payment_link?: string | null;
+    deposit_payment_link?: string | null;
   };
 }
 
-const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, trip }) => {
+const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, trip, initialPaymentType }) => {
   // Form State
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
@@ -36,19 +42,33 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
   const [disponibilite, setDisponibilite] = useState(false);
   const [allergies, setAllergies] = useState("");
   const [engagement, setEngagement] = useState<"Oui" | "Non" | "">("");
-  const [assurance, setAssurance] = useState<"Oui" | "Non" | "Je vais en faire une" | "">("");
+  const [assurance, setAssurance] = useState<"Oui" | "Non" | "Je vais en faire une" | "">("" );
   const [autre, setAutre] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [paymentType, setPaymentType] = useState<"deposit" | "installment" | "full">(
+    initialPaymentType || (trip.deposit_payment_link ? "deposit" : "full")
+  );
 
-  
+  React.useEffect(() => {
+    if (isOpen && initialPaymentType) {
+      setPaymentType(initialPaymentType);
+    }
+  }, [isOpen, initialPaymentType]);
+  const [loading, setLoading] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
+
+  const numericPrice = typeof trip.price === "number" ? trip.price : parseInt(String(trip.price), 10) || 0;
+  const depositAmount = calculateDepositAmount(numericPrice, trip.deposit_amount);
+  const remainingBalance = calculateRemainingBalance(numericPrice, depositAmount);
+
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [acceptedImageRights, setAcceptedImageRights] = useState(true);
 
   // Validation
   const isValid = 
     nom.trim() !== "" &&
     prenom.trim() !== "" &&
     age.trim() !== "" &&
-    email.trim() !== "" &&
+    isValidEmail(email) &&
     telephone.trim() !== "" &&
     disponibilite &&
     allergies.trim() !== "" && 
@@ -60,34 +80,83 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
     e.preventDefault();
     if (!isValid) return;
 
+    // Bot detection via honeypot
+    if (honeypot.trim() !== "") {
+      onClose();
+      return;
+    }
+
+    const cleanNom = sanitizeTextInput(nom, 100);
+    const cleanPrenom = sanitizeTextInput(prenom, 100);
+    const cleanEmail = sanitizeTextInput(email, 254).toLowerCase();
+    const cleanPhone = sanitizeTextInput(telephone, 30);
+    const cleanAllergies = sanitizeTextInput(allergies, 500);
+    const cleanAutre = sanitizeTextInput(autre, 1000);
+    const parsedAge = Math.min(Math.max(parseInt(age, 10) || 0, 1), 120);
+    const hasMedicalAlert = detectMedicalAlert(cleanAllergies);
+    const numericPrice = typeof trip.price === "number" ? trip.price : parseInt(String(trip.price), 10) || 0;
+
     setLoading(true);
     try {
-      const { error } = await supabase.from("bookings").insert({
+      const { data: insertedBooking, error } = await supabase.from("bookings").insert({
         trip_id: trip.id,
-        nom,
-        prenom,
-        age: parseInt(age, 10) || 0,
-        email,
-        telephone,
+        nom: cleanNom,
+        prenom: cleanPrenom,
+        age: parsedAge,
+        email: cleanEmail,
+        telephone: cleanPhone,
         disponibilite,
-        allergies,
+        allergies: cleanAllergies,
         engagement,
         assurance,
-        autre: autre.trim() !== "" ? autre : null,
-        payment_status: "unpaid"
-      });
+        autre: cleanAutre !== "" ? cleanAutre : null,
+        payment_status: "unpaid",
+        payment_type: paymentType,
+        price_at_booking: numericPrice,
+        has_medical_alert: hasMedicalAlert,
+        medical_alert_acknowledged: false,
+        insurance_verified: assurance.toLowerCase() === "oui",
+      }).select("id").single();
 
       if (error) throw error;
 
-      if (trip.payment_link) {
-        window.location.href = trip.payment_link;
+      // Log audit event
+      await supabase.from("audit_events").insert({
+        action: "BOOKING_SUBMITTED",
+        entity_type: "booking",
+        entity_id: insertedBooking?.id || null,
+        details: {
+          trip_id: trip.id,
+          trip_name: trip.name,
+          client_email: cleanEmail,
+          payment_type: paymentType,
+          price_at_booking: numericPrice,
+          has_medical_alert: hasMedicalAlert,
+        },
+      });
+
+      // Redirect to the appropriate payment link based on choice
+      let redirectLink: string | null | undefined = null;
+      if (paymentType === "deposit" && trip.deposit_payment_link) {
+        redirectLink = trip.deposit_payment_link;
+      } else if (trip.payment_link) {
+        redirectLink = trip.payment_link;
+      }
+
+      if (redirectLink) {
+        const redirected = safeRedirect(redirectLink);
+        if (!redirected) {
+          alert("Inscription enregistrée ! Lien de paiement invalide.");
+          onClose();
+        }
       } else {
         alert("Inscription enregistrée ! (Ce voyage n'a pas encore de lien de paiement configuré)");
         onClose();
       }
     } catch (error: any) {
       console.error("Error creating booking:", error);
-      alert("Une erreur est survenue lors de l'enregistrement de votre inscription : " + error.message);
+      const errDiag = formatUserErrorMessage(error);
+      alert(`${errDiag.title}\n\n${errDiag.description}${errDiag.action ? `\n\nAction : ${errDiag.action}` : ""}`);
     } finally {
       setLoading(false);
     }
@@ -111,6 +180,17 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
         {/* Scrollable Body */}
         <div className="flex-1 overflow-y-auto px-6 py-8">
           <form id="booking-form" onSubmit={handleSubmit} className="space-y-10 max-w-2xl mx-auto">
+            {/* Honeypot field for bot mitigation */}
+            <div className="hidden" aria-hidden="true" style={{ display: "none" }}>
+              <input
+                type="text"
+                name="website_url"
+                tabIndex={-1}
+                autoComplete="off"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+              />
+            </div>
             
             {/* Identity */}
             <div className="space-y-4">
@@ -191,8 +271,11 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
             </div>
 
             {/* Allergies */}
-            <div className="space-y-4">
+            <div className="space-y-2">
               <h3 className="font-dm-sans font-bold text-lg text-ink">Des allergies/maladies à signaler *</h3>
+              <p className="text-xs text-ink/60 font-dm-sans">
+                Donnée collectée uniquement pour assurer votre sécurité alimentaire et médicale durant le séjour (Art. 9.2.a RGPD). Purgée après le séjour.
+              </p>
               <Input 
                 placeholder="Si aucune, écrire 'Aucune'" 
                 value={allergies} 
@@ -253,6 +336,124 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
                 onChange={(e) => setAutre(e.target.value)} 
                 className="bg-white/60 border-ink/10 min-h-[100px] rounded-xl focus-visible:ring-citra-orange w-full resize-y" 
               />
+            </div>
+
+            {/* Payment Type Selection */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <h3 className="font-dm-sans font-bold text-lg text-ink">Mode de paiement *</h3>
+                  <p className="text-sm font-dm-sans text-ink/60">Choisissez comment vous souhaitez régler votre séjour.</p>
+                </div>
+                {numericPrice > 0 && (
+                  <span className="text-xs font-dm-sans font-bold px-3 py-1 bg-ink/5 text-ink rounded-full">
+                    Tarif total du séjour : {numericPrice} €
+                  </span>
+                )}
+              </div>
+
+              <RadioGroup 
+                value={paymentType} 
+                onValueChange={(val: any) => setPaymentType(val)}
+                className="flex flex-col space-y-3"
+              >
+                {/* Option 1: Acompte (si lien d'acompte configuré) */}
+                {trip.deposit_payment_link && (
+                  <label
+                    htmlFor="pay-deposit"
+                    className={`relative flex items-start space-x-3.5 p-4 sm:p-5 rounded-2xl border-2 transition-all cursor-pointer ${
+                      paymentType === "deposit"
+                        ? "bg-blue-50/90 border-blue-500 shadow-md ring-1 ring-blue-500/30"
+                        : "bg-white/60 border-blue-200/50 hover:bg-blue-50/40 hover:border-blue-300"
+                    }`}
+                  >
+                    <RadioGroupItem value="deposit" id="pay-deposit" className="mt-1 border-blue-400 text-blue-600" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <span className="font-bold text-ink text-base flex items-center gap-1.5">
+                          💰 Payer un acompte
+                        </span>
+                        <span className="font-extrabold text-blue-700 bg-blue-100/80 px-2.5 py-0.5 rounded-full text-xs">
+                          {depositAmount} € aujourd'hui
+                        </span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-ink/75 mt-1 leading-relaxed">
+                        Versez seulement <strong>{depositAmount} €</strong> aujourd'hui pour bloquer votre place.
+                      </p>
+                      {remainingBalance > 0 && (
+                        <div className="mt-2 text-xs font-semibold text-blue-900/80 bg-white/70 px-2.5 py-1 rounded-lg border border-blue-200/40 inline-flex items-center gap-1">
+                          <span>📅 Solde restant ({remainingBalance} €) à régler avant le départ</span>
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                )}
+
+                {/* Option 2: Paiement en plusieurs fois (Klarna) */}
+                <label
+                  htmlFor="pay-installment"
+                  className={`relative flex items-start space-x-3.5 p-4 sm:p-5 rounded-2xl border-2 transition-all cursor-pointer ${
+                    paymentType === "installment"
+                      ? "bg-[#FFF0F4] border-pink-500 shadow-md ring-1 ring-pink-500/30"
+                      : "bg-white/60 border-[#FFE1E8]/70 hover:bg-[#FFF0F4]/50 hover:border-pink-300"
+                  }`}
+                >
+                  <RadioGroupItem value="installment" id="pay-installment" className="mt-1 border-pink-400 text-pink-600" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <span className="font-bold text-ink text-base flex items-center gap-1.5">
+                        💳 Payer en 3x ou 4x sans frais
+                      </span>
+                      <span className="font-black text-pink-700 bg-pink-100/80 px-2.5 py-0.5 rounded-full text-xs">
+                        Klarna.
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-ink/75 mt-1 leading-relaxed">
+                      Réglez en 3 ou 4 mensualités sans aucun frais supplémentaire
+                      {numericPrice > 0 ? ` (soit ~${Math.round(numericPrice / 3)} € / mois)` : ""}.
+                    </p>
+                  </div>
+                </label>
+
+                {/* Option 3: Paiement intégral */}
+                <label
+                  htmlFor="pay-full"
+                  className={`relative flex items-start space-x-3.5 p-4 sm:p-5 rounded-2xl border-2 transition-all cursor-pointer ${
+                    paymentType === "full"
+                      ? "bg-emerald-50/90 border-emerald-500 shadow-md ring-1 ring-emerald-500/30"
+                      : "bg-white/60 border-emerald-200/50 hover:bg-emerald-50/40 hover:border-emerald-300"
+                  }`}
+                >
+                  <RadioGroupItem value="full" id="pay-full" className="mt-1 border-emerald-400 text-emerald-600" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <span className="font-bold text-ink text-base flex items-center gap-1.5">
+                        ✅ Payer la totalité
+                      </span>
+                      {numericPrice > 0 && (
+                        <span className="font-extrabold text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full text-xs">
+                          {numericPrice} €
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs sm:text-sm text-ink/75 mt-1 leading-relaxed">
+                      Réglez le montant intégral du séjour en une seule fois par carte bancaire.
+                    </p>
+                  </div>
+                </label>
+              </RadioGroup>
+
+              {/* Dynamic Recap Card */}
+              <div className="bg-white/70 p-3.5 rounded-xl border border-ink/10 text-xs font-dm-sans text-ink/80 flex items-center justify-between">
+                <span className="text-ink/60">Montant à régler à la confirmation :</span>
+                <span className="font-extrabold text-sm text-ink">
+                  {paymentType === "deposit"
+                    ? `${depositAmount} € (Acompte)`
+                    : paymentType === "installment"
+                    ? `${numericPrice} € (échelonné via Klarna)`
+                    : `${numericPrice} € (Règlement total)`}
+                </span>
+              </div>
             </div>
 
             {/* T&Cs Block */}
@@ -330,16 +531,32 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
                 Je garantis que ni moi, ni le cas échéant la personne que je représente, n’est lié par un contrat exclusif relatif à l’utilisation de mon image ou de mon nom.</p>
               </div>
 
-              <div className="flex items-start space-x-4 bg-citra-orange/10 p-4 rounded-xl border border-citra-orange/20">
-                <Checkbox 
-                  id="terms" 
-                  checked={acceptedTerms} 
-                  onCheckedChange={(c) => setAcceptedTerms(c as boolean)} 
-                  className="mt-1 w-6 h-6 rounded-md border-citra-orange/40 data-[state=checked]:bg-citra-orange data-[state=checked]:border-citra-orange"
-                />
-                <Label htmlFor="terms" className="text-base font-dm-sans text-ink/90 cursor-pointer font-bold leading-snug">
-                  Je déclare avoir lu, compris et accepté l'ensemble des Conditions de participation au programme Goldie's Travel, ainsi que l'Autorisation de droit à l'image.
-                </Label>
+              <div className="space-y-3">
+                {/* Mandatory CGV Checkbox */}
+                <div className="flex items-start space-x-4 bg-citra-orange/10 p-4 rounded-xl border border-citra-orange/20">
+                  <Checkbox 
+                    id="terms" 
+                    checked={acceptedTerms} 
+                    onCheckedChange={(c) => setAcceptedTerms(c as boolean)} 
+                    className="mt-1 w-6 h-6 rounded-md border-citra-orange/40 data-[state=checked]:bg-citra-orange data-[state=checked]:border-citra-orange"
+                  />
+                  <Label htmlFor="terms" className="text-base font-dm-sans text-ink/90 cursor-pointer font-bold leading-snug">
+                    Je déclare avoir lu, compris et accepté l'ensemble des Conditions Générales de Vente et de participation au programme Goldie's Travel. *
+                  </Label>
+                </div>
+
+                {/* Optional Image Rights Checkbox */}
+                <div className="flex items-start space-x-4 bg-white/60 p-4 rounded-xl border border-ink/10">
+                  <Checkbox 
+                    id="image-rights" 
+                    checked={acceptedImageRights} 
+                    onCheckedChange={(c) => setAcceptedImageRights(c as boolean)} 
+                    className="mt-1 w-5 h-5 rounded-md border-ink/30 data-[state=checked]:bg-citra-orange data-[state=checked]:border-citra-orange"
+                  />
+                  <Label htmlFor="image-rights" className="text-sm font-dm-sans text-ink/80 cursor-pointer leading-snug">
+                    <span className="font-semibold text-ink">Autorisation droit à l'image (Optionnel) :</span> J'autorise Goldie's Travel à utiliser les photos/vidéos prises lors du séjour sur ses supports de communication (site, réseaux sociaux).
+                  </Label>
+                </div>
               </div>
             </div>
 
@@ -361,8 +578,8 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
 
         {/* Footer actions */}
         <div className="p-6 bg-white/80 backdrop-blur-md border-t border-ink/10 shrink-0 flex flex-col sm:flex-row justify-between items-center gap-4">
-           <div className="text-ink/70 font-dm-sans text-sm">
-             Total du voyage : <strong className="text-ink text-lg">{trip.price} €</strong>
+           <div className="text-ink/80 font-dm-sans text-sm">
+             Séjour sélectionné : <strong className="text-ink font-extrabold text-base">{trip.name}</strong> <span className="text-ink/70 text-xs font-bold font-dm-sans block sm:inline sm:ml-2">({trip.dates})</span>
            </div>
            <div className="flex gap-4 w-full sm:w-auto">
               <Button type="button" variant="ghost" onClick={onClose} className="w-full sm:w-auto rounded-full font-dm-sans font-bold">
@@ -374,7 +591,15 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
                 disabled={!isValid || loading} 
                 className="w-full sm:w-auto rounded-full bg-citra-orange text-white hover:bg-citra-orange/90 font-dm-sans font-bold shadow-md transition-all h-12 px-8 disabled:opacity-50"
               >
-                {loading ? "Enregistrement..." : (isValid ? "Procéder au paiement" : "Remplissez tous les champs")}
+                {loading
+                  ? "Enregistrement..."
+                  : isValid
+                  ? paymentType === "deposit"
+                    ? `Payer l'acompte (${depositAmount} €)`
+                    : paymentType === "installment"
+                    ? "Payer en plusieurs fois"
+                    : `Payer la totalité (${numericPrice ? `${numericPrice} €` : ""})`
+                  : "Remplissez tous les champs"}
               </Button>
            </div>
         </div>

@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Image, Upload } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { formatUserErrorMessage } from "@/lib/error-handler";
 
 interface AlbumForm {
   title: string;
@@ -102,7 +103,14 @@ const AdminGallery = () => {
       setAlbumForm(emptyAlbumForm);
       toast({ title: editAlbumId ? "Album modifié" : "Album créé" });
     },
-    onError: (e: any) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+    onError: (e: any) => {
+      const err = formatUserErrorMessage(e);
+      toast({
+        title: err.title,
+        description: `${err.description}${err.action ? `\n\n💡 Action requise : ${err.action}` : ""}`,
+        variant: "destructive",
+      });
+    },
   });
 
   const deleteAlbum = useMutation({
@@ -114,6 +122,14 @@ const AdminGallery = () => {
       queryClient.invalidateQueries({ queryKey: ["admin-albums"] });
       if (selectedAlbum) setSelectedAlbum(null);
       toast({ title: "Album supprimé" });
+    },
+    onError: (e: any) => {
+      const err = formatUserErrorMessage(e);
+      toast({
+        title: err.title,
+        description: `${err.description}${err.action ? `\n\n💡 Action requise : ${err.action}` : ""}`,
+        variant: "destructive",
+      });
     },
   });
 
@@ -153,7 +169,12 @@ const AdminGallery = () => {
       queryClient.invalidateQueries({ queryKey: ["admin-photos", selectedAlbum] });
       toast({ title: `${files.length} photo(s) ajoutée(s)` });
     } catch (err: any) {
-      toast({ title: "Erreur upload", description: err.message, variant: "destructive" });
+      const errDiag = formatUserErrorMessage(err);
+      toast({
+        title: errDiag.title,
+        description: `${errDiag.description}${errDiag.action ? `\n\n💡 Action : ${errDiag.action}` : ""}`,
+        variant: "destructive",
+      });
     } finally {
       setUploading(false);
       e.target.value = "";

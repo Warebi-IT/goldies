@@ -90,10 +90,10 @@ const InteractiveHeart: React.FC<InteractiveHeartProps> = ({ variant = 'default'
       // Hero dimensions
       const heroHeight = height / 2.0;
       
-      // Determine Heart center and radius
-      const centerX = width / 2;
-      const centerY = (heroHeight / 2) + 25; // Centered vertically with slight vertical push
-      const baseRadius = Math.max(130, Math.min(width * 0.35, heroHeight * 0.45, 230));
+      // Determine Heart center and radius — shifted right, half size, aligned with CTA buttons
+      const centerX = width * 0.75;
+      const centerY = heroHeight * 0.68; // ~aligned with CTA button row
+      const baseRadius = Math.max(65, Math.min(width * 0.175, heroHeight * 0.225, 115));
 
       // Pulsing heartbeat scale factor calculations
       const beatCycle = time * 5.0;

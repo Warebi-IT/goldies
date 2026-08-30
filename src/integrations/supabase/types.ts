@@ -118,6 +118,8 @@ export type Database = {
         Row: {
           created_at: string
           dates: string
+          deposit_amount: number | null
+          deposit_payment_link: string | null
           description: string | null
           destination: string
           duration: string
@@ -126,6 +128,7 @@ export type Database = {
           image_url: string | null
           includes: string[]
           is_active: boolean
+          is_featured: boolean
           name: string
           payment_link: string | null
           price: number
@@ -139,6 +142,8 @@ export type Database = {
         Insert: {
           created_at?: string
           dates: string
+          deposit_amount?: number | null
+          deposit_payment_link?: string | null
           description?: string | null
           destination: string
           duration: string
@@ -147,6 +152,7 @@ export type Database = {
           image_url?: string | null
           includes?: string[]
           is_active?: boolean
+          is_featured?: boolean
           name: string
           payment_link?: string | null
           price: number
@@ -160,6 +166,8 @@ export type Database = {
         Update: {
           created_at?: string
           dates?: string
+          deposit_amount?: number | null
+          deposit_payment_link?: string | null
           description?: string | null
           destination?: string
           duration?: string
@@ -168,6 +176,7 @@ export type Database = {
           image_url?: string | null
           includes?: string[]
           is_active?: boolean
+          is_featured?: boolean
           name?: string
           payment_link?: string | null
           price?: number
@@ -216,6 +225,11 @@ export type Database = {
           assurance: string
           autre: string | null
           payment_status: string
+          payment_type: string
+          price_at_booking: number | null
+          has_medical_alert: boolean
+          medical_alert_acknowledged: boolean
+          insurance_verified: boolean
           created_at: string
         }
         Insert: {
@@ -232,6 +246,11 @@ export type Database = {
           assurance: string
           autre?: string | null
           payment_status?: string
+          payment_type?: string
+          price_at_booking?: number | null
+          has_medical_alert?: boolean
+          medical_alert_acknowledged?: boolean
+          insurance_verified?: boolean
           created_at?: string
         }
         Update: {
@@ -248,6 +267,11 @@ export type Database = {
           assurance?: string
           autre?: string | null
           payment_status?: string
+          payment_type?: string
+          price_at_booking?: number | null
+          has_medical_alert?: boolean
+          medical_alert_acknowledged?: boolean
+          insurance_verified?: boolean
           created_at?: string
         }
         Relationships: [
@@ -259,6 +283,39 @@ export type Database = {
             referencedColumns: ["id"]
           }
         ]
+      }
+      audit_events: {
+        Row: {
+          id: string
+          actor_id: string | null
+          actor_email: string | null
+          action: string
+          entity_type: string
+          entity_id: string | null
+          details: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          actor_id?: string | null
+          actor_email?: string | null
+          action: string
+          entity_type: string
+          entity_id?: string | null
+          details?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          actor_id?: string | null
+          actor_email?: string | null
+          action?: string
+          entity_type?: string
+          entity_id?: string | null
+          details?: Json
+          created_at?: string
+        }
+        Relationships: []
       }
       contacts: {
         Row: {

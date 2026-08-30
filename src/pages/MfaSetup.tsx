@@ -129,7 +129,14 @@ const MfaSetup = () => {
           </div>
 
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => navigate("/gestion-goldies")} className="flex-1">
+            <Button
+              variant="outline"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                navigate("/gestion-goldies");
+              }}
+              className="flex-1"
+            >
               Annuler
             </Button>
             <Button

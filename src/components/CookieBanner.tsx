@@ -13,6 +13,10 @@ const CookieBanner = () => {
       const timer = setTimeout(() => setIsVisible(true), 1500);
       return () => clearTimeout(timer);
     }
+
+    const handleOpenBanner = () => setIsVisible(true);
+    window.addEventListener('open_cookie_preferences', handleOpenBanner);
+    return () => window.removeEventListener('open_cookie_preferences', handleOpenBanner);
   }, []);
 
   const handleAccept = () => {

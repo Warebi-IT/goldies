@@ -9,23 +9,23 @@ import ExplorerGirl from "./ExplorerGirl";
 const steps = [
   {
     icon: Globe,
-    title: "Choisissez votre destination",
-    desc: "Sénégal, Maroc et bientôt d'autres pays africains. Consultez le programme détaillé de chaque séjour.",
-  },
-  {
-    icon: Package,
-    title: "Package tout compris",
-    desc: "Logement, transport, activités, nourriture et budget association inclus. Seul le billet d'avion reste à votre charge.",
+    title: "L'immersion culturelle",
+    desc: "Découvrir un pays à travers ses habitants, ses traditions, son patrimoine, son artisanat et sa gastronomie.",
   },
   {
     icon: Users,
-    title: "Voyagez en groupe",
-    desc: "Des séjours 100% féminins pour créer des liens forts et vivre une expérience unique entre femmes.",
+    title: "L'expérience humaine",
+    desc: "Créer des liens authentiques entre les participantes et favoriser des rencontres qui dépassent le simple cadre du voyage.",
   },
   {
     icon: Heart,
-    title: "Impact solidaire",
-    desc: "Une partie de votre séjour contribue à des projets associatifs locaux. Voyager avec du sens.",
+    title: "Le tourisme responsable",
+    desc: "Collaborer avec des acteurs locaux et intégrer des actions solidaires afin que nos voyages aient également un impact positif.",
+  },
+  {
+    icon: Package,
+    title: "La sécurité et l'accompagnement",
+    desc: "Chaque séjour est entièrement organisé et encadré afin que les participantes puissent profiter pleinement de leur expérience en toute sérénité.",
   },
 ];
 
@@ -56,14 +56,14 @@ const AboutConcept = () => {
 
         <div className="container mx-auto max-w-[1280px] relative z-10 text-center">
           <p className="font-dm-sans text-sm uppercase tracking-widest text-citra-orange font-bold mb-6">
-            [ NOTRE RAISON D'ÊTRE ]
+            [ À PROPOS DE GOLDIES TRAVEL ]
           </p>
           <h1 className="font-pp-neue-corp-compact text-6xl md:text-8xl lg:text-[7rem] font-black text-ink uppercase tracking-tight mb-8 leading-[0.9]">
             Voyager <br/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-citra-orange to-rose-400">Autrement</span>
           </h1>
           <p className="max-w-2xl mx-auto font-dm-sans text-xl md:text-2xl text-ink/70 font-medium leading-relaxed">
-            Goldies Travel est une agence créée par deux femmes, pour les femmes. Passionnées par l'aventure, nous créons des expériences qui changent des vies.
+            Goldies Travel est une agence spécialisée dans l'organisation de voyages immersifs et expérientiels en Afrique. Chaque voyage est pensé comme une véritable expérience humaine où les rencontres, le partage et l'immersion sont au cœur de chaque journée.
           </p>
         </div>
       </div>
@@ -75,14 +75,15 @@ const AboutConcept = () => {
           {/* Main Statement */}
           <div className="md:col-span-8 bg-pastel-sand/40 rounded-[40px] p-10 md:p-14 relative overflow-hidden group border border-white/50 shadow-sm">
             <div className="absolute -top-10 -right-10 p-8 text-white group-hover:scale-110 transition-transform duration-700 opacity-80">
-               <Globe size={250} strokeWidth={0.5} />
+               <Users size={250} strokeWidth={0.5} />
             </div>
             <div className="relative z-10">
+              <p className="font-dm-sans text-sm uppercase tracking-widest text-citra-orange font-bold mb-4">LES FONDATRICES</p>
               <h3 className="font-pp-neue-corp-compact text-4xl md:text-5xl font-black text-ink mb-6 uppercase tracking-tight">
-                Plus qu'un voyage,<br/>une <span className="text-citra-orange">mission</span>.
+                Une aventure née d'une <span className="text-citra-orange">passion commune</span>
               </h3>
               <p className="font-dm-sans text-lg md:text-xl text-ink/80 leading-relaxed max-w-xl font-medium">
-                Nous ne sommes pas une agence ordinaire. Goldies Travel, ce n'est pas seulement voyager, c'est aider, contribuer et partager. Nous organisons des expéditions en Afrique pour vous impacter profondément.
+                Goldies Travel a été fondée par Aïda Fall et Naïma Arrazki, deux jeunes entrepreneures diplômées de Sciences Po. Animées par leur passion pour l'Afrique, les voyages et les échanges interculturels, elles ont imaginé Goldies Travel afin de proposer une nouvelle manière de voyager : plus humaine, plus authentique et plus responsable.
               </p>
             </div>
           </div>
@@ -91,8 +92,8 @@ const AboutConcept = () => {
           <div className="md:col-span-4 bg-citra-orange text-white rounded-[40px] p-10 flex flex-col justify-center items-center text-center shadow-lg shadow-citra-orange/20 hover:-translate-y-2 transition-transform duration-500 relative overflow-hidden">
             <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none">
             </div>
-            <p className="font-pp-neue-corp-compact text-7xl font-black mb-2 relative z-10">500+</p>
-            <p className="font-dm-sans text-sm uppercase tracking-widest font-bold opacity-90 relative z-10">Voyageuses Impactées</p>
+            <p className="font-pp-neue-corp-compact text-7xl font-black mb-2 relative z-10">100+</p>
+            <p className="font-dm-sans text-sm uppercase tracking-widest font-bold opacity-90 relative z-10">Participantes</p>
           </div>
 
           {/* Quote Box */}
@@ -103,23 +104,25 @@ const AboutConcept = () => {
              <div className="text-citra-orange text-7xl font-serif leading-none mb-4 absolute top-8 left-8 opacity-40">"</div>
              <div className="relative z-10 mt-12">
                <p className="font-dm-sans text-xl md:text-2xl font-medium leading-relaxed mb-8">
-                  Une immersion authentique dans la culture, avec une empreinte positive et durable sur les communautés.
+                  Faire découvrir les richesses du continent africain tout en créant des expériences qui marquent durablement les participantes.
                </p>
                <span className="inline-block bg-white/10 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
-                 100% Féminin
+                 Incubé à Sciences Po
                </span>
              </div>
           </div>
 
           {/* Features List */}
           <div className="md:col-span-7 bg-white rounded-[40px] p-10 md:p-12 flex flex-col justify-center relative overflow-hidden border border-ink/5 shadow-sm hover:shadow-md transition-shadow duration-300">
-             <h3 className="font-pp-neue-corp-compact text-3xl font-black text-ink mb-8 uppercase tracking-tight">L'Expérience Goldies</h3>
+             <h3 className="font-pp-neue-corp-compact text-3xl font-black text-ink mb-8 uppercase tracking-tight">Pourquoi choisir Goldies Travel ?</h3>
              <ul className="space-y-5">
                {[
-                 "Des séjours 100% exclusifs entre femmes",
-                 "Un package logistique tout inclus (hors vol)",
-                 "Une immersion authentique et éthique",
-                 "Des actions de solidarité locale"
+                 "Des voyages organisés de A à Z",
+                 "Des groupes à taille humaine",
+                 "Une immersion culturelle authentique",
+                 "Un accompagnement avant, pendant et après le voyage",
+                 "Des expériences solidaires et rencontres inoubliables",
+                 "Une équipe passionnée par l'Afrique"
                ].map((item, i) => (
                  <li key={i} className="flex items-center gap-5 font-dm-sans text-lg text-ink/80 font-medium group">
                    <div className="w-10 h-10 rounded-full bg-pastel-sage/30 flex flex-shrink-0 items-center justify-center text-ink group-hover:bg-citra-orange group-hover:text-white transition-colors duration-300">
@@ -136,13 +139,13 @@ const AboutConcept = () => {
         <div className="mb-32">
           <div className="text-center mb-20">
             <p className="font-dm-sans text-sm uppercase tracking-wider text-citra-orange font-bold mb-3">
-              MÉTHODOLOGIE
+              NOTRE VISION
             </p>
             <h2 className="font-pp-neue-corp-compact text-5xl md:text-6xl font-black text-ink uppercase tracking-tight mb-4">
-              Comment ça fonctionne ?
+              4 Engagements
             </h2>
             <p className="max-w-xl mx-auto text-lg font-dm-sans font-medium text-ink/70">
-              Un parcours simplifié pour vous donner la confiance d'oser l'inconnu en toute sérénité.
+              Nous croyons que le voyage est bien plus qu'un simple déplacement. C'est une opportunité de rencontrer, d'apprendre et de créer des souvenirs inoubliables.
             </p>
           </div>
 
@@ -205,15 +208,13 @@ const AboutConcept = () => {
 
       </div>
 
-      {/* 4. SECTION IMPACT SOLIDAIRE (VIBRANT SUNSET MESH) */}
-      <div className="relative w-full py-32 overflow-hidden">
-        {/* Animated Mesh Gradient Background representing warmth, humanity and African sunset */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#D95F3B] to-[#C04A2A] z-0"></div>
-        <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-hazard-yellow rounded-full mix-blend-overlay filter blur-[120px] opacity-80 animate-float-slow"></div>
-        <div className="absolute bottom-[-20%] right-[-10%] w-[80%] h-[80%] bg-[#FF6B9E] rounded-full mix-blend-overlay filter blur-[150px] opacity-70 animate-float-slow" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-[30%] left-[40%] w-[50%] h-[50%] bg-[#BCE3F1] rounded-full mix-blend-overlay filter blur-[100px] opacity-40 animate-float-slow" style={{ animationDelay: '4s' }}></div>
+      {/* 4. SECTION IMPACT SOLIDAIRE (CITRA ORANGE / SOFT PINK) */}
+      <div className="relative w-full py-32 bg-citra-orange overflow-hidden">
+        {/* Subtle decorative animations */}
+        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-white/20 rounded-full blur-[120px] pointer-events-none animate-float-slow"></div>
+        <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-white/30 rounded-full blur-[100px] pointer-events-none animate-float-slow" style={{ animationDelay: '2s' }}></div>
         
-        {/* Abstract animated impact over the gradient */}
+        {/* Abstract animated impact over the background */}
         <div className="absolute inset-0 opacity-100 pointer-events-none z-0">
            <AnimatedImpact />
         </div>
@@ -221,41 +222,38 @@ const AboutConcept = () => {
         <div className="container mx-auto max-w-[1280px] px-6 relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
-              {/* Subtle dark gradient behind text for guaranteed readability */}
-              <div className="absolute -inset-10 bg-gradient-to-r from-ink/30 to-transparent blur-2xl -z-10 rounded-full"></div>
-              
-              <p className="font-dm-sans text-sm uppercase tracking-widest text-[#F7CA44] font-black mb-4 flex items-center gap-2 drop-shadow-md">
-                <Heart size={16} fill="currentColor" />
-                L'ESSENCE DE GOLDIES
+              <p className="font-dm-sans text-sm uppercase tracking-widest text-ink font-black mb-4 flex items-center gap-2">
+                <Users size={16} fill="currentColor" />
+                UNE COMMUNAUTÉ EN PLEINE CROISSANCE
               </p>
-              <h2 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-white uppercase tracking-tight mb-8 leading-[0.9] drop-shadow-xl">
-                Humanitaire<br/>entre femmes
+              <h2 className="font-pp-neue-corp-compact text-5xl md:text-7xl font-black text-white uppercase tracking-tight mb-8 leading-[0.9] drop-shadow-sm">
+                Bien plus<br/>qu'une agence
               </h2>
-              <p className="font-dm-sans text-xl md:text-2xl text-white leading-relaxed mb-10 font-medium drop-shadow-lg">
-                Si tu es une jeune femme en quête d'impact, tu es au bon endroit. Une partie de chaque séjour est systématiquement dédiée à soutenir des initiatives associatives locales.
+              <p className="font-dm-sans text-xl md:text-2xl text-white/95 leading-relaxed mb-10 font-medium">
+                C'est une communauté qui rassemble des milliers de personnes passionnées par la découverte de l'Afrique. Notre présence digitale nous permet d'inspirer quotidiennement notre audience.
               </p>
-              <Link to="/contact" className="inline-flex items-center gap-3 bg-white text-citra-orange px-8 py-4 rounded-full font-dm-sans font-black hover:bg-ink hover:text-white transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-xl hover:-translate-y-1">
-                S'engager avec nous <ArrowRight size={20} />
-              </Link>
+              <a href="https://www.instagram.com/goldies.travel" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 bg-white text-ink px-8 py-4 rounded-full font-dm-sans font-black hover:bg-ink hover:text-white transition-all duration-300 shadow-xl hover:-translate-y-1">
+                Suivez l'aventure <ArrowRight size={20} />
+              </a>
             </div>
             
             <div className="grid sm:grid-cols-2 gap-6 lg:ml-10">
-              <div className="bg-white/10 backdrop-blur-xl rounded-[32px] p-8 border border-white/30 flex flex-col items-center text-center hover:bg-white/20 transition-all duration-300 shadow-2xl shadow-ink/10 group hover:-translate-y-2">
-                <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-6 border border-white/20 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                  <Heart size={32} className="text-white drop-shadow-md" />
-                </div>
-                <h4 className="font-dm-sans font-bold text-white text-xl mb-3 drop-shadow-md">Soutien Local</h4>
-                <p className="font-dm-sans text-base text-white/90 font-medium leading-relaxed drop-shadow-sm">
-                  Aide directe et matérielle aux populations et orphelinats vulnérables.
+              <div className="bg-white/95 backdrop-blur-md rounded-[32px] p-8 border border-white flex flex-col items-center justify-center text-center transition-all duration-300 shadow-xl hover:shadow-2xl group hover:-translate-y-2">
+                <h4 className="font-pp-neue-corp-compact font-black text-ink group-hover:text-citra-orange transition-colors text-4xl mb-3">+ 45 000</h4>
+                <p className="font-dm-sans text-base text-ink/80 font-medium leading-relaxed">
+                  Abonnés sur TikTok
                 </p>
               </div>
-              <div className="bg-white/10 backdrop-blur-xl rounded-[32px] p-8 border border-white/30 flex flex-col items-center text-center sm:translate-y-12 hover:bg-white/20 transition-all duration-300 shadow-2xl shadow-ink/10 mt-6 sm:mt-0 group hover:-translate-y-2">
-                <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-6 border border-white/20 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                  <Users size={32} className="text-white drop-shadow-md" />
-                </div>
-                <h4 className="font-dm-sans font-bold text-white text-xl mb-3 drop-shadow-md">Sororité</h4>
-                <p className="font-dm-sans text-base text-white/90 font-medium leading-relaxed drop-shadow-sm">
-                  Un espace de confiance et de bienveillance 100% féminin.
+              <div className="bg-white/95 backdrop-blur-md rounded-[32px] p-8 border border-white flex flex-col items-center justify-center text-center sm:translate-y-12 transition-all duration-300 shadow-xl hover:shadow-2xl mt-6 sm:mt-0 group hover:-translate-y-2">
+                <h4 className="font-pp-neue-corp-compact font-black text-ink group-hover:text-citra-orange transition-colors text-4xl mb-3">+ 3 400</h4>
+                <p className="font-dm-sans text-base text-ink/80 font-medium leading-relaxed">
+                  Abonnés sur Instagram
+                </p>
+              </div>
+              <div className="bg-white/95 backdrop-blur-md rounded-[32px] p-8 border border-white flex flex-col items-center justify-center text-center transition-all duration-300 shadow-xl hover:shadow-2xl mt-6 sm:mt-16 group hover:-translate-y-2 sm:col-span-2">
+                <h4 className="font-pp-neue-corp-compact font-black text-ink group-hover:text-citra-orange transition-colors text-4xl mb-3">+ 300 000</h4>
+                <p className="font-dm-sans text-base text-ink/80 font-medium leading-relaxed">
+                  Personnes touchées grâce aux réseaux sociaux de nos fondatrices et marques.
                 </p>
               </div>
             </div>

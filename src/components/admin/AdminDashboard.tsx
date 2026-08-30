@@ -93,6 +93,10 @@ const AdminDashboard = () => {
     ? tripStats.filter((t) => t.id === selectedTrip)
     : tripStats;
 
+  // Safety KPIs (Règles 7 & 8)
+  const pendingMedicalAlerts = filteredBookings.filter((b: any) => b.has_medical_alert && !b.medical_alert_acknowledged).length;
+  const pendingInsurances = filteredBookings.filter((b: any) => !b.insurance_verified).length;
+
   return (
     <div className="space-y-8 animate-in fade-in-50 duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-ink/10">
@@ -101,7 +105,7 @@ const AdminDashboard = () => {
             Tableau de Bord
           </h2>
           <p className="font-dm-sans text-sm text-ink/60">
-            Suivi des ventes, des réservations et de l'intérêt client en temps réel.
+            Suivi des ventes, conformité santé & sécurité, et remplissage des séjours.
           </p>
         </div>
 
@@ -209,7 +213,7 @@ const AdminDashboard = () => {
         </Card>
       </div>
 
-      {/* Breakdown per Travel */}
+      {/* Breakdown per Travel & Safety Center */}
       <div className="grid gap-6 md:grid-cols-3">
         {/* Left: Occupancy list */}
         <div className="md:col-span-2 bg-white rounded-[32px] p-6 border border-ink/5 shadow-sm">
@@ -249,10 +253,38 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Right: Quick stats & contact summaries */}
+        {/* Right: Quick stats & Safety Center */}
         <div className="space-y-6">
-          {/* Quick Stats */}
-          <div className="bg-white rounded-[32px] p-6 border border-ink/5 shadow-sm flex flex-col justify-between h-[180px]">
+          {/* Vigilance Santé & Sécurité (Règles 7 & 8) */}
+          <div className="bg-white rounded-[32px] p-6 border border-ink/5 shadow-sm space-y-4">
+            <h4 className="font-pp-neue-corp-compact text-lg font-black uppercase text-ink">
+              Vigilance Voyageuses (Duty of Care)
+            </h4>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-rose-50 border border-rose-100">
+                <div className="text-xs font-dm-sans font-bold text-rose-900">
+                  Alertes Médicales à traiter
+                </div>
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                  pendingMedicalAlerts > 0 ? "bg-rose-600 text-white animate-pulse" : "bg-emerald-100 text-emerald-800"
+                }`}>
+                  {pendingMedicalAlerts}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-amber-50 border border-amber-100">
+                <div className="text-xs font-dm-sans font-bold text-amber-900">
+                  Attestations d'assurance en attente
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-600 text-white">
+                  {pendingInsurances}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Stats Contacts */}
+          <div className="bg-white rounded-[32px] p-6 border border-ink/5 shadow-sm flex flex-col justify-between">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center">
                 <MessageSquare size={18} />
@@ -263,32 +295,11 @@ const AdminDashboard = () => {
               </div>
             </div>
             <div className="mt-4 flex items-baseline gap-2">
-              <span className="font-pp-neue-corp-compact text-5xl font-black text-ink">
+              <span className="font-pp-neue-corp-compact text-4xl font-black text-ink">
                 {contacts?.length || 0}
               </span>
               <span className="font-dm-sans text-sm text-ink/60">messages</span>
             </div>
-          </div>
-
-          {/* Quick tips card */}
-          <div className="bg-gradient-to-br from-citra-orange/10 to-pastel-rose p-6 rounded-[32px] border border-citra-orange/20 shadow-sm">
-            <h4 className="font-pp-neue-corp-compact text-lg font-black uppercase text-ink mb-3">
-              Action requise
-            </h4>
-            <ul className="space-y-3 font-dm-sans text-sm text-ink/80">
-              <li className="flex items-start gap-2">
-                <span className="text-citra-orange font-bold">•</span>
-                <span>Vérifiez les paiements Stripe en attente.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-citra-orange font-bold">•</span>
-                <span>Validez l'assurance et l'engagement des participantes.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-citra-orange font-bold">•</span>
-                <span>Répondez aux demandes des {contacts?.length || 0} nouveaux contacts.</span>
-              </li>
-            </ul>
           </div>
         </div>
       </div>

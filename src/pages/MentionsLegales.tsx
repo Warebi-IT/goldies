@@ -17,37 +17,41 @@ const MentionsLegales = () => {
             
             <h2>1. Éditeur du site</h2>
             <p>
-              Le site <strong>Goldies Travel</strong> est édité par :<br/>
-              [Nom de votre Société ou Auto-entreprise]<br/>
-              [Statut juridique et Capital social si applicable]<br/>
-              SIRET : [Numéro SIRET]<br/>
-              Siège social : [Adresse physique, France]<br/>
-              Directeur de la publication : [Votre Nom / Nom du dirigeant]
+              Le site internet <strong>Goldies Travel</strong> (accessible à l'adresse <code>https://goldies.vercel.app</code>) est édité par :<br/>
+              <strong>GOLDIES TRAVEL</strong><br/>
+              Société par Actions Simplifiée (SAS) / Structure en cours d'immatriculation<br/>
+              Siège social : France<br/>
+              Contact email : <a href="mailto:contact@goldiestravel.com">contact@goldiestravel.com</a><br/>
+              Directeur de la publication : Direction de Goldies Travel
             </p>
 
-            <h2>2. Hébergement</h2>
+            <h2>2. Hébergement de l'application et de la base de données</h2>
             <p>
-              Ce site est hébergé par :<br/>
-              [Nom de l'hébergeur, ex: Vercel Inc.]<br/>
-              [Adresse de l'hébergeur]<br/>
-              [Site web ou téléphone de l'hébergeur]
+              <strong>Hébergeur de l'application web :</strong><br/>
+              <strong>Vercel Inc.</strong><br/>
+              440 N Barranca Ave #4133, Covina, CA 91723, États-Unis<br/>
+              Site web : <a href="https://vercel.com" target="_blank" rel="noopener noreferrer">https://vercel.com</a>
+            </p>
+            <p>
+              <strong>Hébergeur de la base de données :</strong><br/>
+              <strong>Supabase Inc.</strong><br/>
+              970 Folsom St, San Francisco, CA 94107, États-Unis<br/>
+              Infrastructure cloud sécurisée (Région Europe / UE - conformité RGPD).
             </p>
 
-            <h2>3. Contact</h2>
+            <h2>3. Propriété intellectuelle</h2>
             <p>
-              Pour toute question ou demande d'information, vous pouvez nous contacter :<br/>
-              Par email : <a href="mailto:contact@goldiestravel.com">contact@goldiestravel.com</a><br/>
-              Par téléphone : [Votre Numéro]
+              L'ensemble des contenus présents sur le site Goldies Travel (textes, logos, photographies, vidéos, icônes, éléments graphiques et charte visuelle) relève de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle. Toute reproduction, représentation, modification ou diffusion totale ou partielle, par quelque procédé que ce soit, sans autorisation écrite préalable, est formellement interdite et constitue une contrefaçon sanctionnée par les articles L. 335-2 et suivants du Code de la propriété intellectuelle.
             </p>
 
-            <h2>4. Propriété intellectuelle</h2>
+            <h2>4. Données personnelles et Cookies</h2>
             <p>
-              L'ensemble de ce site relève de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle. Tous les droits de reproduction sont réservés, y compris pour les documents téléchargeables et les représentations iconographiques et photographiques.
+              Pour toute information concernant la collecte, le traitement et la protection de vos données personnelles ainsi que l'utilisation des cookies, nous vous invitons à consulter notre <a href="/politique-confidentialite">Politique de Confidentialité</a>.
             </p>
 
-            <h2>5. Données personnelles</h2>
+            <h2>5. Droit applicable et Juridiction compétente</h2>
             <p>
-              Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification, de suppression et d'opposition aux données personnelles vous concernant. Consultez notre <a href="/politique-confidentialite">Politique de Confidentialité</a> pour plus de détails.
+              Le présent site est soumis au droit français. En cas de litige relatif à l'utilisation du site ou à ses mentions légales, et à défaut de résolution amiable, compétence expresse est attribuée aux tribunaux français compétents.
             </p>
 
           </div>

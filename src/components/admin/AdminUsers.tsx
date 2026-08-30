@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { Trash2, Plus, UserCog } from "lucide-react";
+import { formatUserErrorMessage } from "@/lib/error-handler";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,8 +48,12 @@ const AdminUsers = () => {
   const load = async () => {
     setLoading(true);
     const { data, errorMessage } = await invokeAdmin("list", { method: "GET" });
-    if (errorMessage) toast({ title: "Erreur", description: errorMessage, variant: "destructive" });
-    else setUsers(data?.users ?? []);
+    if (errorMessage) {
+      const errDiag = formatUserErrorMessage(errorMessage);
+      toast({ title: errDiag.title, description: `${errDiag.description} ${errDiag.action || ""}`, variant: "destructive" });
+    } else {
+      setUsers(data?.users ?? []);
+    }
     setLoading(false);
   };
 
@@ -66,7 +71,8 @@ const AdminUsers = () => {
     });
     setSubmitting(false);
     if (errorMessage) {
-      toast({ title: "Erreur", description: errorMessage, variant: "destructive" });
+      const errDiag = formatUserErrorMessage(errorMessage);
+      toast({ title: errDiag.title, description: `${errDiag.description} ${errDiag.action || ""}`, variant: "destructive" });
       return;
     }
     toast({ title: "Invitation envoyée", description: `Invitation envoyée à ${normalizedEmail}` });
@@ -81,9 +87,10 @@ const AdminUsers = () => {
       body: { user_id: toDelete.user_id },
     });
     if (errorMessage) {
-      toast({ title: "Erreur", description: errorMessage, variant: "destructive" });
+      const errDiag = formatUserErrorMessage(errorMessage);
+      toast({ title: errDiag.title, description: `${errDiag.description} ${errDiag.action || ""}`, variant: "destructive" });
     } else {
-      toast({ title: "Admin supprimé" });
+      toast({ title: "Admin supprimé avec succès" });
       load();
     }
     setToDelete(null);
