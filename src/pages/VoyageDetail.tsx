@@ -145,9 +145,9 @@ const VoyageDetail = () => {
     <div className="min-h-screen bg-concrete-canvas text-ink">
       <Navbar />
 
-      {/* Hero */}
+      {/* Hero Header (extends fully under Navbar) */}
       <section 
-        className="relative h-[65vh] min-h-[450px] mt-16 overflow-hidden group/hero"
+        className="relative w-full h-[70vh] min-h-[520px] overflow-hidden group/hero flex flex-col justify-end"
         onMouseEnter={() => setPhotoPaused(true)}
         onMouseLeave={() => setPhotoPaused(false)}
       >
@@ -175,9 +175,10 @@ const VoyageDetail = () => {
           <img src={trip.image_url} alt={trip.name} className="absolute inset-0 w-full h-full object-cover" />
         ) : null}
         
-        {/* Dark overlay gradients */}
-        <div className="absolute inset-0 bg-black/20 z-10" />
-        <div className="absolute inset-0 bg-gradient-to-t from-concrete-canvas via-concrete-canvas/40 to-black/10 z-10" />
+        {/* Dark overlay & gradients for navbar and bottom seamless transition */}
+        <div className="absolute inset-0 bg-black/25 z-10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-concrete-canvas via-concrete-canvas/40 to-transparent z-10 pointer-events-none" />
 
         {/* Navigation Arrows (visible on hover) */}
         {allPhotos.length > 1 && (
@@ -216,7 +217,7 @@ const VoyageDetail = () => {
         )}
 
         {/* Title Content */}
-        <div className="relative z-10 h-full container mx-auto px-6 flex flex-col justify-end pb-16">
+        <div className="relative z-20 container mx-auto px-6 flex flex-col justify-end pb-16 pt-32">
           <Link to="/voyages" className="inline-flex items-center gap-2 text-white hover:text-citra-orange text-sm mb-4 transition-all duration-300 font-dm-sans font-medium drop-shadow-md">
             <ArrowLeft size={16} /> Tous nos voyages
           </Link>
