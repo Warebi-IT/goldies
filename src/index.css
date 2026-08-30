@@ -11,15 +11,15 @@
   --color-ink: #0D0D0D;             /* Deep Black */
   --color-pure-black: #0D0D0D;      
   --color-paper-white: #ffffff;
-  --color-citra-orange: #FC6C26;    /* Burnt Orange */
+  --color-citra-orange: #B6656E;    /* Sahel Rose */
   --color-ion-violet: #1E2A4A;      /* Night Blue */
-  --color-hazard-yellow: #FC6C26;   
+  --color-hazard-yellow: #B6656E;   
 
   /* Pastel Palette Variables */
   --color-pastel-sand: #FFF8ED;
   --color-pastel-sage: #F0F2F6;
   --color-pastel-rose: #E1E5ED;
-  --color-pastel-peach: #FC6C26;
+  --color-pastel-peach: #B6656E;
   --color-pastel-lime: #1E2A4A;
 
   /* Typography — Font Families */
@@ -99,7 +99,7 @@
   /* Surfaces */
   --surface-concrete-canvas: #FAFAFA;
   --surface-cream-card: #FFF8ED;
-  --surface-citra-surface: #FC6C26;
+  --surface-citra-surface: #B6656E;
   --surface-ion-surface: #1E2A4A;
 
   /* Shadcn compatibility mappings (mapped to New Sahel Express Palette) */
@@ -109,19 +109,19 @@
   --card-foreground: 0 0% 5%;
   --popover: 38 100% 96%;
   --popover-foreground: 0 0% 5%;
-  --primary: 20 97% 57%;     /* #FC6C26 */
+  --primary: 353.3 35.7% 55.5%;     /* #B6656E */
   --primary-foreground: 0 0% 100%;
   --secondary: 224 42% 20%;  /* #1E2A4A (Night Blue) */
   --secondary-foreground: 0 0% 100%;
   --muted: 224 30% 94%;      /* Soft shade of Night Blue */
   --muted-foreground: 224 42% 30%; 
-  --accent: 20 97% 57%;      /* #FC6C26 */
+  --accent: 353.3 35.7% 55.5%;      /* #B6656E */
   --accent-foreground: 0 0% 100%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
   --border: 224 30% 85%;     /* Border using soft Night Blue */
   --input: 224 30% 85%;
-  --ring: 20 97% 57%;
+  --ring: 353.3 35.7% 55.5%;
   --radius: 40px;
 }
 
