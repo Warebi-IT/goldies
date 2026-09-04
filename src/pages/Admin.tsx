@@ -10,10 +10,12 @@ import AdminUsers from "@/components/admin/AdminUsers";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import AdminBookings from "@/components/admin/AdminBookings";
 import logo from "@/assets/logo.png";
-import { LogOut, Shield } from "lucide-react";
+import { LogOut, Shield, Clock } from "lucide-react";
 import { evaluateMfaState } from "@/lib/security";
 
 const EMAIL_DOMAIN = "goldies.local";
+const ADMIN_SESSION_DURATION_MS = 8 * 60 * 60 * 1000; // Session de travail de 8h
+const SESSION_START_KEY = "goldies_admin_session_start";
 
 interface LoginFormProps {
   isBootstrap: boolean;
@@ -90,11 +92,36 @@ const Admin = () => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
+      if (s) {
+        if (!localStorage.getItem(SESSION_START_KEY)) {
+          localStorage.setItem(SESSION_START_KEY, String(Date.now()));
+        }
+      } else {
+        localStorage.removeItem(SESSION_START_KEY);
+      }
     });
+
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        const startStr = localStorage.getItem(SESSION_START_KEY);
+        const startTime = startStr ? parseInt(startStr, 10) : Date.now();
+        if (Date.now() - startTime > ADMIN_SESSION_DURATION_MS) {
+          // Session de travail de 8h expirée
+          localStorage.removeItem(SESSION_START_KEY);
+          supabase.auth.signOut().then(() => {
+            setSession(null);
+            setLoading(false);
+          });
+          return;
+        }
+        if (!startStr) {
+          localStorage.setItem(SESSION_START_KEY, String(Date.now()));
+        }
+      }
       setSession(session);
       setLoading(false);
     });
+
     return () => subscription.unsubscribe();
   }, []);
 
@@ -194,6 +221,7 @@ const Admin = () => {
   };
 
   const handleLogout = async () => {
+    localStorage.removeItem(SESSION_START_KEY);
     await supabase.auth.signOut();
     setIsAdmin(null);
     setIsMfaVerified(false);
@@ -248,6 +276,9 @@ const Admin = () => {
           </span>
         </Link>
         <div className="flex items-center gap-3">
+          <span className="text-xs text-muted-foreground hidden md:inline-flex items-center gap-1.5 bg-muted/70 px-3 py-1 rounded-full border border-border/40 font-dm-sans">
+            <Clock size={12} className="text-primary" /> Session active (8h)
+          </span>
           <span className="text-sm text-muted-foreground hidden sm:inline">{currentUsername}</span>
           <Button
             variant="ghost"

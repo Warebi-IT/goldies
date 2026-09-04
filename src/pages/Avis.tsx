@@ -36,7 +36,7 @@ const Avis = () => {
         </div>
 
         {/* Reviews Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
           {reviews.slice(0, visibleCount).map((review, idx) => {
             const cardBg = "bg-[#F5EFE6]";
 

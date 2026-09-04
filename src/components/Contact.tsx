@@ -1,19 +1,45 @@
-import { useState } from "react";
-import { Send, Instagram } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Send, Instagram, Phone } from "lucide-react";
 import videoSenegal from "@/assets/goldiessenegalversion.mp4";
 import { supabase } from "@/integrations/supabase/client";
 import { isValidEmail, sanitizeTextInput } from "@/lib/security";
 
 const Contact = () => {
+  const [searchParams] = useSearchParams();
   const [prenom, setPrenom] = useState("");
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
+  const [telephone, setTelephone] = useState("");
   const [destination, setDestination] = useState("");
   const [message, setMessage] = useState("");
   const [honeypot, setHoneypot] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formError, setFormError] = useState("");
+
+  useEffect(() => {
+    const pNom = searchParams.get("nom");
+    const pPrenom = searchParams.get("prenom");
+    const pEmail = searchParams.get("email");
+    const pTel = searchParams.get("telephone") || searchParams.get("tel");
+    const pDest = searchParams.get("destination");
+    const pTrip = searchParams.get("trip");
+
+    if (pNom) setNom(pNom);
+    if (pPrenom) setPrenom(pPrenom);
+    if (pEmail) setEmail(pEmail);
+    if (pTel) setTelephone(pTel);
+    if (pDest) {
+      const lower = pDest.toLowerCase();
+      if (lower.includes("maroc")) setDestination("maroc");
+      else if (lower.includes("sénégal") || lower.includes("senegal")) setDestination("senegal");
+      else setDestination(pDest);
+    }
+    if (pTrip && !message) {
+      setMessage(`Bonjour, je souhaite être recontactée concernant le séjour : ${pTrip}.`);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,18 +59,33 @@ const Contact = () => {
     const cleanPrenom = sanitizeTextInput(prenom, 100);
     const cleanNom = sanitizeTextInput(nom, 100);
     const cleanEmail = sanitizeTextInput(email, 254).toLowerCase();
+    const cleanPhone = sanitizeTextInput(telephone, 30);
     const cleanDest = sanitizeTextInput(destination, 100);
     const cleanMessage = sanitizeTextInput(message, 3000);
 
     setLoading(true);
     try {
-      const { error } = await supabase.from("contacts").insert({
+      let { error } = await supabase.from("contacts").insert({
         prenom: cleanPrenom,
         nom: cleanNom,
         email: cleanEmail,
+        telephone: cleanPhone || null,
         destination: cleanDest,
         message: cleanMessage,
       });
+
+      if (error && (error.code === "42703" || error.message?.includes("telephone"))) {
+        const fallbackMsg = cleanPhone ? `${cleanMessage}\n\nTéléphone: ${cleanPhone}` : cleanMessage;
+        const retryRes = await supabase.from("contacts").insert({
+          prenom: cleanPrenom,
+          nom: cleanNom,
+          email: cleanEmail,
+          destination: cleanDest,
+          message: fallbackMsg,
+        });
+        error = retryRes.error;
+      }
+
       if (error) throw error;
       setSubmitted(true);
     } catch (err: any) {
@@ -174,18 +215,32 @@ const Contact = () => {
                     />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-dm-sans font-bold text-ink mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all"
-                    placeholder="votre@email.com"
-                  />
+                <div className="grid sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-dm-sans font-bold text-ink mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all"
+                      placeholder="votre@email.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-dm-sans font-bold text-ink mb-2">
+                      Numéro de téléphone
+                    </label>
+                    <input
+                      type="tel"
+                      value={telephone}
+                      onChange={(e) => setTelephone(e.target.value)}
+                      className="w-full rounded-[16px] border-none bg-gray-100/80 px-5 py-4 text-base font-dm-sans text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-citra-orange/50 transition-all"
+                      placeholder="+33 6 00 00 00 00"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-dm-sans font-bold text-ink mb-2">

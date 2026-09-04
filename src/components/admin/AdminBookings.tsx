@@ -445,6 +445,15 @@ const AdminBookings = () => {
                             <Phone size={11} className="text-ink/40" />
                             <a href={`tel:${b.telephone}`} className="hover:underline">{b.telephone}</a>
                           </div>
+                          {(b as any).submission_action === "etre_contacte" ? (
+                            <span className="inline-block px-2 py-0.5 mt-1 rounded-md text-[10px] font-extrabold bg-blue-100 text-blue-800">
+                              📞 Demande de contact
+                            </span>
+                          ) : (b as any).submission_action === "annuler" || b.payment_status === "cancelled" ? (
+                            <span className="inline-block px-2 py-0.5 mt-1 rounded-md text-[10px] font-extrabold bg-gray-100 text-gray-700">
+                              ⚠️ Abandon / Annulé
+                            </span>
+                          ) : null}
                         </td>
 
                         <td className="px-6 py-4 max-w-[200px]">
@@ -589,8 +598,11 @@ const AdminBookings = () => {
                       <tr key={c.id} className="hover:bg-gray-50/50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="font-bold text-ink">{fullName}</div>
-                          <div className="text-xs text-ink/50">
-                            <a href={`mailto:${c.email}`} className="hover:underline">{c.email}</a>
+                          <div className="text-xs text-ink/50 space-y-0.5">
+                            <div><a href={`mailto:${c.email}`} className="hover:underline">{c.email}</a></div>
+                            {c.telephone && (
+                              <div><a href={`tel:${c.telephone}`} className="text-citra-orange font-medium hover:underline flex items-center gap-1"><Phone size={11} /> {c.telephone}</a></div>
+                            )}
                           </div>
                         </td>
                         <td className="px-6 py-4">

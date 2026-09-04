@@ -214,64 +214,67 @@ export type Database = {
         Row: {
           id: string
           trip_id: string | null
-          nom: string
-          prenom: string
-          age: number
-          email: string
-          telephone: string
-          disponibilite: boolean
-          allergies: string
-          engagement: string
-          assurance: string
+          nom: string | null
+          prenom: string | null
+          age: number | null
+          email: string | null
+          telephone: string | null
+          disponibilite: boolean | null
+          allergies: string | null
+          engagement: string | null
+          assurance: string | null
           autre: string | null
           payment_status: string
           payment_type: string
           price_at_booking: number | null
-          has_medical_alert: boolean
-          medical_alert_acknowledged: boolean
-          insurance_verified: boolean
+          has_medical_alert: boolean | null
+          medical_alert_acknowledged: boolean | null
+          insurance_verified: boolean | null
+          submission_action: string | null
           created_at: string
         }
         Insert: {
           id?: string
           trip_id?: string | null
-          nom: string
-          prenom: string
-          age: number
-          email: string
-          telephone: string
-          disponibilite?: boolean
-          allergies: string
-          engagement: string
-          assurance: string
+          nom?: string | null
+          prenom?: string | null
+          age?: number | null
+          email?: string | null
+          telephone?: string | null
+          disponibilite?: boolean | null
+          allergies?: string | null
+          engagement?: string | null
+          assurance?: string | null
           autre?: string | null
           payment_status?: string
           payment_type?: string
           price_at_booking?: number | null
-          has_medical_alert?: boolean
-          medical_alert_acknowledged?: boolean
-          insurance_verified?: boolean
+          has_medical_alert?: boolean | null
+          medical_alert_acknowledged?: boolean | null
+          insurance_verified?: boolean | null
+          submission_action?: string | null
           created_at?: string
         }
         Update: {
           id?: string
           trip_id?: string | null
-          nom?: string
-          prenom?: string
-          age?: number
-          email?: string
-          telephone?: string
-          disponibilite?: boolean
-          allergies?: string
-          engagement?: string
-          assurance?: string
+          nom?: string | null
+          prenom?: string | null
+          age?: number | null
+          email?: string | null
+          telephone?: string | null
+          disponibilite?: boolean | null
+          allergies?: string | null
+          engagement?: string | null
+          assurance?: string | null
           autre?: string | null
           payment_status?: string
           payment_type?: string
           price_at_booking?: number | null
-          has_medical_alert?: boolean
-          medical_alert_acknowledged?: boolean
-          insurance_verified?: boolean
+          has_medical_alert?: boolean | null
+          medical_alert_acknowledged?: boolean | null
+          insurance_verified?: boolean | null
+          submission_action?: string | null
           created_at?: string
         }
         Relationships: [
@@ -281,7 +284,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "trips"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       audit_events: {
@@ -323,8 +326,9 @@ export type Database = {
           nom: string
           prenom: string
           email: string
+          telephone: string | null
           destination: string
-          message: string
+          message: string | null
           created_at: string
         }
         Insert: {
@@ -332,8 +336,9 @@ export type Database = {
           nom: string
           prenom: string
           email: string
+          telephone?: string | null
           destination: string
-          message: string
+          message?: string | null
           created_at?: string
         }
         Update: {
@@ -341,8 +346,9 @@ export type Database = {
           nom?: string
           prenom?: string
           email?: string
+          telephone?: string | null
           destination?: string
-          message?: string
+          message?: string | null
           created_at?: string
         }
         Relationships: []
