@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { calculateBalanceDueDate, calculateDepositAmount, calculateRemainingBalance } from "@/lib/business-rules";
 import { formatUserErrorMessage } from "@/lib/error-handler";
+import AdminAuditTrail from "@/components/admin/AdminAuditTrail";
 
 const AdminBookings = () => {
   const queryClient = useQueryClient();
@@ -282,14 +283,6 @@ const AdminBookings = () => {
            c.email.toLowerCase().includes(search.toLowerCase()) ||
            c.message.toLowerCase().includes(search.toLowerCase()) ||
            c.destination.toLowerCase().includes(search.toLowerCase());
-  });
-
-  // Searching audit events
-  const filteredAuditEvents = auditEvents?.filter((a) => {
-    return a.action.toLowerCase().includes(search.toLowerCase()) ||
-           (a.actor_email || "").toLowerCase().includes(search.toLowerCase()) ||
-           (a.entity_type || "").toLowerCase().includes(search.toLowerCase()) ||
-           (a.entity_id || "").toLowerCase().includes(search.toLowerCase());
   });
 
   return (
@@ -637,67 +630,12 @@ const AdminBookings = () => {
           )}
         </div>
       ) : (
-        /* Audit Events Timeline (Règle 6) */
-        <div className="bg-white rounded-[32px] p-6 border border-ink/5 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-ink/5">
-            <div>
-              <h3 className="font-pp-neue-corp-compact font-bold text-xl uppercase text-ink">
-                Historique des Événements & Traçabilité
-              </h3>
-              <p className="text-xs text-ink/60 font-dm-sans">
-                Journal immuable enregistrant chaque action sensible et cycle de vie client.
-              </p>
-            </div>
-            <span className="text-xs font-bold px-3 py-1 bg-pastel-sand rounded-full text-ink">
-              {filteredAuditEvents?.length || 0} événement(s)
-            </span>
-          </div>
-
-          {auditLoading ? (
-            <div className="p-12 text-center text-ink/60 font-dm-sans">Chargement du journal d'audit...</div>
-          ) : !filteredAuditEvents || filteredAuditEvents.length === 0 ? (
-            <div className="p-12 text-center text-ink/50 font-dm-sans">Aucun événement d'audit enregistré.</div>
-          ) : (
-            <div className="divide-y divide-ink/5">
-              {filteredAuditEvents.map((evt) => {
-                const date = new Date(evt.created_at).toLocaleString("fr-FR", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
-                });
-
-                return (
-                  <div key={evt.id} className="py-3 flex flex-col md:flex-row md:items-center justify-between gap-2 font-dm-sans text-xs">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold font-mono px-2 py-0.5 rounded bg-ink/5 text-ink">
-                          {evt.action}
-                        </span>
-                        <span className="text-ink/60 uppercase font-semibold text-[10px] px-2 py-0.5 rounded bg-pastel-sand">
-                          {evt.entity_type} {evt.entity_id ? `(#${evt.entity_id.slice(0, 8)})` : ""}
-                        </span>
-                        {evt.actor_email && (
-                          <span className="text-citra-orange font-medium">Par : {evt.actor_email}</span>
-                        )}
-                      </div>
-                      {evt.details && Object.keys(evt.details as object).length > 0 && (
-                        <p className="text-ink/70 font-mono text-[11px] bg-gray-50 p-1.5 rounded-lg">
-                          {JSON.stringify(evt.details)}
-                        </p>
-                      )}
-                    </div>
-                    <div className="text-ink/40 whitespace-nowrap text-right shrink-0">
-                      {date}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        /* Executive Audit Trail Component */
+        <AdminAuditTrail
+          events={auditEvents || []}
+          isLoading={auditLoading}
+          searchQuery={search}
+        />
       )}
     </div>
   );
