@@ -112,15 +112,34 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
     return errs;
   };
 
-  // Helper for safe booking insert with fallback if DB schema differs
+  // Helper for safe booking insert without requiring SELECT permissions on bookings table
   const safeInsertBooking = async (payload: any) => {
-    const res = await supabase.from("bookings").insert(payload).select("id").maybeSingle();
+    // Generate UUID client-side so anonymous clients never require SELECT rights on bookings
+    const bookingId = payload.id || (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : undefined);
+    const insertPayload = bookingId ? { ...payload, id: bookingId } : payload;
+
+    const res = await supabase.from("bookings").insert(insertPayload);
     if (res.error && (res.error.code === "42703" || res.error.message?.includes("column") || res.error.message?.includes("has_medical_alert"))) {
       console.warn("Retrying booking insert without extended columns:", res.error.message);
-      const { has_medical_alert, medical_alert_acknowledged, insurance_verified, price_at_booking, submission_action, ...legacyPayload } = payload;
-      return await supabase.from("bookings").insert(legacyPayload).select("id").maybeSingle();
+      const { has_medical_alert, medical_alert_acknowledged, insurance_verified, price_at_booking, submission_action, ...legacyPayload } = insertPayload;
+      const retryRes = await supabase.from("bookings").insert(legacyPayload);
+      return { data: { id: bookingId }, error: retryRes.error };
     }
-    return res;
+    return { data: { id: bookingId }, error: res.error };
+  };
+
+  // Safe non-blocking audit event logger
+  const safeLogAuditEvent = async (action: string, entityId?: string | null, details?: Record<string, any>) => {
+    try {
+      await supabase.from("audit_events").insert({
+        action,
+        entity_type: "booking",
+        entity_id: entityId || null,
+        details: details || {},
+      });
+    } catch (auditErr) {
+      console.warn("Non-blocking audit log failure:", auditErr);
+    }
   };
 
   // Helper for safe contact insert with fallback
@@ -158,7 +177,7 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
         const parsedAge = parseInt(age, 10) || null;
         const hasMedicalAlert = detectMedicalAlert(cleanAllergies);
 
-        await safeInsertBooking({
+        const { data: insertedBooking } = await safeInsertBooking({
           trip_id: trip.id,
           nom: cleanNom,
           prenom: cleanPrenom,
@@ -179,16 +198,12 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
           submission_action: "annuler",
         });
 
-        await supabase.from("audit_events").insert({
-          action: "BOOKING_ABANDONED_OR_CANCELLED",
-          entity_type: "booking",
-          details: {
-            trip_id: trip.id,
-            trip_name: trip.name,
-            client_email: cleanEmail,
-            client_phone: cleanPhone,
-            client_name: `${cleanPrenom || ""} ${cleanNom || ""}`.trim(),
-          },
+        await safeLogAuditEvent("BOOKING_ABANDONED_OR_CANCELLED", insertedBooking?.id, {
+          trip_id: trip.id,
+          trip_name: trip.name,
+          client_email: cleanEmail,
+          client_phone: cleanPhone,
+          client_name: `${cleanPrenom || ""} ${cleanNom || ""}`.trim(),
         });
       } catch (err) {
         console.error("Error saving partial booking on cancel:", err);
@@ -211,7 +226,7 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
       const hasMedicalAlert = detectMedicalAlert(cleanAllergies);
 
       // A. Sauvegarde dans la table bookings
-      await safeInsertBooking({
+      const { data: insertedBooking } = await safeInsertBooking({
         trip_id: trip.id,
         nom: cleanNom,
         prenom: cleanPrenom,
@@ -244,17 +259,13 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
         });
       }
 
-      // C. Audit event
-      await supabase.from("audit_events").insert({
-        action: "BOOKING_CONTACT_REQUESTED",
-        entity_type: "booking",
-        details: {
-          trip_id: trip.id,
-          trip_name: trip.name,
-          client_email: cleanEmail,
-          client_phone: cleanPhone,
-          client_name: `${cleanPrenom || ""} ${cleanNom || ""}`.trim(),
-        },
+      // C. Audit event (non-bloquant)
+      await safeLogAuditEvent("BOOKING_CONTACT_REQUESTED", insertedBooking?.id, {
+        trip_id: trip.id,
+        trip_name: trip.name,
+        client_email: cleanEmail,
+        client_phone: cleanPhone,
+        client_name: `${cleanPrenom || ""} ${cleanNom || ""}`.trim(),
       });
 
       // D. Redirection vers la page de contact avec informations préremplies
@@ -333,19 +344,14 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
 
       if (error) throw error;
 
-      // Log audit event
-      await supabase.from("audit_events").insert({
-        action: "BOOKING_SUBMITTED",
-        entity_type: "booking",
-        entity_id: insertedBooking?.id || null,
-        details: {
-          trip_id: trip.id,
-          trip_name: trip.name,
-          client_email: cleanEmail,
-          payment_type: paymentType,
-          price_at_booking: numericPrice,
-          has_medical_alert: hasMedicalAlert,
-        },
+      // Log audit event (non-bloquant)
+      await safeLogAuditEvent("BOOKING_SUBMITTED", insertedBooking?.id, {
+        trip_id: trip.id,
+        trip_name: trip.name,
+        client_email: cleanEmail,
+        payment_type: paymentType,
+        price_at_booking: numericPrice,
+        has_medical_alert: hasMedicalAlert,
       });
 
       // Redirect to the appropriate payment link based on choice
@@ -368,7 +374,7 @@ const BookingFormModal: React.FC<BookingFormModalProps> = ({ isOpen, onClose, tr
       }
     } catch (error: any) {
       console.error("Error creating booking:", error);
-      const errDiag = formatUserErrorMessage(error);
+      const errDiag = formatUserErrorMessage(error, "public");
       alert(`${errDiag.title}\n\n${errDiag.description}${errDiag.action ? `\n\nAction : ${errDiag.action}` : ""}`);
     } finally {
       setLoading(false);

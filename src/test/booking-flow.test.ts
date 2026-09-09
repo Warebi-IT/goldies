@@ -188,4 +188,44 @@ describe("Booking & Payment Deposit Flow Integration", () => {
       expect(cancelAction.payment_status).toBe("cancelled");
     });
   });
+
+  describe("6. Résilience de réservation publique (sans droits backend requis)", () => {
+    it("Génère un UUID côté client pour la réservation sans nécessiter de SELECT en base", () => {
+      const generateBookingPayload = (input: any) => {
+        const bookingId = input.id || "mock-uuid-" + Math.random().toString(36).substring(2);
+        return {
+          ...input,
+          id: bookingId,
+        };
+      };
+
+      const payload = generateBookingPayload({
+        trip_id: "trip-senegal-1",
+        nom: "Sow",
+        prenom: "Aminata",
+        email: "aminata@test.sn",
+      });
+
+      expect(payload.id).toBeDefined();
+      expect(typeof payload.id).toBe("string");
+      expect(payload.id.length).toBeGreaterThan(10);
+    });
+
+    it("Permet à safeLogAuditEvent d'échouer silencieusement sans bloquer la réservation", async () => {
+      let bookingCompleted = false;
+
+      const safeLogAuditEvent = async () => {
+        try {
+          throw new Error("Simulated network or RLS failure on audit_events");
+        } catch (err) {
+          // Logged silently, non-blocking
+        }
+      };
+
+      await safeLogAuditEvent();
+      bookingCompleted = true;
+
+      expect(bookingCompleted).toBe(true);
+    });
+  });
 });

@@ -53,4 +53,16 @@ describe("Centralized Error Handler - Diagnostic & Actionable French Messages", 
     expect(formatted.title).toBe("Connexion réseau interrompue");
     expect(formatted.action).toContain("connexion Internet");
   });
+
+  it("Traduit une erreur RLS dans un contexte public client sans mentionner user_roles", () => {
+    const error = {
+      message: "new row violates row-level security policy for table 'bookings'",
+      code: "42501",
+    };
+
+    const formatted = formatUserErrorMessage(error, "public");
+    expect(formatted.title).toBe("Réservation temporairement indisponible");
+    expect(formatted.action).not.toContain("user_roles");
+    expect(formatted.action).toContain("contact");
+  });
 });

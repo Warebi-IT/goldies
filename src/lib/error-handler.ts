@@ -14,7 +14,7 @@ export interface UserFriendlyError {
 /**
  * Parses any error object and returns a clear, actionable French diagnostic.
  */
-export function formatUserErrorMessage(error: any): UserFriendlyError {
+export function formatUserErrorMessage(error: any, context: "admin" | "public" = "admin"): UserFriendlyError {
   if (!error) {
     return {
       title: "Erreur inconnue",
@@ -77,6 +77,16 @@ export function formatUserErrorMessage(error: any): UserFriendlyError {
     rawMsg.includes("new row violates row-level security policy") ||
     code === "42501"
   ) {
+    if (context === "public") {
+      return {
+        title: "Réservation temporairement indisponible",
+        description: "Une restriction d'accès est survenue lors de l'enregistrement de votre réservation.",
+        action: "Veuillez rafraîchir la page ou nous contacter directement via notre page de contact.",
+        technicalDetails: rawMsg,
+        fullMessage: "Erreur d'accès lors de la réservation. Veuillez réessayer.",
+      };
+    }
+
     return {
       title: "Autorisation requise",
       description: "Votre compte ne dispose pas des droits nécessaires pour modifier cette ressource.",
