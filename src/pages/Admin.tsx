@@ -151,7 +151,7 @@ const Admin = () => {
           navigate("/mfa-setup", {
             replace: true,
             state: {
-              message: "Vous devez activer Google Authenticator (2FA) pour accéder au back-office",
+              message: "Vous devez activer la double authentification 2FA pour accéder au back-office",
             },
           });
           return;
@@ -197,7 +197,7 @@ const Admin = () => {
     } else if (mfaState === "needs_setup") {
       navigate("/mfa-setup", {
         state: {
-          message: "Vous devez activer Google Authenticator pour accéder au back-office",
+          message: "Activez votre application d'authentification (Microsoft ou Google Authenticator) pour accéder au back-office",
         },
       });
     }

@@ -74,7 +74,7 @@ const MfaVerify = () => {
 
         <div className="space-y-5">
           <p className="text-sm text-muted-foreground text-center">
-            Entrez le code à 6 chiffres de votre application Google Authenticator
+            Entrez le code à 6 chiffres de votre application d'authentification (Microsoft Authenticator, Google Authenticator, etc.)
           </p>
 
           <div className="flex justify-center">
