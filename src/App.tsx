@@ -30,6 +30,9 @@ const initialHash = window.location.hash;
 const AuthRedirect = () => {
   const navigate = useNavigate();
   useEffect(() => {
+    // Si l'utilisateur est déjà sur la page /set-password, ne pas écraser l'URL ni le hash
+    if (window.location.pathname === "/set-password") return;
+
     const isInvite = initialHash.includes("type=invite") || initialHash.includes("type=recovery");
     if (!isInvite) return;
     supabase.auth.getSession().then(({ data }) => {

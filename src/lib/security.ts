@@ -128,3 +128,42 @@ export function formatPasswordRecoveryRedirect(origin: string | null | undefined
   return `${base}/set-password`;
 }
 
+export interface ParsedAuthTokens {
+  accessToken: string | null;
+  refreshToken: string | null;
+  type: string | null;
+  code: string | null;
+  errorCode: string | null;
+  errorDescription: string | null;
+}
+
+/**
+ * Safely parses auth tokens or error fragments from URL hash and search query.
+ * Handles both Implicit flow (#access_token=...) and PKCE flow (?code=...).
+ */
+export function parseAuthTokensFromUrl(
+  hash: string | null | undefined,
+  search: string | null | undefined
+): ParsedAuthTokens {
+  const cleanHash = (hash || "").replace(/^[#?]/, "");
+  const cleanSearch = (search || "").replace(/^[#?]/, "");
+
+  const hashParams = new URLSearchParams(cleanHash);
+  const searchParams = new URLSearchParams(cleanSearch);
+
+  return {
+    accessToken: hashParams.get("access_token") || searchParams.get("access_token"),
+    refreshToken: hashParams.get("refresh_token") || searchParams.get("refresh_token"),
+    type: hashParams.get("type") || searchParams.get("type"),
+    code: searchParams.get("code") || hashParams.get("code"),
+    errorCode:
+      hashParams.get("error_code") ||
+      searchParams.get("error_code") ||
+      hashParams.get("error") ||
+      searchParams.get("error"),
+    errorDescription:
+      hashParams.get("error_description") || searchParams.get("error_description"),
+  };
+}
+
+

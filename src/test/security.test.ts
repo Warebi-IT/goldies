@@ -7,6 +7,7 @@ import {
   normalizeAuthIdentifier,
   isValidAuthIdentifier,
   formatPasswordRecoveryRedirect,
+  parseAuthTokensFromUrl,
 } from "@/lib/security";
 
 describe("Security Utilities - Given / When / Then", () => {
@@ -111,5 +112,39 @@ describe("Security Utilities - Given / When / Then", () => {
       expect(formatPasswordRecoveryRedirect("http://localhost:8080")).toBe("http://localhost:8080/set-password");
     });
   });
+
+  describe("Recovery URL Token Parsing (parseAuthTokensFromUrl) - Given / When / Then", () => {
+    it("Given a recovery hash with access_token and refresh_token, When parsed, Then extracts tokens correctly", () => {
+      const hash = "#access_token=token123&refresh_token=refresh456&type=recovery";
+      const result = parseAuthTokensFromUrl(hash, "");
+      expect(result.accessToken).toBe("token123");
+      expect(result.refreshToken).toBe("refresh456");
+      expect(result.type).toBe("recovery");
+      expect(result.errorCode).toBeNull();
+    });
+
+    it("Given an expired recovery hash with error_code=otp_expired, When parsed, Then captures error details", () => {
+      const hash = "#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired";
+      const result = parseAuthTokensFromUrl(hash, "");
+      expect(result.accessToken).toBeNull();
+      expect(result.errorCode).toBe("otp_expired");
+      expect(result.errorDescription).toBe("Email link is invalid or has expired");
+    });
+
+    it("Given a PKCE search query with code parameter, When parsed, Then extracts code", () => {
+      const search = "?code=pkce-auth-code-789";
+      const result = parseAuthTokensFromUrl("", search);
+      expect(result.code).toBe("pkce-auth-code-789");
+    });
+
+    it("Given empty hash and search strings, When parsed, Then returns null values safely", () => {
+      const result = parseAuthTokensFromUrl("", "");
+      expect(result.accessToken).toBeNull();
+      expect(result.refreshToken).toBeNull();
+      expect(result.code).toBeNull();
+      expect(result.errorCode).toBeNull();
+    });
+  });
 });
+
 
