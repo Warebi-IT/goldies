@@ -4,6 +4,9 @@ import {
   isValidEmail,
   sanitizeTextInput,
   evaluateMfaState,
+  normalizeAuthIdentifier,
+  isValidAuthIdentifier,
+  formatPasswordRecoveryRedirect,
 } from "@/lib/security";
 
 describe("Security Utilities - Given / When / Then", () => {
@@ -73,4 +76,40 @@ describe("Security Utilities - Given / When / Then", () => {
       expect(evaluateMfaState(factors, aal)).toBe("verified");
     });
   });
+
+  describe("Password Recovery & Identifier Normalization - Given / When / Then", () => {
+    it("Given a raw email, When normalized, Then it trims and converts to lowercase", () => {
+      expect(normalizeAuthIdentifier("  User.Admin@Domain.COM ")).toBe("user.admin@domain.com");
+    });
+
+    it("Given a bare username without domain, When normalized, Then it appends default domain", () => {
+      expect(normalizeAuthIdentifier("yancouba")).toBe("yancouba@goldies.local");
+      expect(normalizeAuthIdentifier("admin.master", "custom.domain")).toBe("admin.master@custom.domain");
+    });
+
+    it("Given empty or blank input, When normalized, Then it returns empty string", () => {
+      expect(normalizeAuthIdentifier("")).toBe("");
+      expect(normalizeAuthIdentifier("   ")).toBe("");
+    });
+
+    it("Given a valid email or valid username, When checked with isValidAuthIdentifier, Then returns true", () => {
+      expect(isValidAuthIdentifier("admin@goldies-travel.com")).toBe(true);
+      expect(isValidAuthIdentifier("yancouba.diatta")).toBe(true);
+      expect(isValidAuthIdentifier("admin_2026")).toBe(true);
+    });
+
+    it("Given an invalid identifier with illegal characters or script tags, When checked, Then returns false", () => {
+      expect(isValidAuthIdentifier("admin<script>")).toBe(false);
+      expect(isValidAuthIdentifier("user;drop table")).toBe(false);
+      expect(isValidAuthIdentifier("")).toBe(false);
+      expect(isValidAuthIdentifier("   ")).toBe(false);
+    });
+
+    it("Given an origin URL, When formatting recovery redirect, Then it returns clean /set-password target", () => {
+      expect(formatPasswordRecoveryRedirect("https://goldies-travel.com")).toBe("https://goldies-travel.com/set-password");
+      expect(formatPasswordRecoveryRedirect("https://goldies-travel.com/")).toBe("https://goldies-travel.com/set-password");
+      expect(formatPasswordRecoveryRedirect("http://localhost:8080")).toBe("http://localhost:8080/set-password");
+    });
+  });
 });
+

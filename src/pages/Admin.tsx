@@ -10,8 +10,13 @@ import AdminUsers from "@/components/admin/AdminUsers";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import AdminBookings from "@/components/admin/AdminBookings";
 import logo from "@/assets/logo.png";
-import { LogOut, Shield, Clock } from "lucide-react";
-import { evaluateMfaState } from "@/lib/security";
+import { LogOut, Shield, Clock, KeyRound, Mail, ArrowLeft, CheckCircle2, AlertCircle } from "lucide-react";
+import {
+  evaluateMfaState,
+  normalizeAuthIdentifier,
+  isValidAuthIdentifier,
+  formatPasswordRecoveryRedirect,
+} from "@/lib/security";
 
 const EMAIL_DOMAIN = "goldies.local";
 const ADMIN_SESSION_DURATION_MS = 8 * 60 * 60 * 1000; // Session de travail de 8h
@@ -28,12 +33,73 @@ const LoginForm = ({ isBootstrap, onLogin, onBootstrap }: LoginFormProps) => {
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
 
+  // État Récupération Mot de passe oublié
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotIdentifier, setForgotIdentifier] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotSuccess, setForgotSuccess] = useState(false);
+  const [forgotError, setForgotError] = useState("");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError("");
     const fn = isBootstrap ? onBootstrap : onLogin;
     const error = await fn(username, password);
     if (error) setAuthError(error);
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotError("");
+
+    if (!isValidAuthIdentifier(forgotIdentifier)) {
+      setForgotError("Format d'identifiant ou d'adresse email invalide.");
+      return;
+    }
+
+    setForgotLoading(true);
+
+    try {
+      const targetEmail = normalizeAuthIdentifier(forgotIdentifier, EMAIL_DOMAIN);
+      const redirectUrl = formatPasswordRecoveryRedirect(window.location.origin);
+
+      const { error } = await supabase.auth.resetPasswordForEmail(targetEmail, {
+        redirectTo: redirectUrl,
+      });
+
+      // Journalisation d'audit immuable (non-bloquante)
+      supabase
+        .from("audit_events")
+        .insert({
+          actor_email: targetEmail,
+          action: "auth.password_reset_requested",
+          entity_type: "auth",
+          entity_id: targetEmail,
+          details: {
+            origin: window.location.origin,
+            userAgent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+            requested_at: new Date().toISOString(),
+          },
+        })
+        .then(() => {});
+
+      if (error) {
+        const msg = error.message?.toLowerCase() || "";
+        if (msg.includes("rate limit") || error.status === 429) {
+          setForgotError("Trop de demandes de réinitialisation. Veuillez patienter quelques instants.");
+          setForgotLoading(false);
+          return;
+        }
+        // Anti-énumération stricte : on ne divulgue jamais si l'email existe ou non en base
+        console.warn("[Auth Security] Password reset request processed for:", targetEmail, error.message);
+      }
+
+      setForgotSuccess(true);
+    } catch {
+      setForgotError("Une erreur inattendue est survenue. Veuillez réessayer.");
+    } finally {
+      setForgotLoading(false);
+    }
   };
 
   return (
@@ -43,39 +109,151 @@ const LoginForm = ({ isBootstrap, onLogin, onBootstrap }: LoginFormProps) => {
           <img src={logo} alt="Goldies Travel" className="h-10 w-10" />
           <span className="font-serif text-xl font-bold text-foreground">Admin</span>
         </Link>
-        {isBootstrap && (
-          <p className="text-xs text-center text-muted-foreground mb-4">
-            Aucun admin n'existe. Créez le premier compte.
-          </p>
+
+        {showForgot ? (
+          <div>
+            <div className="text-center mb-6">
+              <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                <KeyRound className="h-6 w-6 text-primary" />
+              </div>
+              <h1 className="text-lg font-bold text-foreground">Mot de passe oublié</h1>
+              <p className="text-xs text-muted-foreground mt-1">
+                Saisissez votre email ou identifiant administrateur. Un lien sécurisé vous sera envoyé.
+              </p>
+            </div>
+
+            {forgotSuccess ? (
+              <div className="space-y-4">
+                <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4 text-xs flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold text-emerald-800 dark:text-emerald-300">Demande prise en compte</p>
+                    <p className="text-emerald-700 dark:text-emerald-400 leading-relaxed">
+                      Si cette adresse correspond à un compte administrateur, un lien de réinitialisation sécurisé vient de vous être envoyé.
+                      Veuillez vérifier votre boîte de réception ainsi que vos courriers indésirables (spams).
+                    </p>
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setShowForgot(false);
+                    setForgotSuccess(false);
+                    setForgotError("");
+                  }}
+                  className="w-full rounded-full flex items-center justify-center gap-2 text-xs font-medium"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Retour à la connexion
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <div>
+                  <label className="text-xs font-medium text-foreground mb-1 block">
+                    Email ou identifiant administrateur
+                  </label>
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      value={forgotIdentifier}
+                      onChange={(e) => setForgotIdentifier(e.target.value)}
+                      placeholder="nom.prenom ou email@exemple.com"
+                      autoComplete="username"
+                      required
+                      disabled={forgotLoading}
+                      className="pl-9"
+                    />
+                    <Mail className="h-4 w-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                </div>
+
+                {forgotError && (
+                  <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-destructive text-xs flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                    <span>{forgotError}</span>
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full rounded-full bg-primary text-primary-foreground font-medium"
+                >
+                  {forgotLoading ? "Envoi du lien..." : "Envoyer le lien de réinitialisation"}
+                </Button>
+
+                <div className="text-center pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowForgot(false);
+                      setForgotError("");
+                    }}
+                    className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 transition-colors focus:outline-none"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    Retour à la connexion
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        ) : (
+          <>
+            {isBootstrap && (
+              <p className="text-xs text-center text-muted-foreground mb-4">
+                Aucun admin n'existe. Créez le premier compte.
+              </p>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="text-xs font-medium text-foreground mb-1 block">Identifiant</label>
+                <Input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="nom.prenom ou email@exemple.com"
+                  autoComplete="username"
+                  required
+                />
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-medium text-foreground">Mot de passe</label>
+                  {!isBootstrap && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowForgot(true);
+                        setForgotSuccess(false);
+                        setForgotError("");
+                        setForgotIdentifier(username);
+                      }}
+                      className="text-xs text-primary hover:underline font-medium focus:outline-none"
+                    >
+                      Mot de passe oublié ?
+                    </button>
+                  )}
+                </div>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  required
+                />
+              </div>
+              {authError && <p className="text-sm text-destructive">{authError}</p>}
+              <Button type="submit" className="w-full rounded-full bg-primary text-primary-foreground font-medium">
+                {isBootstrap ? "Créer le compte admin" : "Se connecter"}
+              </Button>
+            </form>
+          </>
         )}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="text-xs font-medium text-foreground mb-1 block">Identifiant</label>
-            <Input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="nom.prenom ou email@exemple.com"
-              autoComplete="username"
-              required
-            />
-          </div>
-          <div>
-            <label className="text-xs font-medium text-foreground mb-1 block">Mot de passe</label>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              autoComplete="current-password"
-              required
-            />
-          </div>
-          {authError && <p className="text-sm text-destructive">{authError}</p>}
-          <Button type="submit" className="w-full rounded-full bg-primary text-primary-foreground">
-            {isBootstrap ? "Créer le compte admin" : "Se connecter"}
-          </Button>
-        </form>
       </div>
     </div>
   );

@@ -49,6 +49,7 @@ const App = () => (
       <div className="min-h-screen bg-zinc-950 p-2 md:p-4 font-dm-sans text-ink">
         <main className="bg-white rounded-[2rem] overflow-hidden min-h-[calc(100vh-1rem)] md:min-h-[calc(100vh-2rem)] shadow-2xl relative flex flex-col">
           <BrowserRouter>
+            <AuthRedirect />
             <ScrollToTop />
             <Routes>
               <Route path="/" element={<Index />} />

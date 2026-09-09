@@ -87,3 +87,44 @@ export function evaluateMfaState(
 
   return "needs_verify";
 }
+
+/**
+ * Normalizes an administrative username or email address.
+ * If no '@' is present, appends the provided default domain (e.g. goldies.local).
+ */
+export function normalizeAuthIdentifier(
+  input: string | null | undefined,
+  defaultDomain = "goldies.local"
+): string {
+  if (!input || typeof input !== "string") return "";
+  const clean = input.trim().toLowerCase();
+  if (!clean) return "";
+  return clean.includes("@") ? clean : `${clean}@${defaultDomain}`;
+}
+
+/**
+ * Validates whether an authentication identifier (email or username) is safe and well-formed.
+ * Prevents command/SQL injection patterns and invalid characters.
+ */
+export function isValidAuthIdentifier(input: string | null | undefined): boolean {
+  if (!input || typeof input !== "string") return false;
+  const clean = input.trim().toLowerCase();
+  if (!clean || clean.length > 254) return false;
+
+  if (clean.includes("@")) {
+    return isValidEmail(clean);
+  }
+
+  const usernameRegex = /^[a-zA-Z0-9._-]+$/;
+  return usernameRegex.test(clean);
+}
+
+/**
+ * Formats a clean password recovery redirect URL targeting /set-password.
+ */
+export function formatPasswordRecoveryRedirect(origin: string | null | undefined): string {
+  if (!origin || typeof origin !== "string") return "/set-password";
+  const base = origin.trim().replace(/\/+$/, "");
+  return `${base}/set-password`;
+}
+
