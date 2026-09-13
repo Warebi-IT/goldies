@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, X, Calendar as CalendarIcon, Star, Lock, Unlock } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, X, Calendar as CalendarIcon, Star, Lock, Unlock, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import ConfirmationMFA from "@/components/admin/ConfirmationMFA";
@@ -607,10 +607,15 @@ const AdminTrips = () => {
                   <Button
                     variant="ghost"
                     size="icon"
+                    disabled={toggleFeaturedMutation.isPending && toggleFeaturedMutation.variables?.id === trip.id}
                     onClick={() => toggleFeaturedMutation.mutate({ id: trip.id, is_featured: !trip.is_featured })}
                     className={trip.is_featured ? "text-citra-orange" : "text-muted-foreground"}
                   >
-                    <Star size={16} className={trip.is_featured ? "fill-current" : ""} />
+                    {toggleFeaturedMutation.isPending && toggleFeaturedMutation.variables?.id === trip.id ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <Star size={16} className={trip.is_featured ? "fill-current" : ""} />
+                    )}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className="bg-ink text-white font-dm-sans text-xs">
@@ -623,9 +628,16 @@ const AdminTrips = () => {
                   <Button
                     variant="ghost"
                     size="icon"
+                    disabled={toggleMutation.isPending && toggleMutation.variables?.id === trip.id}
                     onClick={() => toggleMutation.mutate({ id: trip.id, is_active: !trip.is_active })}
                   >
-                    {trip.is_active ? <Eye size={16} /> : <EyeOff size={16} />}
+                    {toggleMutation.isPending && toggleMutation.variables?.id === trip.id ? (
+                      <Loader2 size={16} className="animate-spin text-muted-foreground" />
+                    ) : trip.is_active ? (
+                      <Eye size={16} />
+                    ) : (
+                      <EyeOff size={16} />
+                    )}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className="bg-ink text-white font-dm-sans text-xs">
@@ -638,10 +650,17 @@ const AdminTrips = () => {
                   <Button
                     variant="ghost"
                     size="icon"
+                    disabled={toggleBookingMutation.isPending && toggleBookingMutation.variables?.id === trip.id}
                     onClick={() => toggleBookingMutation.mutate({ id: trip.id, is_booking_enabled: trip.is_booking_enabled === false ? true : false })}
                     className={trip.is_booking_enabled === false ? "text-amber-500" : "text-emerald-500"}
                   >
-                    {trip.is_booking_enabled === false ? <Lock size={16} /> : <Unlock size={16} />}
+                    {toggleBookingMutation.isPending && toggleBookingMutation.variables?.id === trip.id ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : trip.is_booking_enabled === false ? (
+                      <Lock size={16} />
+                    ) : (
+                      <Unlock size={16} />
+                    )}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className="bg-ink text-white font-dm-sans text-xs">
