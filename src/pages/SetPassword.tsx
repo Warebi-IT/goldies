@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import logo from "@/assets/logo.png";
 import { parseAuthTokensFromUrl } from "@/lib/security";
-import { AlertCircle, CheckCircle2, Lock, ArrowLeft } from "lucide-react";
+import { AlertCircle, CheckCircle2, Lock, ArrowLeft, Shield } from "lucide-react";
 
 const SetPassword = () => {
   const navigate = useNavigate();
@@ -18,14 +19,16 @@ const SetPassword = () => {
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  // MFA State
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
+  const [mfaCode, setMfaCode] = useState("");
+
   useEffect(() => {
     let isMounted = true;
 
     const setupSession = async () => {
-      // 1. Extraction défensive des jetons ou de l'erreur dans l'URL (hash ou search)
       const tokens = parseAuthTokensFromUrl(window.location.hash, window.location.search);
 
-      // Si Supabase a renvoyé une erreur explicite dans l'URL (ex: otp_expired)
       if (tokens.errorCode || tokens.errorDescription) {
         if (isMounted) {
           if (tokens.errorCode === "otp_expired") {
@@ -41,7 +44,6 @@ const SetPassword = () => {
         return;
       }
 
-      // 2. Si le hash contient access_token et refresh_token, initialiser la session immédiatement
       if (tokens.accessToken && tokens.refreshToken) {
         try {
           const { data, error: sessionErr } = await supabase.auth.setSession({
@@ -53,15 +55,12 @@ const SetPassword = () => {
             setLoading(false);
             return;
           }
-          if (sessionErr) {
-            console.warn("[Auth] Erreur lors de setSession:", sessionErr.message);
-          }
+          if (sessionErr) console.warn("[Auth] Erreur lors de setSession:", sessionErr.message);
         } catch (err) {
           console.warn("[Auth] Exception setSession:", err);
         }
       }
 
-      // 3. Si l'URL contient un code PKCE
       if (tokens.code) {
         try {
           const { data, error: codeErr } = await supabase.auth.exchangeCodeForSession(tokens.code);
@@ -70,15 +69,12 @@ const SetPassword = () => {
             setLoading(false);
             return;
           }
-          if (codeErr) {
-            console.warn("[Auth] Erreur exchangeCode:", codeErr.message);
-          }
+          if (codeErr) console.warn("[Auth] Erreur exchangeCode:", codeErr.message);
         } catch (err) {
           console.warn("[Auth] Exception exchangeCode:", err);
         }
       }
 
-      // 4. Session déjà existante en cache local
       const { data } = await supabase.auth.getSession();
       if (data?.session && isMounted) {
         setHasSession(true);
@@ -86,17 +82,13 @@ const SetPassword = () => {
         return;
       }
 
-      // 5. Attente courte pour laisser onAuthStateChange se déclencher avant de conclure
       const timer = setTimeout(() => {
-        if (isMounted) {
-          setLoading(false);
-        }
+        if (isMounted) setLoading(false);
       }, 1200);
 
       return () => clearTimeout(timer);
     };
 
-    // Écouteur réactif des changements d'état d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session && isMounted) {
         setHasSession(true);
@@ -111,6 +103,23 @@ const SetPassword = () => {
       subscription.unsubscribe();
     };
   }, []);
+
+  // Check MFA requirements when session is established
+  useEffect(() => {
+    if (hasSession) {
+      const checkMfa = async () => {
+        const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+        if (aal?.currentLevel === 'aal1' && aal?.nextLevel === 'aal2') {
+          const { data: factors } = await supabase.auth.mfa.listFactors();
+          const totp = factors?.totp?.find(f => f.status === 'verified');
+          if (totp) {
+            setMfaFactorId(totp.id);
+          }
+        }
+      };
+      checkMfa();
+    }
+  }, [hasSession]);
 
   useEffect(() => {
     if (!success) return;
@@ -133,6 +142,24 @@ const SetPassword = () => {
     }
 
     setSubmitting(true);
+
+    if (mfaFactorId) {
+      if (mfaCode.length !== 6) {
+        setError("Veuillez saisir le code d'authentification à 6 chiffres.");
+        setSubmitting(false);
+        return;
+      }
+      const { error: mfaError } = await supabase.auth.mfa.challengeAndVerify({
+        factorId: mfaFactorId,
+        code: mfaCode
+      });
+      if (mfaError) {
+        setError("Code d'authentification invalide. Veuillez réessayer.");
+        setSubmitting(false);
+        return;
+      }
+    }
+
     const { error: updateError } = await supabase.auth.updateUser({ password });
     setSubmitting(false);
 
@@ -240,6 +267,33 @@ const SetPassword = () => {
                 required
               />
             </div>
+
+            {mfaFactorId && (
+              <div className="pt-2 pb-1 border-t border-border mt-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Shield className="h-4 w-4 text-primary" />
+                  <label className="text-xs font-medium text-foreground">
+                    Vérification 2FA requise
+                  </label>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                  Votre compte est protégé par la double authentification. Entrez le code à 6 chiffres de votre application.
+                </p>
+                <div className="flex justify-center">
+                  <InputOTP maxLength={6} value={mfaCode} onChange={setMfaCode}>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+              </div>
+            )}
+
             {error && (
               <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-destructive text-xs flex items-start gap-2">
                 <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
@@ -261,3 +315,4 @@ const SetPassword = () => {
 };
 
 export default SetPassword;
+

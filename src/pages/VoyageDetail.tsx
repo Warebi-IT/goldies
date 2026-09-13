@@ -8,11 +8,22 @@ import { MapPin, Calendar, Clock, ArrowLeft, ArrowRight, CheckCircle, Users, X, 
 import { Button } from "@/components/ui/button";
 import BookingFormModal from "@/components/BookingFormModal";
 import { calculateDepositAmount, calculateRemainingBalance } from "@/lib/business-rules";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const VoyageDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isBookingDisabledModalOpen, setIsBookingDisabledModalOpen] = useState(false);
   const [bookingPaymentType, setBookingPaymentType] = useState<"deposit" | "installment" | "full">("deposit");
+
+  const handleBookingClick = (type: "deposit" | "installment" | "full" = "full") => {
+    if ((trip as any)?.is_booking_enabled === false) {
+      setIsBookingDisabledModalOpen(true);
+      return;
+    }
+    setBookingPaymentType(type);
+    setIsBookingModalOpen(true);
+  };
 
   const { data: trip, isLoading } = useQuery({
     queryKey: ["trip", id],
@@ -276,10 +287,7 @@ const VoyageDetail = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                   {/* Option 1 : Acompte */}
                   <div 
-                    onClick={() => {
-                      setBookingPaymentType("deposit");
-                      setIsBookingModalOpen(true);
-                    }}
+                    onClick={() => handleBookingClick("deposit")}
                     className="group relative bg-white/95 rounded-xl p-4 border border-blue-100/80 shadow-xs hover:shadow-md hover:border-blue-300 transition-all duration-300 cursor-pointer flex flex-col justify-between"
                   >
                     <div>
@@ -303,10 +311,7 @@ const VoyageDetail = () => {
 
                   {/* Option 2 : 3x / 4x Klarna */}
                   <div 
-                    onClick={() => {
-                      setBookingPaymentType("installment");
-                      setIsBookingModalOpen(true);
-                    }}
+                    onClick={() => handleBookingClick("installment")}
                     className="group relative bg-white/95 rounded-xl p-4 border border-pink-100/80 shadow-xs hover:shadow-md hover:border-pink-300 transition-all duration-300 cursor-pointer flex flex-col justify-between"
                   >
                     <div>
@@ -475,7 +480,7 @@ const VoyageDetail = () => {
                 </div>
               ) : (trip.payment_link || (trip as any).deposit_payment_link) ? (
                 <Button 
-                  onClick={() => setIsBookingModalOpen(true)}
+                  onClick={() => handleBookingClick("full")}
                   className="w-full rounded-full shadow-lg bg-ink text-cream-card hover:bg-citra-orange hover:text-white font-dm-sans font-bold h-14 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
                   Réserver maintenant
@@ -500,6 +505,33 @@ const VoyageDetail = () => {
           initialPaymentType={bookingPaymentType}
         />
       )}
+
+      {/* Booking Disabled Modal */}
+      <Dialog open={isBookingDisabledModalOpen} onOpenChange={setIsBookingDisabledModalOpen}>
+        <DialogContent className="sm:max-w-md text-center p-8 rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="font-pp-neue-corp-compact text-2xl font-black uppercase text-ink">
+              Réservation non disponible
+            </DialogTitle>
+            <DialogDescription className="font-dm-sans text-ink/80 pt-2 text-base">
+              Ce voyage n'est pas encore disponible à la réservation en ligne.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-6 py-4">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center text-ink/40">
+              <Sparkles size={32} />
+            </div>
+            <p className="font-dm-sans text-sm text-ink/70">
+              Si vous avez des questions ou souhaitez être informé(e) de l'ouverture des inscriptions, n'hésitez pas à nous contacter.
+            </p>
+          </div>
+          <div className="flex justify-center mt-2">
+            <Button asChild className="w-full rounded-full bg-ink text-white hover:bg-citra-orange h-12 font-dm-sans font-bold">
+              <Link to="/contact">Nous contacter</Link>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Lightbox Modal */}
       {isLightboxOpen && (

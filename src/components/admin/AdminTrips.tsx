@@ -8,7 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, X, Calendar as CalendarIcon, Star } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, X, Calendar as CalendarIcon, Star, Lock, Unlock } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import ConfirmationMFA from "@/components/admin/ConfirmationMFA";
 import { isValidRedirectUrl } from "@/lib/security";
@@ -42,6 +43,7 @@ interface TripForm {
   program: ProgramDay[];
   start_date: string;
   end_date: string;
+  is_booking_enabled: boolean;
 }
 
 const emptyForm: TripForm = {
@@ -62,6 +64,7 @@ const emptyForm: TripForm = {
   program: [],
   start_date: "",
   end_date: "",
+  is_booking_enabled: true,
 };
 
 const slugify = (s: string) =>
@@ -170,10 +173,12 @@ const AdminTrips = () => {
         program: form.program as any,
         start_date: form.start_date || null,
         end_date: form.end_date || null,
+        is_booking_enabled: form.is_booking_enabled,
       };
 
       let tripId: string;
       let depositColumnMissing = false;
+      let bookingColumnMissing = false;
 
       try {
         if (editId) {
@@ -186,10 +191,18 @@ const AdminTrips = () => {
           tripId = data.id;
         }
       } catch (err: any) {
-        // Fallback: If deposit_amount column is not yet present in remote Supabase schema cache, retry without it
-        if (err?.message?.includes("deposit_amount") || err?.code === "PGRST204") {
-          depositColumnMissing = true;
-          const { deposit_amount, ...fallbackPayload } = payload;
+        // Fallback for missing columns in remote Supabase schema cache
+        const isDepositMissing = err?.message?.includes("deposit_amount") || err?.code === "PGRST204";
+        const isBookingMissing = err?.message?.includes("is_booking_enabled") || err?.code === "PGRST204";
+        
+        if (isDepositMissing || isBookingMissing) {
+          if (isDepositMissing) depositColumnMissing = true;
+          if (isBookingMissing) bookingColumnMissing = true;
+          
+          const fallbackPayload = { ...payload };
+          if (isDepositMissing) delete fallbackPayload.deposit_amount;
+          if (isBookingMissing) delete fallbackPayload.is_booking_enabled;
+          
           if (editId) {
             const { error: retryErr } = await supabase.from("trips").update(fallbackPayload).eq("id", editId);
             if (retryErr) throw retryErr;
@@ -229,10 +242,11 @@ const AdminTrips = () => {
           price: form.price,
           is_active: true,
           deposit_column_missing: depositColumnMissing,
+          booking_column_missing: bookingColumnMissing,
         },
       });
 
-      return { tripId, isEdit: !!editId, depositColumnMissing };
+      return { tripId, isEdit: !!editId, depositColumnMissing, bookingColumnMissing };
     },
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["admin-trips"] });
@@ -241,10 +255,13 @@ const AdminTrips = () => {
       setForm(emptyForm);
       setTripPhotos([]);
 
-      if (res?.depositColumnMissing) {
+      if (res?.depositColumnMissing || res?.bookingColumnMissing) {
+        let missingMsg = "Certaines informations nécessitent une mise à jour de la base de données.\nExécutez cette commande SQL dans Supabase :\n";
+        if (res?.depositColumnMissing) missingMsg += "ALTER TABLE trips ADD COLUMN IF NOT EXISTS deposit_amount NUMERIC;\n";
+        if (res?.bookingColumnMissing) missingMsg += "ALTER TABLE trips ADD COLUMN IF NOT EXISTS is_booking_enabled BOOLEAN DEFAULT TRUE;\n";
         toast({
           title: res.isEdit ? "Voyage modifié avec succès" : "Voyage ajouté avec succès",
-          description: "Les informations et liens Stripe ont bien été enregistrés.\n\n💡 Note : pour persister le montant d'acompte personnalisé, exécutez la commande SQL suivante dans Supabase :\nALTER TABLE trips ADD COLUMN IF NOT EXISTS deposit_amount NUMERIC;",
+          description: missingMsg,
         });
       } else {
         toast({ title: res?.isEdit ? "Voyage modifié avec succès" : "Voyage ajouté avec succès" });
@@ -342,6 +359,33 @@ const AdminTrips = () => {
     },
   });
 
+  const toggleBookingMutation = useMutation({
+    mutationFn: async ({ id, is_booking_enabled }: { id: string; is_booking_enabled: boolean }) => {
+      const { error } = await supabase.from("trips").update({ is_booking_enabled }).eq("id", id);
+      if (error) {
+        if (error.message?.includes("is_booking_enabled")) {
+          throw new Error("La colonne is_booking_enabled n'existe pas. Veuillez exécuter la commande SQL dans Supabase.");
+        }
+        throw error;
+      }
+
+      await supabase.from("audit_events").insert({
+        action: "TRIP_BOOKING_TOGGLED",
+        entity_type: "trip",
+        entity_id: id,
+        details: { is_booking_enabled },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-trips"] });
+      toast({ title: "Statut des réservations mis à jour" });
+    },
+    onError: (e: any) => {
+      const err = formatUserErrorMessage(e);
+      toast({ title: err.title, description: err.description, variant: "destructive" });
+    },
+  });
+
   const toggleFeaturedMutation = useMutation({
     mutationFn: async ({ id, is_featured }: { id: string; is_featured: boolean }) => {
       const { error } = await supabase.from("trips").update({ is_featured }).eq("id", id);
@@ -421,6 +465,7 @@ const AdminTrips = () => {
       program: Array.isArray(trip.program) ? trip.program : [],
       start_date: trip.start_date || "",
       end_date: trip.end_date || "",
+      is_booking_enabled: trip.is_booking_enabled ?? true,
     });
 
     const { data } = await supabase
@@ -587,6 +632,22 @@ const AdminTrips = () => {
                   <p>{trip.is_active ? "Cacher ce voyage (le rendre invisible aux clients)" : "Activer ce voyage (le rendre visible aux clients)"}</p>
                 </TooltipContent>
               </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => toggleBookingMutation.mutate({ id: trip.id, is_booking_enabled: trip.is_booking_enabled === false ? true : false })}
+                    className={trip.is_booking_enabled === false ? "text-amber-500" : "text-emerald-500"}
+                  >
+                    {trip.is_booking_enabled === false ? <Lock size={16} /> : <Unlock size={16} />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="bg-ink text-white font-dm-sans text-xs">
+                  <p>{trip.is_booking_enabled === false ? "Ouvrir les réservations pour ce voyage" : "Bloquer les réservations pour ce voyage"}</p>
+                </TooltipContent>
+              </Tooltip>
               
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -630,6 +691,17 @@ const AdminTrips = () => {
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleFormSubmit} className="space-y-4">
+            <div className="flex items-center justify-between bg-muted/30 p-3 rounded-lg border border-border">
+              <div>
+                <label className="text-sm font-medium block">Réservations ouvertes</label>
+                <p className="text-xs text-muted-foreground">Si désactivé, le voyage reste visible mais ne peut être réservé.</p>
+              </div>
+              <Switch 
+                checked={form.is_booking_enabled} 
+                onCheckedChange={(c) => setForm({ ...form, is_booking_enabled: c })} 
+              />
+            </div>
+
             <div>
               <label className="text-xs font-medium mb-1 block">Nom du voyage *</label>
               <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />

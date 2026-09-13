@@ -128,6 +128,7 @@ export type Database = {
           image_url: string | null
           includes: string[]
           is_active: boolean
+          is_booking_enabled?: boolean
           is_featured: boolean
           name: string
           payment_link: string | null
@@ -152,6 +153,7 @@ export type Database = {
           image_url?: string | null
           includes?: string[]
           is_active?: boolean
+          is_booking_enabled?: boolean
           is_featured?: boolean
           name: string
           payment_link?: string | null
@@ -176,6 +178,7 @@ export type Database = {
           image_url?: string | null
           includes?: string[]
           is_active?: boolean
+          is_booking_enabled?: boolean
           is_featured?: boolean
           name?: string
           payment_link?: string | null

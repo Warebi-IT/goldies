@@ -9,7 +9,7 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="py-16 mt-20 bg-ink text-white relative overflow-hidden">
+    <footer className="py-16 bg-ink text-white relative overflow-hidden">
       {/* Subtle decorative atmosphere matching the pastel blue waves */}
       <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-white/30 rounded-full blur-[120px] pointer-events-none animate-float-slow"></div>
       <div className="absolute bottom-[-30%] left-[-10%] w-[600px] h-[600px] rounded-full border border-white/30 pointer-events-none mix-blend-overlay"></div>

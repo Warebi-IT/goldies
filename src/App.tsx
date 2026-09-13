@@ -49,8 +49,8 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <div className="min-h-screen bg-zinc-950 p-2 md:p-4 font-dm-sans text-ink">
-        <main className="bg-white rounded-[2rem] overflow-hidden min-h-[calc(100vh-1rem)] md:min-h-[calc(100vh-2rem)] shadow-2xl relative flex flex-col">
+      <div className="min-h-screen bg-white font-dm-sans text-ink">
+        <main className="relative flex flex-col min-h-screen">
           <BrowserRouter>
             <AuthRedirect />
             <ScrollToTop />
